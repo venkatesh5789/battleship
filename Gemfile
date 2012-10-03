@@ -10,10 +10,11 @@ group :development, :test do
 end
 
 group :production do
-  gem 'pg'
+  gem 'pg'     # --without production ??
 end
 
-
+# OH!!! add this!!
+gem 'activesupport'
 
 # Gems used only for assets and not required
 # in production environments by default.
