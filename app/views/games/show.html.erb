@@ -1,15 +1,63 @@
-<p id="notice"><%= notice %></p>
+<div class="container-fluid">
 
-<p>
-  <b>Name:</b>
-  <%= @game.name %>
-</p>
+  <div class="center">
+    <h1>Current Game</h1>
+  </div>
+  <div class="row-fluid">
+    <div class="span2">
+      <h2>Players</h2>
+      <table class="table table-striped">
+        <thead>
+            <tr>
+              <th>Name</th>
+              <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <td>Knott</td>
+              <td>Ready</td>
+            </tr>
+            <tr>
+              <td>Knott</td>
+              <td>Ready</td>
+            </tr>
+            <tr>
+              <td>Knott</td>
+              <td>Ready</td>
+            </tr>
+            <tr>
+              <td>Knott</td>
+              <td>Ready</td>
+            </tr>
+            <tr>
+              <td>Knott</td>
+              <td>Ready</td>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="span10">
+      <h2>Battleground</h2>
+      <div class="row-fluid">
+        <div class="span4">
+          <h3>My name</h3>
+          Grid
+        </div>
+        <div class="span1">
+          Panel
+        </div>
 
-<p>
-  <b>Status:</b>
-  <%= @game.status %>
-</p>
+        <div class="span4">
+          <h3>Other player</h3>
+          [some paginations]<br>
+          Grid
+        </div>
+        <div class="span1">
+          Panel
+        </div>
+      </div>
+    </div>
+  </div>
 
-
-<%= link_to 'Edit', edit_game_path(@game) %> |
-<%= link_to 'Back', games_path %>
+</div>
