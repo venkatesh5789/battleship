@@ -8,3 +8,11 @@
     margin-bottom: 10px;
   }
 }
+
+/* battlefield grid */
+
+.battlefield tr:hover .missed,
+.battlefield tr .missed {
+  background-color: red;
+
+}

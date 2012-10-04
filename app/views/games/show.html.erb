@@ -1,3 +1,5 @@
+
+
 <div class="container-fluid">
 
   <div class="center">
@@ -42,10 +44,39 @@
       <div class="row-fluid">
         <div class="span4">
           <h3>My name</h3>
-          Grid
+          <!-- my grid -->
+          <table id="myGrid" class="table table-bordered battlefield table-hover">
+            <% 10.times do |row| %>
+            <tr>
+              <% 10.times do |col| %>
+              <td id="<%="leftGrid"+(row.to_s+"-"+col.to_s)%>">c</td>
+                  <%end%>
+            </tr>
+            <%end%>
+          </table>
+
         </div>
         <div class="span1">
-          Panel
+          <%= form_tag("/search", :method => "get") do %>
+              <%= radio_button_tag(:ship_alignment, "Hor") %>
+              <%= label_tag(:age_adult, "Hor") %>
+              <%= radio_button_tag(:ship_alignment, "Vert") %>
+              <%= label_tag(:age_adult, "Vert") %>
+              <%= radio_button_tag(:ship_type, "Ship 5") %>
+              <%= label_tag(:ship_type, "Ship 5") %>
+              <%= radio_button_tag(:ship_type, "Ship 4") %>
+              <%= label_tag(:ship_type, "Ship 4") %>
+              <%= radio_button_tag(:ship_type, "Ship 3") %>
+              <%= label_tag(:ship_type, "Ship 3") %>
+              <%= radio_button_tag(:ship_type, "Ship 2") %>
+              <%= label_tag(:ship_type, "Ship 2") %>
+              <%= radio_button_tag(:ship_type, "Ship 1") %>
+              <%= label_tag(:ship_type, "Ship 1") %>
+              <%= text_field_tag(:ship_row) %>
+              <%= text_field_tag(:ship_col) %>
+
+              <%= submit_tag("Place") %>
+          <% end %>
         </div>
 
         <div class="span4">
@@ -61,3 +92,12 @@
   </div>
 
 </div>
+
+<script>
+    $('#myGrid td').on('click', function (e) {
+
+        //$('#myGrid td').addClass("missed");
+        //alert(e.target.id);
+        e.target.className += "missed";
+    })
+</script>
