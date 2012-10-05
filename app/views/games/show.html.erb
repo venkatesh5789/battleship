@@ -21,19 +21,19 @@
               <td>Ready</td>
             </tr>
             <tr>
-              <td>Knott</td>
+              <td>Jingyi</td>
               <td>Ready</td>
             </tr>
             <tr>
-              <td>Knott</td>
+              <td>Venkatesh</td>
               <td>Ready</td>
             </tr>
             <tr>
-              <td>Knott</td>
+              <td>Kapil</td>
               <td>Ready</td>
             </tr>
             <tr>
-              <td>Knott</td>
+              <td>Pujita</td>
               <td>Ready</td>
             </tr>
         </tbody>
@@ -46,10 +46,17 @@
           <h3>My name</h3>
           <!-- my grid -->
           <table id="myGrid" class="table table-bordered battlefield table-hover">
+            <tr>
+              <th>&nbsp;</th>
+              <% 10.times do |col_head| %>
+                <th><%= col_head+1 %></th>
+              <% end %>
+            </tr>
             <% 10.times do |row| %>
             <tr>
+              <th><%= (row+65).chr %></th>
               <% 10.times do |col| %>
-              <td id="<%="leftGrid"+(row.to_s+"-"+col.to_s)%>">c</td>
+              <td id="<%="battlefield-1-"+(row.to_s+"-"+col.to_s)%>">c</td>
                   <%end%>
             </tr>
             <%end%>
@@ -57,11 +64,15 @@
 
         </div>
         <div class="span1">
-          <%= form_tag("/search", :method => "get") do %>
+          <%# We have to change "#" to "place game move" process
+              :remote => true   is for using AJAX request for this form
+              :onsubmit         is for calling JS function to update battlefield variable & grid display %>
+          <%= form_tag("#", :method => "get", :remote => true, :onsubmit => "return placeShip(this)") do %>
               <%= radio_button_tag(:ship_alignment, "Hor") %>
-              <%= label_tag(:age_adult, "Hor") %>
+              <%= label_tag(:ship_alignment, "Hor") %>
               <%= radio_button_tag(:ship_alignment, "Vert") %>
-              <%= label_tag(:age_adult, "Vert") %>
+              <%= label_tag(:ship_alignment, "Vert") %>
+              <hr>
               <%= radio_button_tag(:ship_type, "Ship 5") %>
               <%= label_tag(:ship_type, "Ship 5") %>
               <%= radio_button_tag(:ship_type, "Ship 4") %>
@@ -74,8 +85,7 @@
               <%= label_tag(:ship_type, "Ship 1") %>
               <%= text_field_tag(:ship_row) %>
               <%= text_field_tag(:ship_col) %>
-
-              <%= submit_tag("Place") %>
+              <%= submit_tag "Place" %>
           <% end %>
         </div>
 
@@ -94,10 +104,74 @@
 </div>
 
 <script>
+    var player_battlefield = new Array(2); // replace 2 with number_of_players
+    // initialize battlefield 2d-array for each player
+    for (var i=0; i<player_battlefield.length; i++) {
+        player_battlefield[i] = new Array(10);
+        for (var row=0; row<10; row++) {
+            player_battlefield[i][row] = new Array(10);
+        }
+    }
+
+
     $('#myGrid td').on('click', function (e) {
 
         //$('#myGrid td').addClass("missed");
         //alert(e.target.id);
         e.target.className += "missed";
-    })
+    });
+
+    function placeShip(form) {
+        var alignment;
+        var type;
+        for (var i=0; i < form.ship_alignment.length; i++)
+        {
+            if (form.ship_alignment[i].checked)
+            {
+                alignment = form.ship_alignment[i].value;
+            }
+        }
+        for (i=0; i < form.ship_type.length; i++)
+        {
+            if (form.ship_type[i].checked)
+            {
+                type = form.ship_type[i].value;
+            }
+        }
+
+        //alert(alignment);
+        //alert(type);
+
+        //alert(form.ship_row.value);
+        //alert(form.ship_col.value);
+
+        var numberOfCellToDraw = 0;
+        if (type == "Ship 1") {
+            numberOfCellToDraw = 1;
+        } else if (type == "Ship 2") {
+            numberOfCellToDraw = 2;
+        } else if (type == "Ship 3") {
+            numberOfCellToDraw = 3;
+        } else if (type == "Ship 4") {
+            numberOfCellToDraw = 4;
+        } else if (type == "Ship 5") {
+            numberOfCellToDraw = 5;
+        }
+
+        var player = 1;
+        var start_row = parseInt(form.ship_row.value);
+        var start_col = parseInt(form.ship_col.value);
+        var is_increase_row = (alignment == "Hor")?0:1;
+        var is_increase_col = (alignment == "Vert")?0:1;
+
+
+        for (var c=0; c<numberOfCellToDraw; c++) {
+            //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
+            $("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col)).addClass("shipPlaced")
+        }
+
+
+
+    }
+
 </script>

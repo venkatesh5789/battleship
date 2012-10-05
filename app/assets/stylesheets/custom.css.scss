@@ -14,5 +14,10 @@
 .battlefield tr:hover .missed,
 .battlefield tr .missed {
   background-color: red;
+}
 
+
+.battlefield tr:hover .shipPlaced,
+.battlefield tr .shipPlaced {
+  background-color: blue;
 }
