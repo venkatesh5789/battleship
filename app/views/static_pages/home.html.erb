@@ -1,0 +1,50 @@
+<% provide(:title,'home') %>
+
+<html>
+<h1>Welcome to Battleship</h1>
+
+
+<form accept-charset="UTF-8" action="/users" class="new_user"
+      id="new_user" method="post">
+
+  <label for="user_name">Name</label>
+  <input id="user_name" name="user[name]" size="30" type="text" />
+
+  <label for="user_email">Email</label>
+  <input id="user_email" name="user[email]" size="30" type="text" />
+
+  <label for="user_password">Password</label>
+  <input id="user_password" name="user[password]" size="30"
+         type="password" />
+
+   <input class="btn btn-large btn-primary" name="commit" type="submit"
+         value="Create my account" />
+  <br>
+  <input class="btn btn-large btn-primary" name="commit" type="submit"
+         value="Sign in" />
+  <br>
+</form>
+<table border="3">
+  <tr>
+    <th>GamesBeing Played</th>
+    <th>Players Joined/Total</th>
+  </tr>
+  <tr>
+    <td>Trojan War</td>
+    <td>4/5</td>
+  </tr>
+  <tr>
+    <td>Bermuda triangle Battle</td>
+    <td>2/5</td>
+  </tr>
+</table>
+<table class="table">
+ <tr>
+   <th>Current Players</th>
+ </tr>
+  <tr>
+  <td>Venky</td>
+  </tr>
+</table>
+
+</html>
