@@ -121,4 +121,7 @@ input, textarea, select, .uneditable-input {
   height: auto !important;
   margin-bottom: 15px;
 
+.battlefield tr:hover .shipPlaced,
+.battlefield tr .shipPlaced {
+  background-color: blue;
 }
