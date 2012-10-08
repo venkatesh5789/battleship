@@ -1,107 +1,138 @@
-<div class="container-fluid">
 
-  <div class="center">
-    <h1>Current Game</h1>
-  </div>
-  <div class="row-fluid">
-    <div class="span2">
+<div class="center">
+  <h1>Current Game</h1>
+</div>
+<div class="row">
+  <div class="span2">
+    <div id="player-window">
       <h2>Players</h2>
       <table class="table table-striped">
         <thead>
-            <tr>
-              <th>Name</th>
-              <th>Status</th>
-            </tr>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+        </tr>
         </thead>
         <tbody>
-            <tr>
-              <td>Knott</td>
-              <td>Ready</td>
-            </tr>
-            <tr>
-              <td>Jingyi</td>
-              <td>Ready</td>
-            </tr>
-            <tr>
-              <td>Venkatesh</td>
-              <td>Ready</td>
-            </tr>
-            <tr>
-              <td>Kapil</td>
-              <td>Ready</td>
-            </tr>
-            <tr>
-              <td>Pujita</td>
-              <td>Ready</td>
-            </tr>
+        <tr>
+          <td>Knott</td>
+          <td>Ready</td>
+        </tr>
+        <tr>
+          <td>Jingyi</td>
+          <td>Ready</td>
+        </tr>
+        <tr>
+          <td>Venkatesh</td>
+          <td>Ready</td>
+        </tr>
+        <tr>
+          <td>Kapil</td>
+          <td>Ready</td>
+        </tr>
+        <tr>
+          <td>Pujita</td>
+          <td>Ready</td>
+        </tr>
         </tbody>
       </table>
     </div>
-    <div class="span10">
-      <h2>Battleground</h2>
-      <div class="row-fluid">
-        <div class="span4">
-          <h3>My name</h3>
-          <!-- my grid -->
-          <table id="myGrid" class="table table-bordered battlefield table-hover">
-            <tr>
-              <th>&nbsp;</th>
-              <% 10.times do |col_head| %>
-                <th><%= col_head+1 %></th>
-              <% end %>
-            </tr>
-            <% 10.times do |row| %>
-            <tr>
-              <th><%= (row+65).chr %></th>
-              <% 10.times do |col| %>
-              <td id="<%="battlefield-1-"+(row.to_s+"-"+col.to_s)%>">c</td>
-                  <%end%>
-            </tr>
-            <%end%>
-          </table>
-
-        </div>
-        <div class="span1">
-          <%# We have to change "#" to "place game move" process
-              :remote => true   is for using AJAX request for this form
-              :onsubmit         is for calling JS function to update battlefield variable & grid display %>
-          <%= form_tag("#", :method => "get", :remote => true, :onsubmit => "return placeShip(this)") do %>
-              <%= radio_button_tag(:ship_alignment, "Hor") %>
-              <%= label_tag(:ship_alignment, "Hor") %>
-              <%= radio_button_tag(:ship_alignment, "Vert") %>
-              <%= label_tag(:ship_alignment, "Vert") %>
-              <hr>
-              <%= radio_button_tag(:ship_type, "Ship 5") %>
-              <%= label_tag(:ship_type, "Ship 5") %>
-              <%= radio_button_tag(:ship_type, "Ship 4") %>
-              <%= label_tag(:ship_type, "Ship 4") %>
-              <%= radio_button_tag(:ship_type, "Ship 3") %>
-              <%= label_tag(:ship_type, "Ship 3") %>
-              <%= radio_button_tag(:ship_type, "Ship 2") %>
-              <%= label_tag(:ship_type, "Ship 2") %>
-              <%= radio_button_tag(:ship_type, "Ship 1") %>
-              <%= label_tag(:ship_type, "Ship 1") %>
-              <%= text_field_tag(:ship_row) %>
-              <%= text_field_tag(:ship_col) %>
-              <%= submit_tag "Place" %>
-          <% end %>
-        </div>
-
-        <div class="span4">
-          <h3>Other player</h3>
-          [some paginations]<br>
-          Grid
-        </div>
-        <div class="span1">
-          Panel
-        </div>
-      </div>
+    <div id="chat-window" >
+      <h2>Chat</h2>
+      <table> <tr><td>Motherfucker</td></tr></table>
     </div>
   </div>
+  <div class="span10">
 
+    <div class="btn-group">
+      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+        Current game name
+        <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+        <!-- dropdown menu links -->
+      </ul>
+    </div>
+
+
+        <div class="span5">
+
+          <ul class="nav nav-tabs" id="playerTab">
+            <li class="active"><a href="#player-venkatesh" data-toggle="tab">Venkatesh</a></li>
+            <li><a href="#player-knott" data-toggle="tab">Knott</a></li>
+            <li><a href="#player-kapil" data-toggle="tab">Kapil</a></li>
+          </ul>
+
+          <div class="tab-content">
+            <div class="tab-pane active" id="player-venkatesh">
+              <h3>Venkatesh</h3>
+              <!-- my grid -->
+              <table id="myGrid" class="table table-bordered battlefield table-hover">
+                <tr>
+                  <th>&nbsp;</th>
+                  <% 10.times do |col_head| %>
+                      <th><%= col_head+1 %></th>
+                  <% end %>
+                </tr>
+                <% 10.times do |row| %>
+                    <tr>
+                      <th><%= (row+65).chr %></th>
+                      <% 10.times do |col| %>
+                          <td id="<%="battlefield-1-"+(row.to_s+"-"+col.to_s)%>">c</td>
+                      <%end%>
+                    </tr>
+                <%end%>
+              </table>
+              <!-- Form to place ships -->
+              <%# We have to change "#" to "place game move" process
+                      :remote => true   is for using AJAX request for this form
+                      :onsubmit         is for calling JS function to update battlefield variable & grid display %>
+              <%= form_tag("#", :method => "post", :class=>"form-inline", :remote => true, :onsubmit => "return placeShip(this)") do %>
+                  <%= hidden_field_tag(:game_id,@game.id) %>
+
+                  <%= select_tag(:ship_alignment,options_for_select([['H','H'],['V','V']]), :class=>"input-mini") %>
+
+                  <%= select_tag(:ship_type,options_for_select([
+                                                                       ['Carrier', 5],
+                                                                       ['Battleship', 4],
+                                                                       ['Destroyer', 3],
+                                                                       ['Submarine', 2],
+                                                                       ['Patrol Boat', 1]
+                                                                ]), :class=>"input-small") %>
+
+                  <%= text_field_tag(:ship_row,"", :placeholder=>"Row",:class=>"span1") %>
+                  <%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %>
+                  <%= submit_tag "Place" %>
+              <% end %>
+            </div>
+          </div>
+          <div class="tab-pane" id="player-knott">Knott</div>
+          <div class="tab-pane" id="player-kapil">Kapil</div>
+        </div>
+        <div class="span3">
+          <h3>Game moves</h3>
+          <table class="table table-striped">
+            <tr>
+              <td>
+                Venkatesh shot Kapil at (5,6)- Hit
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
+    // Activate player tab
+    $('#playerTab a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    })
+
+
     var player_battlefield = new Array(2); // replace 2 with number_of_players
     // initialize battlefield 2d-array for each player
     for (var i=0; i<player_battlefield.length; i++) {
@@ -120,57 +151,42 @@
     });
 
     function placeShip(form) {
-        var alignment;
-        var type;
-        for (var i=0; i < form.ship_alignment.length; i++)
-        {
-            if (form.ship_alignment[i].checked)
-            {
-                alignment = form.ship_alignment[i].value;
-            }
-        }
-        for (i=0; i < form.ship_type.length; i++)
-        {
-            if (form.ship_type[i].checked)
-            {
-                type = form.ship_type[i].value;
-            }
-        }
-
-        //alert(alignment);
-        //alert(type);
+        var alignment = form.ship_alignment.value;
+        var type = form.ship_type.value;
+        var row = form.ship_row.value;
+        var col = form.ship_col.value;
+        //alert(form.ship_alignment.value);
+        //alert(form.ship_type.value);
 
         //alert(form.ship_row.value);
         //alert(form.ship_col.value);
 
         var numberOfCellToDraw = 0;
-        if (type == "Ship 1") {
-            numberOfCellToDraw = 1;
-        } else if (type == "Ship 2") {
-            numberOfCellToDraw = 2;
-        } else if (type == "Ship 3") {
-            numberOfCellToDraw = 3;
-        } else if (type == "Ship 4") {
-            numberOfCellToDraw = 4;
-        } else if (type == "Ship 5") {
+
+        if (type == 5) {
             numberOfCellToDraw = 5;
+        } else if (type == 4) {
+            numberOfCellToDraw = 4;
+        } else if (type == 3 || type == 2) {
+            numberOfCellToDraw = 3;
+        } else if (type == 1) {
+            numberOfCellToDraw = 2;
         }
 
-        var player = 1;
-        var start_row = parseInt(form.ship_row.value);
-        var start_col = parseInt(form.ship_col.value);
-        var is_increase_row = (alignment == "Hor")?0:1;
-        var is_increase_col = (alignment == "Vert")?0:1;
+        var player = 1; // need to insert current player id
+        var start_row = parseInt(row);
+        var start_col = parseInt(col);
+        var is_increase_row = (alignment == 'V')?1:0;
+        var is_increase_col = (alignment == 'H')?1:0;
 
 
         for (var c=0; c<numberOfCellToDraw; c++) {
             //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
-            $("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col)).addClass("shipPlaced")
+            $("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col)).addClass("shipPlaced");
         }
 
 
 
     }
-
 
 </script>

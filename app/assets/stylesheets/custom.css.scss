@@ -9,14 +9,6 @@
   }
 }
 
-/* battlefield grid */
-
-.battlefield tr:hover .missed,
-.battlefield tr .missed {
-  background-color: red;
-
-}
-
 html {
   overflow-y: scroll;
 }
@@ -31,14 +23,6 @@ section {
 
 textarea {
   resize: vertical;
-}
-
-.center {
-  text-align: center;
-}
-
-.center h1 {
-  margin-bottom: 10px;
 }
 
 /* typography */
@@ -120,6 +104,14 @@ input, textarea, select, .uneditable-input {
   padding: 10px;
   height: auto !important;
   margin-bottom: 15px;
+}
+
+/* battlefield grid */
+
+.battlefield tr:hover .missed,
+.battlefield tr .missed {
+  background-color: red;
+}
 
 .battlefield tr:hover .shipPlaced,
 .battlefield tr .shipPlaced {
