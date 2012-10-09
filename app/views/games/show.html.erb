@@ -39,7 +39,7 @@
     </div>
     <div id="chat-window" >
       <h2>Chat</h2>
-      <table> <tr><td>Motherfucker</td></tr></table>
+      <table> <tr><td>Once upon a time, in a galaxy far </td></tr></table>
     </div>
   </div>
   <div class="span10">
@@ -78,7 +78,8 @@
                     <tr>
                       <th><%= (row+65).chr %></th>
                       <% 10.times do |col| %>
-                          <td id="<%="battlefield-1-"+(row.to_s+"-"+col.to_s)%>">c</td>
+                          <!-- implement a mechanism so that it becomes battlefield-<current player id>-->
+                          <td id="<%="battlefield-0-"+(row.to_s+"-"+col.to_s)%>">c</td>
                       <%end%>
                     </tr>
                 <%end%>
@@ -100,8 +101,33 @@
                                                                        ['Patrol Boat', 1]
                                                                 ]), :class=>"input-small") %>
 
-                  <%= text_field_tag(:ship_row,"", :placeholder=>"Row",:class=>"span1") %>
-                  <%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %>
+                  <%= select_tag(:ship_row,options_for_select([
+                                                                            ['A',0],
+                                                                            ['B',1],
+                                                                            ['C',2],
+                                                                            ['D',3],
+                                                                            ['E',4],
+                                                                            ['F',5],
+                                                                            ['G',6],
+                                                                            ['H',7],
+                                                                            ['I',8],
+                                                                            ['J',9]
+                                                                    ]), :class=>"input-mini") %>
+
+                  <%= select_tag(:ship_col,options_for_select([
+                                                                      ['1',0],
+                                                                      ['2',1],
+                                                                      ['3',2],
+                                                                      ['4',3],
+                                                                      ['5',4],
+                                                                      ['6',5],
+                                                                      ['7',6],
+                                                                      ['8',7],
+                                                                      ['9',8],
+                                                                      ['10',9],
+                                                              ]), :class=>"input-mini") %>
+                  <!--%= text_field_tag(:ship_row,"", :placeholder=>"Row",:class=>"span1") %-->
+                  <!--%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %-->
                   <%= submit_tag "Place" %>
               <% end %>
             </div>
@@ -132,6 +158,7 @@
         $(this).tab('show');
     })
 
+    var current_player = 0;
 
     var player_battlefield = new Array(2); // replace 2 with number_of_players
     // initialize battlefield 2d-array for each player
@@ -139,6 +166,9 @@
         player_battlefield[i] = new Array(10);
         for (var row=0; row<10; row++) {
             player_battlefield[i][row] = new Array(10);
+            for (var col=0; col<10; col++) {
+                player_battlefield[i][row][col] = 0;
+            }
         }
     }
 
@@ -161,28 +191,60 @@
         //alert(form.ship_row.value);
         //alert(form.ship_col.value);
 
-        var numberOfCellToDraw = 0;
+        var sizeOfShip = 0;
 
         if (type == 5) {
-            numberOfCellToDraw = 5;
+            sizeOfShip = 5;
         } else if (type == 4) {
-            numberOfCellToDraw = 4;
+            sizeOfShip = 4;
         } else if (type == 3 || type == 2) {
-            numberOfCellToDraw = 3;
+            sizeOfShip = 3;
         } else if (type == 1) {
-            numberOfCellToDraw = 2;
+            sizeOfShip = 2;
         }
 
-        var player = 1; // need to insert current player id
         var start_row = parseInt(row);
         var start_col = parseInt(col);
         var is_increase_row = (alignment == 'V')?1:0;
         var is_increase_col = (alignment == 'H')?1:0;
 
+        if (isValidMove(alignment, start_row,start_col,sizeOfShip))  {
+            for (var c=0; c<sizeOfShip; c++) {
+                //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
+                player_battlefield[current_player][start_row+c*is_increase_row][start_col+c*is_increase_col] = type;
+                $("#battlefield-"+current_player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col)).addClass("shipPlaced");
+            }
+            return true;
+        } else {
+            return false;
+        }
 
-        for (var c=0; c<numberOfCellToDraw; c++) {
-            //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
-            $("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col)).addClass("shipPlaced");
+        function isValidMove(alignment, start_row,start_col,sizeOfShip) {
+            var is_increase_row = (alignment == 'V')?1:0;
+            var is_increase_col = (alignment == 'H')?1:0;
+
+            for (var c=0; c<sizeOfShip; c++) {
+                //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
+                var row_to_check = start_row+c*is_increase_row;
+                var col_to_check = start_col+c*is_increase_col;
+                if ((row_to_check >= 0 && row_to_check < 10) && (col_to_check >= 0 && col_to_check < 10)) {
+                    var value_on_battlefield = player_battlefield[current_player][row_to_check][col_to_check];
+                    if (value_on_battlefield == 0) {
+                        // no collision to other ships
+                        // continue to next position, do nothing
+                        continue;
+                    } else {
+                        // there's something, alert and return false
+                        alert("Your new ship collides with another ship, please select a new position.");
+                        return false;
+                    }
+                } else {
+                    alert("Your new ship position is invalid because it is out of the battlefield.");
+                    return false;
+                }
+             }
+
+            return true;
         }
 
 

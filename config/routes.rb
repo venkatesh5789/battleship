@@ -5,6 +5,8 @@ Battleship::Application.routes.draw do
 
   resources :users
 
+  resources :game_moves
+
 
 
   # The priority is based upon order of creation:
