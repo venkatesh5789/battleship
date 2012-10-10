@@ -19,10 +19,11 @@ ActiveRecord::Schema.define(:version => 20121009221220) do
     t.integer  "to_user_id"
     t.integer  "row"
     t.integer  "column"
-    t.datetime "created_at",   :null => false
-    t.datetime "updated_at",   :null => false
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
     t.integer  "type_of_move"
     t.integer  "type_of_ship"
+    t.integer  "ship_alignment"
   end
 
   create_table "games", :force => true do |t|

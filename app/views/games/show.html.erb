@@ -88,12 +88,13 @@
               <%# We have to change "#" to "place game move" process
                       :remote => true   is for using AJAX request for this form
                       :onsubmit         is for calling JS function to update battlefield variable & grid display %>
-              <%= form_tag("#", :method => "post", :class=>"form-inline", :remote => true, :onsubmit => "return placeShip(this)") do %>
-                  <%= hidden_field_tag(:game_id,@game.id) %>
+              <%= form_for(@game_move, :html => {:class =>"form-inline"}, :remote => true ) do |f| %>
 
-                  <%= select_tag(:ship_alignment,options_for_select([['H','H'],['V','V']]), :class=>"input-mini") %>
+                  <%#= f.hidden_field(:type_of_move,1) %>
 
-                  <%= select_tag(:ship_type,options_for_select([
+                  <%= f.select(:ship_alignment,options_for_select([['H',0],['V',1]]),{:class=>"input-mini"}) %>
+
+                  <%= f.select(:type_of_ship,options_for_select([
                                                                        ['Carrier', 5],
                                                                        ['Battleship', 4],
                                                                        ['Destroyer', 3],
@@ -101,7 +102,7 @@
                                                                        ['Patrol Boat', 1]
                                                                 ]), :class=>"input-small") %>
 
-                  <%= select_tag(:ship_row,options_for_select([
+                  <%= f.select(:row,options_for_select([
                                                                             ['A',0],
                                                                             ['B',1],
                                                                             ['C',2],
@@ -114,7 +115,7 @@
                                                                             ['J',9]
                                                                     ]), :class=>"input-mini") %>
 
-                  <%= select_tag(:ship_col,options_for_select([
+                  <%= f.select(:column,options_for_select([
                                                                       ['1',0],
                                                                       ['2',1],
                                                                       ['3',2],
@@ -128,7 +129,7 @@
                                                               ]), :class=>"input-mini") %>
                   <!--%= text_field_tag(:ship_row,"", :placeholder=>"Row",:class=>"span1") %-->
                   <!--%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %-->
-                  <%= submit_tag "Place" %>
+                  <%= f.submit "Place",:onclick => "return placeShip(this.form);" %>
               <% end %>
             </div>
           </div>
@@ -181,10 +182,12 @@
     });
 
     function placeShip(form) {
-        var alignment = form.ship_alignment.value;
-        var type = form.ship_type.value;
-        var row = form.ship_row.value;
-        var col = form.ship_col.value;
+        //var form = document.getElementById("new_game_move");
+
+        var alignment = form.elements["game_move[ship_alignment]"].value;
+        var type = form.elements["game_move[type_of_ship]"].value;
+        var row = form.elements["game_move[row]"].value;
+        var col = form.elements["game_move[column]"].value;
         //alert(form.ship_alignment.value);
         //alert(form.ship_type.value);
 
@@ -205,14 +208,16 @@
 
         var start_row = parseInt(row);
         var start_col = parseInt(col);
-        var is_increase_row = (alignment == 'V')?1:0;
-        var is_increase_col = (alignment == 'H')?1:0;
+        var is_increase_row = (alignment == 1)?1:0;
+        var is_increase_col = (alignment == 0)?1:0;
 
         if (isValidMove(alignment, start_row,start_col,sizeOfShip))  {
             for (var c=0; c<sizeOfShip; c++) {
+                 var target_row =  start_row+c*is_increase_row;
+                 var target_column =  start_col+c*is_increase_col  ;
                 //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
-                player_battlefield[current_player][start_row+c*is_increase_row][start_col+c*is_increase_col] = type;
-                $("#battlefield-"+current_player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col)).addClass("shipPlaced");
+                player_battlefield[current_player][target_row][target_column] = type;
+                $("#battlefield-"+current_player+"-"+(target_row)+"-"+(target_column)).addClass("shipPlaced");
             }
             return true;
         } else {
