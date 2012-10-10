@@ -113,7 +113,23 @@ input, textarea, select, .uneditable-input {
   background-color: red;
 }
 
-.battlefield tr:hover .shipPlaced,
-.battlefield tr .shipPlaced {
-  background-color: blue;
+.battlefield tr:hover .ship5Placed,
+.battlefield tr .ship5Placed {
+  background-color: #7cfc00;
+}
+.battlefield tr:hover .ship4Placed,
+.battlefield tr .ship4Placed {
+  background-color: #f0e68c;
+}
+.battlefield tr:hover .ship3Placed,
+.battlefield tr .ship3Placed {
+  background-color: #bc8f8f;
+}
+.battlefield tr:hover .ship2Placed,
+.battlefield tr .ship2Placed {
+  background-color: #8a2be2;
+}
+.battlefield tr:hover .ship1Placed,
+.battlefield tr .ship1Placed {
+  background-color: #00bfff;
 }

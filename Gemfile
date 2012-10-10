@@ -8,10 +8,15 @@ gem 'bootstrap-sass', '2.0.4' # for Bootstrap and Sass CSS support
 
 group :development, :test do
    gem 'sqlite3'
+   gem 'rspec-rails','2.11.0'
 end
 
+group :test do
+  gem 'capybara','1.1.2'
+  gem 'factory_girl_rails','4.1.0'
+end
 group :production do
-  gem 'pg'     # --without production ??
+  gem 'pg','0.12.2'     # --without production ??
 end
 
 # OH!!! add this!!
@@ -46,9 +51,7 @@ gem 'jquery-rails'
 # To use debugger
 # gem 'debugger'
 
-#suggested gems by Todd
-gem 'factory_girl_rails' 
-gem 'rspec-rails' 
+#suggested gems by Todd'
 gem 'devise' 
 #gem 'ruby-debug19'
 #gem 'ruby-debug-base19x'

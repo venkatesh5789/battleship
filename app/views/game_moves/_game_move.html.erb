@@ -1,0 +1,13 @@
+<li xmlns="http://www.w3.org/1999/html">
+  Venkatesh places <b>
+  <%="Aircraft Carrier" if game_move.type_of_ship == 5%>
+  <%="Battleship" if game_move.type_of_ship ==4%>
+  <%="Destroyer" if game_move.type_of_ship ==3%>
+  <%="Submarine" if game_move.type_of_ship ==2%>
+  <%="Patrol Boat" if game_move.type_of_ship ==1%>
+  </b> with
+  <%= "horizontal" if game_move.ship_alignment == 0%>
+  <%= "vertical" if game_move.ship_alignment == 1%>
+  alignment at
+  <b><%= (game_move.row+65).chr %><%= (game_move.column)+1 %></b>
+</li>

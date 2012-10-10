@@ -92,7 +92,7 @@
 
                   <%#= f.hidden_field(:type_of_move,1) %>
 
-                  <%= f.select(:ship_alignment,options_for_select([['H',0],['V',1]]),{:class=>"input-mini"}) %>
+                  <%= f.select(:ship_alignment,options_for_select([['Hor',0],['Ver',1]]),{},{:class=>"input-small"}) %>
 
                   <%= f.select(:type_of_ship,options_for_select([
                                                                        ['Carrier', 5],
@@ -100,7 +100,7 @@
                                                                        ['Destroyer', 3],
                                                                        ['Submarine', 2],
                                                                        ['Patrol Boat', 1]
-                                                                ]), :class=>"input-small") %>
+                                                                ]), {}, {:class=>"input-small"}) %>
 
                   <%= f.select(:row,options_for_select([
                                                                             ['A',0],
@@ -113,7 +113,7 @@
                                                                             ['H',7],
                                                                             ['I',8],
                                                                             ['J',9]
-                                                                    ]), :class=>"input-mini") %>
+                                                                    ]), {}, {:class=>"input-mini"}) %>
 
                   <%= f.select(:column,options_for_select([
                                                                       ['1',0],
@@ -126,7 +126,7 @@
                                                                       ['8',7],
                                                                       ['9',8],
                                                                       ['10',9],
-                                                              ]), :class=>"input-mini") %>
+                                                              ]), {}, {:class=>"input-mini"}) %>
                   <!--%= text_field_tag(:ship_row,"", :placeholder=>"Row",:class=>"span1") %-->
                   <!--%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %-->
                   <%= f.submit "Place",:onclick => "return placeShip(this.form);" %>
@@ -138,13 +138,8 @@
         </div>
         <div class="span3">
           <h3>Game moves</h3>
-          <table class="table table-striped">
-            <tr>
-              <td>
-                Venkatesh shot Kapil at (5,6)- Hit
-              </td>
-            </tr>
-          </table>
+          <ol id="game-moves-feed">
+          </ol>
         </div>
       </div>
 
@@ -217,7 +212,7 @@
                  var target_column =  start_col+c*is_increase_col  ;
                 //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
                 player_battlefield[current_player][target_row][target_column] = type;
-                $("#battlefield-"+current_player+"-"+(target_row)+"-"+(target_column)).addClass("shipPlaced");
+                $("#battlefield-"+current_player+"-"+(target_row)+"-"+(target_column)).addClass("ship"+type+"Placed");
             }
             return true;
         } else {
