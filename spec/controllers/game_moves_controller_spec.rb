@@ -20,7 +20,7 @@ describe GameMovesController do
       it { should respond_to(:type_of_ship) }
       it { should respond_to(:ship_alignment) }
     end
-
+=begin
     describe "placing ship" do
 
       before do
@@ -76,5 +76,6 @@ describe GameMovesController do
         GameMove.find(5).column.should eq(4)
       end
     end
+=end
 
 end

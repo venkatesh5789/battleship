@@ -5,9 +5,9 @@
   <%="Destroyer" if game_move.type_of_ship ==3%>
   <%="Submarine" if game_move.type_of_ship ==2%>
   <%="Patrol Boat" if game_move.type_of_ship ==1%>
-  </b> with
+  </b> with <b>
   <%= "horizontal" if game_move.ship_alignment == 0%>
-  <%= "vertical" if game_move.ship_alignment == 1%>
+  <%= "vertical" if game_move.ship_alignment == 1%></b>
   alignment at
   <b><%= (game_move.row+65).chr %><%= (game_move.column)+1 %></b>
 </li>

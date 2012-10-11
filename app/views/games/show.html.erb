@@ -84,6 +84,7 @@
                     </tr>
                 <%end%>
               </table>
+
               <!-- Form to place ships -->
               <%# We have to change "#" to "place game move" process
                       :remote => true   is for using AJAX request for this form
@@ -131,6 +132,7 @@
                   <!--%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %-->
                   <%= f.submit "Place",:onclick => "return placeShip(this.form);" %>
               <% end %>
+              <button id="hey">hey</button>
             </div>
           </div>
           <div class="tab-pane" id="player-knott">Knott</div>
@@ -148,12 +150,6 @@
 </div>
 
 <script>
-    // Activate player tab
-    $('#playerTab a').click(function (e) {
-        e.preventDefault();
-        $(this).tab('show');
-    })
-
     var current_player = 0;
 
     var player_battlefield = new Array(2); // replace 2 with number_of_players
@@ -168,6 +164,21 @@
         }
     }
 
+    // Object to send when player press "Ready"
+    var allShips = {data:[{row:4,column:4,ship_alignment:0, ship_type:1},
+        {row:0,column:0,ship_alignment:0, ship_type:2},
+        {row:0,column:0,ship_alignment:0, ship_type:3},
+        {row:0,column:0,ship_alignment:0, ship_type:4},
+        {row:0,column:0,ship_alignment:0, ship_type:5}]};
+
+    $("#hey").click(function () {
+
+        $.ajax({
+            url:"/game_moves", // call "game_moves" controller
+            type:"POST", // method "create"
+            data: allShips
+        });
+    });
 
     $('#myGrid td').on('click', function (e) {
 
@@ -220,8 +231,8 @@
         }
 
         function isValidMove(alignment, start_row,start_col,sizeOfShip) {
-            var is_increase_row = (alignment == 'V')?1:0;
-            var is_increase_col = (alignment == 'H')?1:0;
+            var is_increase_row = (alignment == 1)?1:0;
+            var is_increase_col = (alignment == 0)?1:0;
 
             for (var c=0; c<sizeOfShip; c++) {
                 //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
@@ -250,5 +261,11 @@
 
 
     }
+
+    // Activate player tab
+    $('#playerTab a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    })
 
 </script>
