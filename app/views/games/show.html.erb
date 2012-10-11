@@ -55,98 +55,98 @@
     </div>
 
 
-        <div class="span5">
+    <div class="span5">
 
-          <ul class="nav nav-tabs" id="playerTab">
-            <li class="active"><a href="#player-venkatesh" data-toggle="tab">Venkatesh</a></li>
-            <li><a href="#player-knott" data-toggle="tab">Knott</a></li>
-            <li><a href="#player-kapil" data-toggle="tab">Kapil</a></li>
-          </ul>
+      <ul class="nav nav-tabs" id="playerTab">
+        <li class="active"><a href="#player-venkatesh" data-toggle="tab">Venkatesh</a></li>
+        <li><a href="#player-knott" data-toggle="tab">Knott</a></li>
+        <li><a href="#player-kapil" data-toggle="tab">Kapil</a></li>
+      </ul>
 
-          <div class="tab-content">
-            <div class="tab-pane active" id="player-venkatesh">
-              <h3>Venkatesh</h3>
-              <!-- my grid -->
-              <table id="myGrid" class="table table-bordered battlefield table-hover">
+      <div class="tab-content">
+        <div class="tab-pane active" id="player-venkatesh">
+          <h3>Venkatesh</h3>
+          <!-- my grid -->
+          <table id="myGrid" class="table table-bordered battlefield table-hover">
+            <tr>
+              <th>&nbsp;</th>
+              <% 10.times do |col_head| %>
+                  <th><%= col_head+1 %></th>
+              <% end %>
+            </tr>
+            <% 10.times do |row| %>
                 <tr>
-                  <th>&nbsp;</th>
-                  <% 10.times do |col_head| %>
-                      <th><%= col_head+1 %></th>
-                  <% end %>
+                  <th><%= (row+65).chr %></th>
+                  <% 10.times do |col| %>
+                      <!-- implement a mechanism so that it becomes battlefield-<current player id>-->
+                      <td id="<%="battlefield-0-"+(row.to_s+"-"+col.to_s)%>">c</td>
+                  <%end%>
                 </tr>
-                <% 10.times do |row| %>
-                    <tr>
-                      <th><%= (row+65).chr %></th>
-                      <% 10.times do |col| %>
-                          <!-- implement a mechanism so that it becomes battlefield-<current player id>-->
-                          <td id="<%="battlefield-0-"+(row.to_s+"-"+col.to_s)%>">c</td>
-                      <%end%>
-                    </tr>
-                <%end%>
-              </table>
+            <%end%>
+          </table>
 
-              <!-- Form to place ships -->
-              <%# We have to change "#" to "place game move" process
+          <!-- Form to place ships -->
+          <%# We have to change "#" to "place game move" process
                       :remote => true   is for using AJAX request for this form
                       :onsubmit         is for calling JS function to update battlefield variable & grid display %>
-              <%= form_for(@game_move, :html => {:class =>"form-inline"}, :remote => true ) do |f| %>
+          <div id="placeShipForm">
+          <%= form_tag("#", :method => "post", :class=>"form-inline", :remote => true, :onsubmit => "return placeShip(this)") do %>
 
-                  <%#= f.hidden_field(:type_of_move,1) %>
+              <%= select_tag(:ship_alignment,options_for_select([['H',0],['V',1]]), :class=>"input-mini") %>
 
-                  <%= f.select(:ship_alignment,options_for_select([['Hor',0],['Ver',1]]),{},{:class=>"input-small"}) %>
+              <%= select_tag(:ship_type,options_for_select([
+                                                                   ['Carrier', 5],
+                                                                   ['Battleship', 4],
+                                                                   ['Destroyer', 3],
+                                                                   ['Submarine', 2],
+                                                                   ['Patrol Boat', 1]
+                                                           ]), :class=>"input-small") %>
 
-                  <%= f.select(:type_of_ship,options_for_select([
-                                                                       ['Carrier', 5],
-                                                                       ['Battleship', 4],
-                                                                       ['Destroyer', 3],
-                                                                       ['Submarine', 2],
-                                                                       ['Patrol Boat', 1]
-                                                                ]), {}, {:class=>"input-small"}) %>
+              <%= select_tag(:ship_row,options_for_select([
+                                                                  ['A',0],
+                                                                  ['B',1],
+                                                                  ['C',2],
+                                                                  ['D',3],
+                                                                  ['E',4],
+                                                                  ['F',5],
+                                                                  ['G',6],
+                                                                  ['H',7],
+                                                                  ['I',8],
+                                                                  ['J',9]
+                                                          ]), :class=>"input-mini") %>
 
-                  <%= f.select(:row,options_for_select([
-                                                                            ['A',0],
-                                                                            ['B',1],
-                                                                            ['C',2],
-                                                                            ['D',3],
-                                                                            ['E',4],
-                                                                            ['F',5],
-                                                                            ['G',6],
-                                                                            ['H',7],
-                                                                            ['I',8],
-                                                                            ['J',9]
-                                                                    ]), {}, {:class=>"input-mini"}) %>
-
-                  <%= f.select(:column,options_for_select([
-                                                                      ['1',0],
-                                                                      ['2',1],
-                                                                      ['3',2],
-                                                                      ['4',3],
-                                                                      ['5',4],
-                                                                      ['6',5],
-                                                                      ['7',6],
-                                                                      ['8',7],
-                                                                      ['9',8],
-                                                                      ['10',9],
-                                                              ]), {}, {:class=>"input-mini"}) %>
-                  <!--%= text_field_tag(:ship_row,"", :placeholder=>"Row",:class=>"span1") %-->
-                  <!--%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %-->
-                  <%= f.submit "Place",:onclick => "return placeShip(this.form);" %>
-              <% end %>
-              <button id="hey">hey</button>
-            </div>
+              <%= select_tag(:ship_column,options_for_select([
+                                                                  ['1',0],
+                                                                  ['2',1],
+                                                                  ['3',2],
+                                                                  ['4',3],
+                                                                  ['5',4],
+                                                                  ['6',5],
+                                                                  ['7',6],
+                                                                  ['8',7],
+                                                                  ['9',8],
+                                                                  ['10',9],
+                                                          ]), :class=>"input-mini") %>
+              <!--%= text_field_tag(:ship_row,"", :placeholder=>"Row",:class=>"span1") %-->
+              <!--%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %-->
+              <%= submit_tag "Place" %>
+          <% end %>
+            <button id="readyButton">Ready to play</button>
           </div>
-          <div class="tab-pane" id="player-knott">Knott</div>
-          <div class="tab-pane" id="player-kapil">Kapil</div>
-        </div>
-        <div class="span3">
-          <h3>Game moves</h3>
-          <ol id="game-moves-feed">
-          </ol>
         </div>
       </div>
-
+      <div class="tab-pane" id="player-knott">Knott</div>
+      <div class="tab-pane" id="player-kapil">Kapil</div>
+    </div>
+    <div class="span3">
+      <h3>Game moves</h3>
+      <ol id="game-moves-feed">
+      </ol>
     </div>
   </div>
+
+</div>
+</div>
 </div>
 
 <script>
@@ -165,19 +165,29 @@
     }
 
     // Object to send when player press "Ready"
-    var allShips = {data:[{row:4,column:4,ship_alignment:0, ship_type:1},
-        {row:0,column:0,ship_alignment:0, ship_type:2},
-        {row:0,column:0,ship_alignment:0, ship_type:3},
-        {row:0,column:0,ship_alignment:0, ship_type:4},
-        {row:0,column:0,ship_alignment:0, ship_type:5}]};
+    var allShips = {data:[{row:-1,column:0,ship_alignment:0, ship_type:1},
+        {row:-1,column:0,ship_alignment:0, ship_type:2},
+        {row:-1,column:0,ship_alignment:0, ship_type:3},
+        {row:-1,column:0,ship_alignment:0, ship_type:4},
+        {row:-1,column:0,ship_alignment:0, ship_type:5}]};
 
-    $("#hey").click(function () {
+    $("#readyButton").click(function () {
 
+        for (i=0; i<5; i++) {
+            if (allShips.data[i].row == -1) {
+                alert("Please place all ships first!!!");
+                return;
+            }
+        }
         $.ajax({
             url:"/game_moves", // call "game_moves" controller
             type:"POST", // method "create"
             data: allShips
         });
+
+        $("#placeShipForm").hide("slow");
+        // Disable the "ready" button right after click
+        this.disabled = true;
     });
 
     $('#myGrid td').on('click', function (e) {
@@ -188,12 +198,10 @@
     });
 
     function placeShip(form) {
-        //var form = document.getElementById("new_game_move");
-
-        var alignment = form.elements["game_move[ship_alignment]"].value;
-        var type = form.elements["game_move[type_of_ship]"].value;
-        var row = form.elements["game_move[row]"].value;
-        var col = form.elements["game_move[column]"].value;
+        var alignment = form.ship_alignment.value;
+        var type = form.ship_type.value;
+        var row = form.ship_row.value;
+        var col = form.ship_column.value;
         //alert(form.ship_alignment.value);
         //alert(form.ship_type.value);
 
@@ -217,20 +225,33 @@
         var is_increase_row = (alignment == 1)?1:0;
         var is_increase_col = (alignment == 0)?1:0;
 
-        if (isValidMove(alignment, start_row,start_col,sizeOfShip))  {
+        if (isValidMove(alignment, start_row,start_col,sizeOfShip,type))  {
+            // Delete ship from old position (if exists)
+            if (allShips.data[type-1].row > -1) {
+                for (var c=0; c<100; c++)
+                    for(var d = 0; d<100; d++)
+                    {
+                    // Clear
+                    $("#battlefield-"+current_player+"-"+c+"-"+d).removeClass("ship"+type+"Placed");
+                    }
+            }
+
+            // Replace data of ship in "allShips" object, which will be sent to server
+            allShips.data[type-1] = {row:start_row,column:start_col,ship_alignment:alignment,ship_type:type};
+            //alert(allShips.data[type-1].ship_type+" row "+allShips.data[type-1].row+" column "+allShips.data[type-1].column);
+
             for (var c=0; c<sizeOfShip; c++) {
-                 var target_row =  start_row+c*is_increase_row;
-                 var target_column =  start_col+c*is_increase_col  ;
+                // Draw ship on battlefield
                 //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
-                player_battlefield[current_player][target_row][target_column] = type;
-                $("#battlefield-"+current_player+"-"+(target_row)+"-"+(target_column)).addClass("ship"+type+"Placed");
+                player_battlefield[current_player][start_row+c*is_increase_row][start_col+c*is_increase_col] = type;
+                $("#battlefield-"+current_player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col)).addClass("ship"+type+"Placed");
             }
             return true;
         } else {
             return false;
         }
 
-        function isValidMove(alignment, start_row,start_col,sizeOfShip) {
+        function isValidMove(alignment, start_row,start_col,sizeOfShip,type) {
             var is_increase_row = (alignment == 1)?1:0;
             var is_increase_col = (alignment == 0)?1:0;
 
@@ -240,8 +261,8 @@
                 var col_to_check = start_col+c*is_increase_col;
                 if ((row_to_check >= 0 && row_to_check < 10) && (col_to_check >= 0 && col_to_check < 10)) {
                     var value_on_battlefield = player_battlefield[current_player][row_to_check][col_to_check];
-                    if (value_on_battlefield == 0) {
-                        // no collision to other ships
+                    if (value_on_battlefield == 0 || value_on_battlefield == type) {
+                        // current position is itself or no collision to other ships
                         // continue to next position, do nothing
                         continue;
                     } else {
@@ -253,7 +274,7 @@
                     alert("Your new ship position is invalid because it is out of the battlefield.");
                     return false;
                 }
-             }
+            }
 
             return true;
         }
