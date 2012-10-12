@@ -16,6 +16,9 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     @game_move = GameMove.new
 
+    @user_in_games = UserInGame.find_all_by_game_id(params[:id])
+    #@users = User.all
+
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @game }
