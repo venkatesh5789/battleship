@@ -20,7 +20,10 @@
     </div>
     <div id="chat-window" >
       <h2>Chat</h2>
-      <table> <tr><td>Once upon a time, in a galaxy far </td></tr></table>
+      <ul>
+          <li><b>Knotty: </b>Once upon a time, in a galaxy far far away..</li>
+          <li><b>Venky: </b>hey that is from Star Wars, not Battleship.</li>
+      </ul>
     </div>
   </div>
   <div class="span10">
@@ -67,11 +70,9 @@
           </table>
 
           <!-- Form to place ships -->
-          <%# We have to change "#" to "place game move" process
-                      :remote => true   is for using AJAX request for this form
-                      :onsubmit         is for calling JS function to update battlefield variable & grid display %>
+          <div id="test">test</div>
           <div id="placeShipForm">
-            <%= form_tag("#", :class=>"form-inline", :onsubmit => "return placeShip(this)") do %>
+            <%= form_tag("#", :class=>"form-inline") do %>
 
                 <%= select_tag(:ship_alignment,options_for_select([['H',0],['V',1]]), :class=>"input-mini") %>
 
@@ -110,9 +111,9 @@
                                                                ]), :class=>"input-mini") %>
                 <!--%= text_field_tag(:ship_row,"", :placeholder=>"Row",:class=>"span1") %-->
                 <!--%= text_field_tag(:ship_col,"", :placeholder=>"Col", :class=>"span1") %-->
-                <%= submit_tag "Place" %>
+                <%= button_tag('Place', :type => 'button', :onclick => "placeShip(this.form)") %>
+                <%= button_tag(:id => 'readyButton', :type => 'button') { content_tag :strong, 'Ready to play' } %>
             <% end %>
-            <button id="readyButton" class= "btn btn-primary">Ready to play</button>
           </div>
         </div>
       </div>
@@ -129,9 +130,11 @@
 </div>
 
 <script>
-    var current_player = 0;
+  /* TODO: replace this with "current user id" minus 1 (for use with array) */
+  var current_player = 0;
 
-    var player_battlefield = new Array(2); // replace 2 with number_of_players
+  /* TODO: Grid variable */
+    var player_battlefield = new Array(2); // TODO replace 2 with number_of_players
     // initialize battlefield 2d-array for each player
     for (var i=0; i<player_battlefield.length; i++) {
         player_battlefield[i] = new Array(10);
@@ -143,21 +146,31 @@
         }
     }
 
-    // Object to send when player press "Ready"
-    var allShips = {data:[{row:-1,column:0,ship_alignment:0, ship_type:1},
+    /* Prepare an object to be sent via AJAX request to update game_moves */
+    /*var allShips = {data:[{row:-1,column:0,ship_alignment:0, ship_type:1},
         {row:-1,column:0,ship_alignment:0, ship_type:2},
         {row:-1,column:0,ship_alignment:0, ship_type:3},
         {row:-1,column:0,ship_alignment:0, ship_type:4},
-        {row:-1,column:0,ship_alignment:0, ship_type:5}]};
+        {row:-1,column:0,ship_alignment:0, ship_type:5}]};          */
+  var allShips = {data:[{row:1,column:0,ship_alignment:0, ship_type:1},
+      {row:1,column:0,ship_alignment:0, ship_type:2},
+      {row:1,column:0,ship_alignment:0, ship_type:3},
+      {row:1,column:0,ship_alignment:0, ship_type:4},
+      {row:1,column:0,ship_alignment:0, ship_type:5}]};
 
+    /* When the player click on "Ready to play" button, it first checks that all 5 ships are placed.
+        Then it sends AJAX requests of
+        - ship positions (game_moves)
+        - new player status (user_in_games)
+     */
     $("#readyButton").click(function () {
 
-        for (i=0; i<5; i++) {
+        /*for (i=0; i<5; i++) {
             if (allShips.data[i].row == -1) {
                 alert("Please place all ships first!!!");
                 return;
             }
-        }
+        }*/
         $.ajax({
             url:"/game_moves", // call "game_moves" controller
             type:"POST", // method "create"
@@ -172,7 +185,7 @@
         $("#placeShipForm").hide("slow");
     });
 
-
+    /* TODO: click to shoot */
     $('#myGrid td').on('click', function (e) {
 
         //$('#myGrid td').addClass("missed");
@@ -180,6 +193,10 @@
         e.target.className += "missed";
     });
 
+    /* After the player selected ship alignment, type, row, col and click on "Place".
+        It check whether the ship is not off screen and collide with other ships.
+        Then it paints the grid with a new ship position.
+     */
     function placeShip(form) {
         var alignment = form.ship_alignment.value;
         var type = form.ship_type.value;
@@ -209,6 +226,7 @@
         var is_increase_col = (alignment == 0)?1:0;
 
         if (isValidMove(alignment, start_row,start_col,sizeOfShip,type))  {
+            $("#test").html("ahe");
             // Delete ship from old position (if exists)
             if (allShips.data[type-1].row > -1) {
                 for (var c=0; c<100; c++)
@@ -236,6 +254,7 @@
             return false;
         }
 
+        /* Helper function for placeShip(), to check validity of ship position */
         function isValidMove(alignment, start_row,start_col,sizeOfShip,type) {
             var is_increase_row = (alignment == 1)?1:0;
             var is_increase_col = (alignment == 0)?1:0;
@@ -264,11 +283,9 @@
             return true;
         }
 
-
-
     }
 
-    // Activate player tab
+    // TODO: Activate player tab
     $('#playerTab a').click(function (e) {
         e.preventDefault();
         $(this).tab('show');

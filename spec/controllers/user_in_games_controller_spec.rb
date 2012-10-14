@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe UserInGameController do
+describe UserInGamesController do
   describe "prereqs" do
     before do
       @user_in_game = UserInGame.new(user_id:1, game_id:2, status:0)
@@ -15,11 +15,11 @@ describe UserInGameController do
   end
 
   describe "when user joins a game, user in game is created " do
-    pending Kapil and Pujita need to write the code
+    pending
   end
 
   describe "click on ready updates the user status to 1" do
-    pending @user_in_game.save
+    pending
 
   end
 
