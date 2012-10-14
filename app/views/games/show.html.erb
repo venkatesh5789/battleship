@@ -152,11 +152,11 @@
         {row:-1,column:0,ship_alignment:0, ship_type:3},
         {row:-1,column:0,ship_alignment:0, ship_type:4},
         {row:-1,column:0,ship_alignment:0, ship_type:5}]};          */
-  var allShips = {data:[{row:1,column:0,ship_alignment:0, ship_type:1},
-      {row:1,column:0,ship_alignment:0, ship_type:2},
-      {row:1,column:0,ship_alignment:0, ship_type:3},
-      {row:1,column:0,ship_alignment:0, ship_type:4},
-      {row:1,column:0,ship_alignment:0, ship_type:5}]};
+  var allShips = {data:[{row:-1,column:0,ship_alignment:0, ship_type:1},
+      {row:-1,column:0,ship_alignment:0, ship_type:2},
+      {row:-1,column:0,ship_alignment:0, ship_type:3},
+      {row:-1,column:0,ship_alignment:0, ship_type:4},
+      {row:-1,column:0,ship_alignment:0, ship_type:5}]};
 
     /* When the player click on "Ready to play" button, it first checks that all 5 ships are placed.
         Then it sends AJAX requests of
@@ -165,12 +165,12 @@
      */
     $("#readyButton").click(function () {
 
-        /*for (i=0; i<5; i++) {
+        for (i=0; i<5; i++) {
             if (allShips.data[i].row == -1) {
                 alert("Please place all ships first!!!");
                 return;
             }
-        }*/
+        }
         $.ajax({
             url:"/game_moves", // call "game_moves" controller
             type:"POST", // method "create"
@@ -226,7 +226,6 @@
         var is_increase_col = (alignment == 0)?1:0;
 
         if (isValidMove(alignment, start_row,start_col,sizeOfShip,type))  {
-            $("#test").html("");
             // Delete ship from old position (if exists)
             if (allShips.data[type-1].row > -1) {
                 for (var c=0; c<100; c++)
