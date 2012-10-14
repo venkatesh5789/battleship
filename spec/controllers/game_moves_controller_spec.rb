@@ -3,79 +3,52 @@ require 'capybara/rspec'
 
 describe GameMovesController do
 
-    describe "something" do
-      before do
-        @game_move = GameMove.new(game_id:1, row:2, column:3, from_user_id:1, to_user_id:1,
-                                  type_of_move:1, type_of_ship:5, ship_alignment:1)
-      end
 
-      subject { @game_move }
-
-      it { should respond_to(:game_id) }
-      it { should respond_to(:row) }
-      it { should respond_to(:column) }
-      it { should respond_to(:from_user_id) }
-      it { should respond_to(:to_user_id) }
-      it { should respond_to(:type_of_move) }
-      it { should respond_to(:type_of_ship) }
-      it { should respond_to(:ship_alignment) }
-    end
 =begin
-    describe "placing ship" do
+  describe "placing ship" do
 
-      before do
-        @game = Game.new(id:1,name:"Lovely game")
-        @game.save
-        visit "/games/1"
-      end
-
-      let(:submit) {"Place"}
-
-      it "should make 5 rows for aircraft carrier" do
-       expect { click_button submit }.to change { GameMove.count }.by(5)
-
-      end
-
-      it "should make 4 rows for battleship" do
-        select "Battleship", :from => "game_move[type_of_ship]"
-        expect { click_button submit }.to change { GameMove.count }.by(4)
-      end
-
-      it "should make 3 rows for destroyer" do
-        select "Destroyer", :from => "game_move[type_of_ship]"
-        expect { click_button submit }.to change { GameMove.count }.by(3)
-      end
-
-      it "should make 3 rows for submarine" do
-        select "Submarine", :from => "game_move[type_of_ship]"
-        expect { click_button submit }.to change { GameMove.count }.by(3)
-      end
-
-      it "should make 2 rows for patrol boat" do
-        select "Patrol Boat", :from => "game_move[type_of_ship]"
-        expect { click_button submit }.to change { GameMove.count }.by(2)
-      end
-
-      it "should increase row for vertical alignment" do
-        select "V", :from => "game_move[ship_alignment]"
-        click_button submit
-        GameMove.find(1).row.should eq(0)
-        GameMove.find(2).row.should eq(1)
-        GameMove.find(3).row.should eq(2)
-        GameMove.find(4).row.should eq(3)
-        GameMove.find(5).row.should eq(4)
-      end
-
-      it "should increase column for horizontal alignment" do
-        select "H", :from => "game_move[ship_alignment]"
-        click_button submit
-        GameMove.find(1).column.should eq(0)
-        GameMove.find(2).column.should eq(1)
-        GameMove.find(3).column.should eq(2)
-        GameMove.find(4).column.should eq(3)
-        GameMove.find(5).column.should eq(4)
-      end
+    before do
+      Game.create(name:"Lovely game",status:0)
+      User.create(name:"Knotty")
+      UserInGame.create(game_id:1,user_id:1,status:0)
+      visit "/games/1"
+      #puts page.html
     end
+
+    let(:place) {"Place"}
+    let(:ready) {"Ready to play"}
+
+    #it "should add 17 rows to GameMove after placed all ships and clicked on ready" do
+     # select "Carrier", :from => "ship_type"
+      #click_button place
+
+      #page.has_selector?("div#test", :text => "fdskljksdf")
+      #page.has_content?("fdsfds")
+
+      select "Battleship", :from => "ship_type"
+      select "B", :from => "ship_row"
+      click_button place
+
+      select "Destroyer", :from => "ship_type"
+      select "C", :from => "ship_row"
+      click_button place
+
+      select "Submarine", :from => "ship_type"
+      select "D", :from => "ship_row"
+      click_button place
+
+      select "Patrol Boat", :from => "ship_type"
+      select "E", :from => "ship_row"
+      click_button place
+
+      #expect { click_button ready }.to change { GameMove.count }.by(17)
+
+      click_button ready
+      sleep 1.seconds
+      UserInGame.find(1).status.should equal(1)
+
+    end
+  end
 =end
 
 end
