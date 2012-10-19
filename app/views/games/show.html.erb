@@ -24,6 +24,10 @@
           <li><b>Knotty: </b>Once upon a time, in a galaxy far far away..</li>
           <li><b>Venky: </b>hey that is from Star Wars, not Battleship.</li>
       </ul>
+      <%= form_tag("#", :class=>"form-inline", :remote=>"true") do %>
+        <%= text_field_tag :message,"",placeholder:"type message..",class:"input-medium" %>
+          <%= button_tag :send %>
+      <% end %>
     </div>
   </div>
   <div class="span10">
@@ -63,14 +67,13 @@
                   <th><%= (row+65).chr %></th>
                   <% 10.times do |col| %>
                       <!-- implement a mechanism so that it becomes battlefield-<current player id>-->
-                      <td id="<%="battlefield-0-"+(row.to_s+"-"+col.to_s)%>">c</td>
+                      <td id="<%="battlefield-0-"+(row.to_s+"-"+col.to_s)%>">&nbsp;&nbsp;&nbsp;</td>
                   <%end%>
                 </tr>
             <%end%>
           </table>
 
           <!-- Form to place ships -->
-          <div id="test">test</div>
           <div id="placeShipForm">
             <%= form_tag("#", :class=>"form-inline") do %>
 
