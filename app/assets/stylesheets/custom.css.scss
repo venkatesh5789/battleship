@@ -108,9 +108,19 @@ input, textarea, select, .uneditable-input {
 
 /* battlefield grid */
 
+.battlefield tr:hover,
+.battlefield tr {
+  background-color: #add8e6;
+}
+
+.battlefield tr:hover .hit,
+.battlefield tr .hit {
+  background-color: red;
+}
+
 .battlefield tr:hover .missed,
 .battlefield tr .missed {
-  background-color: red;
+  background-color: white;
 }
 
 .battlefield tr:hover .ship5Placed,
