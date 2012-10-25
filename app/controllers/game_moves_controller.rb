@@ -6,7 +6,7 @@ class GameMovesController < ApplicationController
     #@input_game_move = GameMove.new(params[:carrier])
 
     #parsed_json = JSON.parse(params[:data])
-        #params[:data][1.to_s]["row"]
+    #params[:data][1.to_s]["row"]
     @ship_placement_notifications = []
 
     5.times do |i|
@@ -21,7 +21,7 @@ class GameMovesController < ApplicationController
       size_of_ship = 2 if type_of_ship == 1
 
       @ship_placement_notifications.push(GameMove.new(column:start_column,row:start_row,
-                                         type_of_ship:type_of_ship,ship_alignment:ship_alignment))
+                                                      type_of_ship:type_of_ship,ship_alignment:ship_alignment))
 
       size_of_ship.times do |delta|
         @game_move = GameMove.new
@@ -37,28 +37,6 @@ class GameMovesController < ApplicationController
       format.js { @ship_placement_notifications }
     end
 
-=begin
-    row = @input_game_move.row
-    column = @input_game_move.column
-    ship_alignment = @input_game_move.ship_alignment
-    type_of_ship = @input_game_move.type_of_ship
-
-    size_of_ship = 5 if type_of_ship == 5
-    size_of_ship = 4 if type_of_ship == 4
-    size_of_ship = 3 if type_of_ship == 3 || type_of_ship == 2
-    size_of_ship = 2 if type_of_ship == 1
-
-    size_of_ship.times do |delta|
-      @game_move = GameMove.new(params[:game_move])
-      @game_move.column += delta if ship_alignment == 0
-      @game_move.row += delta if ship_alignment == 1
-      @game_move.save
-    end
-    respond_to do |format|
-      format.js { @input_game_move }
-    end
-=end
-
   end
 
   # GET /game_moves/1
@@ -68,8 +46,16 @@ class GameMovesController < ApplicationController
     respond_with @game_move
   end
 
+  # GET /game_moves
+  # GET /game_moves.json
+  # This is called when a player request all game moves
+  # Parameter: game_id, player_id
   def index
-    @game_moves = GameMove.all
-    respond_with @game_moves
+    @game_moves = GameMove.where(:game_id => params[:game_id],:to_user_id => params[:target_player_id])
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render json: @game_moves }
+    end
   end
 end

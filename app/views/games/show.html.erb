@@ -303,11 +303,76 @@
     }
 
   function sendGameMovesAJAXRequest(current_player_id,target_player_id,game_id) {
-      $.ajax({
+      /*$.ajax({
           url:"/game_moves", // call "game_moves" controller
-          type:"GET", // method "create"
+          type:"GET", // method "show"
           data: allShips
+      });*/
+      $.ajax({
+          url: "/game_moves.json",
+          data: { current_player_id: current_player_id,target_player_id: target_player_id, game_id: game_id },
+          cache: false
+      }).done(function( response ) {
+        // Send JSON response to this function to update battlefield, which will call drawBattlefield
+        updateBattlefield(response);
       });
+  }
+
+  function updateBattlefield(json_response) {
+      var length = json_response.length;
+      var element = null;
+      for (var i = 0; i < length; i++) {
+          element = json_response[i];
+          //alert(element["to_user_id"]+"---"+element.row+"---"+element.column+"::::"+element.type_of_ship);
+          // Do something with element i.
+          // TODO: Check "type_of_move" is "ship placement" or "shoot"
+          //player_battlefield[element.to_user_id][element.row][element.column] = element.type_of_ship;
+          // TODO: to_user_id and player_battlefield's index must be linked
+          player_battlefield[0][element.row][element.column] = element.type_of_ship;
+      }
+      drawBattlefield();
+  }
+
+  function drawBattlefield() {
+      //alert('DRAW');
+      for (var p = 0; p < player_battlefield.length; p++) {
+          for (var row = 0; row < 10; row++) {
+              for (var column = 0; column < 10; column++) {
+                  // Shorthand for cell
+                  var targetCell = $("#battlefield-"+p+"-"+row+"-"+column);
+                  // Remove all classes (CSS) from that cell
+                  targetCell.removeClass();
+                  /* Value
+                    0: Nothing
+                    1: Patrol boat
+                    2: Submarine
+                    3: Destroyer
+                    4: Battleship
+                    5: Carrier
+                    6: Hit
+                    7: Missed
+                   */
+                  switch (player_battlefield[p][row][column]) {
+                      case 0: // Nothing
+                          break;
+                      case 1:
+                      case 2:
+                      case 3:
+                      case 4:
+                      case 5:
+                          //alert("player = "+p+" position = "+row+","+column);
+                          targetCell.addClass("ship"+player_battlefield[p][row][column]+"Placed");
+                          break;
+                      case 6: // hit
+                          targetCell.addClass("hit");
+                          break;
+                      case 7: // missed
+                          targetCell.addClass("missed");
+                          break;
+                  }
+              }
+          }
+      }
   }
 
     // Activate player tab
@@ -318,8 +383,8 @@
       var linkHref = $(this).attr("href");
       var splitted = linkHref.split("-");
       var target_player_id = parseInt(splitted[1]);
-      alert(target_player_id);
-
+      //alert(target_player_id);
+      sendGameMovesAJAXRequest(1,target_player_id,<%=@game.id%>);
   })
   /*$(function () {
       //e.preventDefault();
