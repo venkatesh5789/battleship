@@ -61,6 +61,8 @@ class GameMovesController < ApplicationController
 
   end
 
+  # GET /game_moves/1
+  # GET /game_moves/1.json
   def show
     @game_move = GameMove.find(params[:id])
     respond_with @game_move
