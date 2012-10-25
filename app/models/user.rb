@@ -1,4 +1,17 @@
 class User < ActiveRecord::Base
-  attr_accessible :name, :password
-  has_many :games, through: :user_in_games, source: :game
+  # Include default devise modules. Others available are:
+  # :token_authenticatable, :confirmable,
+  # :lockable, :timeoutable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :trackable, :validatable
+
+  # Setup accessible (or protected) attributes for your model
+  attr_accessible :email, :password, :password_confirmation, :remember_me
+  # attr_accessible :title, :body
+
+  scope :online, lambda{ where("updated_at > ?", 10.minutes.ago) }
+
+  def online?
+    updated_at > 10.minutes.ago
+  end
 end

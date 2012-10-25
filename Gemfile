@@ -56,3 +56,6 @@ gem 'devise'
 #gem 'ruby-debug19'
 #gem 'ruby-debug-base19x'
 #gem 'ruby-debug-ide' #'0.4.6'
+
+#encrypt the password
+gem 'bcrypt-ruby', '3.0.1'
