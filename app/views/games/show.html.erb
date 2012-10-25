@@ -302,10 +302,29 @@
 
     }
 
-    // TODO: Activate player tab
-  $(function () {
+  function sendGameMovesAJAXRequest(current_player_id,target_player_id,game_id) {
+      $.ajax({
+          url:"/game_moves", // call "game_moves" controller
+          type:"GET", // method "create"
+          data: allShips
+      });
+  }
+
+    // Activate player tab
+  $('#playerTab a').click(function (e) {
       e.preventDefault();
-      $('#playerTab a').tab('show');
+      $(this).tab('show');
+      // TODO: call "send ajax game moves request for current player"
+      var linkHref = $(this).attr("href");
+      var splitted = linkHref.split("-");
+      var target_player_id = parseInt(splitted[1]);
+      alert(target_player_id);
+
   })
+  /*$(function () {
+      //e.preventDefault();
+      $('#playerTab a').tab('show');
+      //$('#playerTab a').onclick = alert('lll');
+  })  */
 
 </script>
