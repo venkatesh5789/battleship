@@ -10,7 +10,7 @@ describe GameMovesController do
     before do
       Game.create(name:"Lovely game",status:0)
       User.create(name:"Knotty")
-      UserInGame.create(game_id:1,user_id:1,status:0)
+      GamePlayer.create(game_id:1,user_id:1,status:0)
       visit "/games/1"
       #puts page.html
     end
@@ -45,7 +45,7 @@ describe GameMovesController do
 
       click_button ready
       sleep 1.seconds
-      UserInGame.find(1).status.should equal(1)
+      GamePlayer.find(1).status.should equal(1)
 
     end
   end

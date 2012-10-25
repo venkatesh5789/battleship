@@ -16,7 +16,7 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     @game_move = GameMove.new
 
-    @user_in_games = UserInGame.find_all_by_game_id(params[:id])
+    @game_players = GamePlayer.find_all_by_game_id(params[:id])
     #@users = User.all
 
     respond_to do |format|

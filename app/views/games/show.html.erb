@@ -14,7 +14,7 @@
         </tr>
         </thead>
         <tbody>
-            <%= render @user_in_games %>
+            <%= render @game_players %>
         </tbody>
       </table>
     </div>
@@ -48,7 +48,7 @@
       <!-- This code creates "player tabs" -->
       <!-- TODO: Replace 'Venky' with 'current player name' to make a default selected tab -->
       <ul class="nav nav-tabs" id="playerTab">
-        <% @user_in_games.each do |each_user_in_game| %>
+        <% @game_players.each do |each_user_in_game| %>
             <li class="<%= "active" if each_user_in_game.user.name.eql?("Venky")%>">
               <a href="#player-<%= each_user_in_game.id %>" data-toggle="tab">
                 <%= each_user_in_game.user.name %><%= " (me)" if each_user_in_game.user.name.eql?("Venky") %>
@@ -61,7 +61,7 @@
       <div class="tab-content">
 
         <!-- Div for each tab content -->
-        <% @user_in_games.each do |each_user_in_game| %>
+        <% @game_players.each do |each_user_in_game| %>
 
             <!-- TODO: Replace "Venky" with current user name (need a helper?) -->
             <div class="tab-pane<%= " active" if each_user_in_game.user.name.eql?("Venky") %>" id="player-<%= each_user_in_game.id %>">
@@ -157,7 +157,7 @@
   * this must be from "Session" variable */
   var current_player = 0;
 
-    var player_battlefield = new Array(<%=@user_in_games.count%>); // Initialize a 3D array [number of players] = 0..n-1
+    var player_battlefield = new Array(<%=@game_players.count%>); // Initialize a 3D array [number of players] = 0..n-1
     // initialize battlefield 2d-array for each player
     for (var i=0; i<player_battlefield.length; i++) {
         player_battlefield[i] = new Array(10); // array: [number of rows] = 0..9
@@ -195,7 +195,7 @@
             data: allShips
         });
         $.ajax({
-            url:"/user_in_games/0", // call "user_in_game" controller with "dummy" user_in_game's primary key in order to call "update"
+            url:"/game_players/0", // call "user_in_game" controller with "dummy" user_in_game's primary key in order to call "update"
             type:"PUT", // method "update"
             data: {user_id:1, status: 1} // TODO: replace user_id:1 with current user_id (session)
         });

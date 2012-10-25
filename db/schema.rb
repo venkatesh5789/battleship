@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121025144733) do
+ActiveRecord::Schema.define(:version => 20121025221220) do
 
   create_table "game_moves", :force => true do |t|
     t.integer  "game_id"
@@ -26,16 +26,16 @@ ActiveRecord::Schema.define(:version => 20121025144733) do
     t.integer  "ship_alignment"
   end
 
-  create_table "games", :force => true do |t|
-    t.string   "name"
+  create_table "game_players", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "game_id"
     t.integer  "status"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
 
-  create_table "user_in_games", :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "game_id"
+  create_table "games", :force => true do |t|
+    t.string   "name"
     t.integer  "status"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
@@ -54,6 +54,7 @@ ActiveRecord::Schema.define(:version => 20121025144733) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+    t.string   "name"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

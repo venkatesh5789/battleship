@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe UserInGamesController do
+describe GamePlayersController do
   describe "prereqs" do
     before do
-      @user_in_game = UserInGame.new(user_id:1, game_id:2, status:0)
+      @game_player = GamePlayer.new(user_id:1, game_id:2, status:0)
     end
 
-    subject { @user_in_game }
+    subject { @game_player }
 
     it { should respond_to(:user_id) }
     it { should respond_to(:game_id) }

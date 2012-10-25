@@ -1,0 +1,7 @@
+  <tr id="player-table-game-player-id-<%=game_player.id%>">
+    <td><%=game_player.user.name%></td>
+    <td>
+      <%= "Waiting" if game_player.status == 0%>
+      <%= "Ready" if game_player.status == 1%>
+    </td>
+  </tr>
