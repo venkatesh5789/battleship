@@ -1,7 +1,13 @@
   <tr id="player-table-game-player-id-<%=game_player.id%>">
     <td><%=game_player.user.name%></td>
     <td>
-      <%= "Waiting" if game_player.status == 0%>
-      <%= "Ready" if game_player.status == 1%>
+      <% # Before game start (game.status == 0) %>
+        <%= "Waiting" if game_player.status == 0%>
+        <%= "Ready" if game_player.status == 1%>
+      <% # After game start (game.status == 1) %>
+        <%= "Playing" if game_player.status == 2%>
+        <%= "Left" if game_player.status == 3 %>
+        <%= "Lost" if game_player.status == 4%>
+        <%= "Won" if game_player.status == 5 %>
     </td>
   </tr>

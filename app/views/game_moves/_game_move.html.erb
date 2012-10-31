@@ -1,10 +1,5 @@
 <li xmlns="http://www.w3.org/1999/html">
-  Game ID: <%=game_move.game_id%><br>
-  From: <%= game_move.from_user_id%><br>
-  To: <%= game_move.to_user_id %><br>
-
-
-  places <b>
+  You place <b>
   <%="Aircraft Carrier" if game_move.type_of_move == 5%>
   <%="Battleship" if game_move.type_of_move ==4%>
   <%="Destroyer" if game_move.type_of_move ==3%>
