@@ -1,0 +1,33 @@
+<h2>Players</h2>
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Status</th>
+  </tr>
+  </thead>
+  <tbody>
+    <% @game_players.each do |each_game_player| %>
+      <tr id="player-table-game-player-number-<%=each_game_player.player_number%>">
+        <td>
+          <% if each_game_player.user.name.eql?(current_user.name) %>
+              <%=content_tag(:strong,each_game_player.user.name)  %>
+          <% else %>
+              <%=each_game_player.user.name%>
+          <% end %>
+        </td>
+        <td>
+          <% # Before game start (game.status == 0) %>
+          <%= "Waiting" if each_game_player.status == 0%>
+          <%= content_tag(:strong,"Ready") if each_game_player.status == 1%>
+          <% # After game start (game.status == 1) %>
+          <%= "Playing" if each_game_player.status == 2%>
+          <%= "Left" if each_game_player.status == 3 %>
+          <%= "Lost" if each_game_player.status == 4%>
+          <%= "Won" if each_game_player.status == 5 %>
+        </td>
+      </tr>
+
+  <% end %>
+  </tbody>
+</table>

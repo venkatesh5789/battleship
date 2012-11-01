@@ -42,7 +42,7 @@ class GameMovesController < ApplicationController
         #puts delta
         g = GameMove.new(game_id:game_id,from_user_id:from_user_id,to_user_id:to_user_id,
                                   type_of_move:type_of_move,ship_alignment:ship_alignment);
-        if ship_alignment = 0
+        if ship_alignment == 0
           g.column = (start_column+delta).to_i
           g.row = start_row.to_i
         else

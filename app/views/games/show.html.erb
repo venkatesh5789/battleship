@@ -5,18 +5,7 @@
 <div class="row">
   <div class="span2">
     <div id="player-window">
-      <h2>Players</h2>
-      <table class="table table-striped">
-        <thead>
-        <tr>
-          <th>Name</th>
-          <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
-            <%= render @game_players %>
-        </tbody>
-      </table>
+      <%= render 'game_players/game_players_table' %>
     </div>
     <div id="chat-window" >
       <h2>Chat</h2>
@@ -43,110 +32,23 @@
       </ul>
     </div>
 
+    <% if @game.status == 0 %>
+        <%# Render game_prep if the game is preparing %>
+        <%= render 'games/game_prep' %>
+    <% elsif @game.status == 1 %>
+        <%# Render game_war if the game has started  %>
+        <%= render 'games/game_war' %>
+    <% else %>
+        <%# Render game_result if the game has ended %>
+    <% end %>
 
-    <div class="span6">
 
-      <!-- This code creates "player tabs" -->
-      <ul class="nav nav-tabs" id="playerTab">
-        <% @game_players.each do |each_game_player| %>
-            <li class="<%= "active" if each_game_player.user.name.eql?(current_user.name)%>">
-              <a href="#player-<%= each_game_player.player_number %>" data-toggle="tab">
-                <%= each_game_player.user.name %><%= " (me)" if each_game_player.user.name.eql?(current_user.name) %>
-              </a>
-            </li>
-        <% end %>
-      </ul>
-
-      <!-- Draw all tabs -->
-      <div class="tab-content">
-
-        <!-- Div for each tab content -->
-        <% @game_players.each do |each_game_player| %>
-
-            <div class="tab-pane<%= " active" if each_game_player.user.name.eql?(current_user.name) %>"
-                 id="player-<%= each_game_player.player_number %>">
-
-              <!-- Draw player's grid -->
-              <table id="myGrid" class="table table-bordered battlefield">
-                <tr>
-                  <th>&nbsp;</th>
-                  <% 10.times do |col_head| %>
-                      <th><%= col_head+1 %></th>
-                  <% end %>
-                </tr>
-                <% 10.times do |row| %>
-                    <tr>
-                      <th><%= (row+65).chr %></th>
-                      <% 10.times do |column| %>
-                          <!-- Refer to each cell by using ID: battlefield-[player_number]-[row]-[column]
-                            player_number: 0..n-1    ; n = number of players
-                            row:    0..9
-                            column: 0..9
-                          -->
-                          <td id="<%="battlefield-"+each_game_player.player_number+"-"+(row.to_s+"-"+column.to_s)%>">
-                            &nbsp;&nbsp;&nbsp;
-                          </td>
-                      <%end%>
-                    </tr>
-                <%end%>
-              </table>
-
-              <!-- Place ships form -- only show if it's current player -->
-              <% if each_game_player.user.name.eql?(current_user.name) %>
-
-                  <!-- Form to place ships -->
-                  <div id="placeShipForm">
-                    <%= form_tag("#", :class=>"form-inline") do %>
-
-                        <%= select_tag(:ship_alignment,options_for_select([['H',0],['V',1]]), :class=>"input-mini") %>
-
-                        <%= select_tag(:type_of_move,options_for_select([
-                                                                             ['Carrier', 5],
-                                                                             ['Battleship', 4],
-                                                                             ['Destroyer', 3],
-                                                                             ['Submarine', 2],
-                                                                             ['Patrol Boat', 1]
-                                                                     ]), :class=>"input-small") %>
-
-                        <%= select_tag(:ship_row,options_for_select([
-                                                                            ['A',0],
-                                                                            ['B',1],
-                                                                            ['C',2],
-                                                                            ['D',3],
-                                                                            ['E',4],
-                                                                            ['F',5],
-                                                                            ['G',6],
-                                                                            ['H',7],
-                                                                            ['I',8],
-                                                                            ['J',9]
-                                                                    ]), :class=>"input-mini") %>
-
-                        <%= select_tag(:ship_column,options_for_select([
-                                                                               ['1',0],
-                                                                               ['2',1],
-                                                                               ['3',2],
-                                                                               ['4',3],
-                                                                               ['5',4],
-                                                                               ['6',5],
-                                                                               ['7',6],
-                                                                               ['8',7],
-                                                                               ['9',8],
-                                                                               ['10',9],
-                                                                       ]), :class=>"input-mini") %>
-                        <%= button_tag('Place', :id => 'placeButton', :type => 'button') %>
-                        <%= button_tag(:id => 'readyButton', :type => 'button') { content_tag :strong, 'Ready to play' } %>
-                    <% end %>
-                  </div>
-               <% end %>
-            </div>
-        <% end %>
-      </div>
-
-    </div>
     <div class="span3">
       <h3>Game moves</h3>
       <ol id="game-moves-feed">
       </ol>
+    </div>
+
     </div>
   </div>
 
@@ -154,191 +56,43 @@
 
 <script>
 
-    /* TODO: Have to deal with other players that may join the game on-the-fly!
-    *        The player_battlefield must be extended then.
-    * */
-    var player_battlefield = new Array(<%=@game_players.count%>); // Initialize a 3D array [number of players] = 0..n-1
-
-    // Initialize battlefield 2d-array for each player
-    for (var i=0; i<player_battlefield.length; i++) {
-        player_battlefield[i] = new Array(10); // array: [number of rows] = 0..9
-        for (var row=0; row<10; row++) {
-            player_battlefield[i][row] = new Array(10);    // array: [number of columns in a row] = 0..9
-            for (var col=0; col<10; col++) {
-                player_battlefield[i][row][col] = 0;
-            }
-        }
-    }
-
-    /* Prepare an object to be sent via AJAX request to update game_moves */
-    var allShips = {data:[
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:0,ship_alignment:0, type_of_move:1},
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:1,ship_alignment:0, type_of_move:2},
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:2,ship_alignment:0, type_of_move:3},
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:3,ship_alignment:0, type_of_move:4},
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:4,ship_alignment:0, type_of_move:5}]
-    };
-
-    /* Event for "Place" button */
-    $("#placeButton").click(function() {
-        placeShip(this.form);
-    })
-
-    /* When the player click on "Ready to play" button, it first checks that all 5 ships are placed.
-     Then it sends AJAX requests of
-     - ship positions (game_moves)
-     - new player status (user_in_games)
-     */
-    $("#readyButton").click(function () {
-
-        for (i=0; i<5; i++) {
-            if (allShips.data[i].row == -1) {
-                alert("Please place all ships first!!!");
-                return;
-            }
-        }
-        // Send ship positions AJAX call
-        $.ajax({
-            url:"/game_moves", // call "game_moves" controller
-            type:"POST", // method "create"
-            data: allShips
-        });
-        // Send ready notification AJAX call
-        $.ajax({
-            url:"/game_players/<%= @current_player_number %>",
-            type:"PUT", // method "update"
-            data: {status: 1} // Status: 1 = Ready
-        });
-
-        $("#placeShipForm").hide("slow");
-    });
-
-    /* TODO: click to shoot */
-    $('#myGrid td').click(function (e) {
-        /* TODO: Check if it's current user's turn
-         * If it's user's turn: Check whether it's a valid move (not yourself, not been shot before)
-         *                      Check whether it's a hit or a miss
-         *                      Then drawBattlefield()
-         */
-        $(this).toggleClass("missed");
-    });
-
-    /* After the player selected ship alignment, type, row, col and click on "Place".
-     It check whether the ship is not off screen and collide with other ships.
-     Then it paints the grid with a new ship position.
-     */
-    function placeShip(form) {
-        var alignment = form.ship_alignment.value;
-        var type = form.type_of_move.value;
-        var row = form.ship_row.value;
-        var col = form.ship_column.value;
-        
-        var sizeOfShip = 0;
-
-        if (type == 5) {
-            sizeOfShip = 5;
-        } else if (type == 4) {
-            sizeOfShip = 4;
-        } else if (type == 3 || type == 2) {
-            sizeOfShip = 3;
-        } else if (type == 1) {
-            sizeOfShip = 2;
-        }
-
-        var start_row = parseInt(row);
-        var start_col = parseInt(col);
-        var is_increase_row = (alignment == 1)?1:0;
-        var is_increase_col = (alignment == 0)?1:0;
-
-        if (isValidNewShipPosition(alignment, start_row,start_col,sizeOfShip,type))  {
-            // Delete ship from old position (if exists)
-            if (allShips.data[type-1].row > -1) {
-                for (var c=0; c<10; c++)
-                    for(var d = 0; d<10; d++)
-                    {
-                        // Clear from player_battlefield variable
-                        player_battlefield[<%= @current_player_number %>][start_row+i*is_increase_row][start_col+i*is_increase_col] = 0;
-                        // Clear from displaying grid
-                        $("#battlefield-"+<%= @current_player_number %>+"-"+c+"-"+d).removeClass("ship"+type+"Placed");
-                    }
-            }
-
-            // Replace data of ship in "allShips" object, which will be sent to server
-            allShips.data[type-1].row = start_row;
-            allShips.data[type-1].column = start_col;
-            allShips.data[type-1].ship_alignment = alignment;
-            allShips.data[type-1].type_of_move = type;
-            //allShips.data[type-1] = {row:start_row,column:start_col,ship_alignment:alignment,type_of_move:type};
-            //alert(allShips.data[type-1].ship_type+" row "+allShips.data[type-1].row+" column "+allShips.data[type-1].column);
-
-            for (var i=0; i<sizeOfShip; i++) {
-                // Update player_battlefield variable
-                player_battlefield[<%= @current_player_number %>][start_row+i*is_increase_row][start_col+i*is_increase_col] = type;
-                // Draw ship on battlefield
-                $("#battlefield-"+<%= @current_player_number %>+"-"+(start_row+i*is_increase_row)+"-"+(start_col+i*is_increase_col)).addClass("ship"+type+"Placed");
-            }
-        } // end if isValidNewShipPosition()
-    }
-
-    /* Helper function for placeShip(), to check validity of ship position */
-    function isValidNewShipPosition(alignment, start_row,start_col,sizeOfShip,type) {
-        var is_increase_row = (alignment == 1)?1:0;
-        var is_increase_col = (alignment == 0)?1:0;
-
-        for (var c=0; c<sizeOfShip; c++) {
-            //alert("#battlefield-"+player+"-"+(start_row+c*is_increase_row)+"-"+(start_col+c*is_increase_col));
-            var row_to_check = start_row+c*is_increase_row;
-            var col_to_check = start_col+c*is_increase_col;
-            if ((row_to_check >= 0 && row_to_check < 10) && (col_to_check >= 0 && col_to_check < 10)) {
-                var value_on_battlefield = player_battlefield[<%= @current_player_number %>][row_to_check][col_to_check];
-                if (value_on_battlefield == 0 || value_on_battlefield == type) {
-                    // current position is itself or no collision to other ships
-                    // continue to next position, do nothing
-                    continue;
-                } else {
-                    // there's something, alert and return false
-                    alert("Collide with another ship");
-                    return false;
-                }
-            } else {
-                alert("Position out of screen");
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     // Send request for game moves
     function requestGameMovesFromServer(from_game_player_number,to_game_player_number,game_id) {
         $.ajax({
             url: "/game_moves.json",
-            data: { from_game_player_number: from_game_player_number,
-                    to_game_player_number: to_game_player_number,
-                    game_id: game_id},
+            data: {
+                from_game_player_number: from_game_player_number,
+                to_game_player_number: to_game_player_number,
+                game_id: game_id
+            },
             cache: false
         }).done(function( response ) {
                     // Send JSON response to this function to update battlefield, which will call drawBattlefield
-                    updateBattlefield(response);
+                    updateAndRedrawBattlefield(response);
                 });
     }
 
-    // Update player_battlefield variable from JSON response
-    function updateBattlefield(json_response) {
+    // Update player_battlefield variable (in client-side) from JSON response
+    function updateAndRedrawBattlefield(json_response) {
+
         var length = json_response.length;
-        //alert(json_response.length);
         var element = null;
         for (var i = 0; i < length; i++) {
             element = json_response[i];
-            //alert(element["to_user_id"]+"---"+element.row+"---"+element.column+"::::"+element.type_of_move);
 
-            player_battlefield[element.to_game_player_number][element.row][element.column] = element.type_of_move;
+            <% if @game.status == 0 %>
+                <%# Game preparation: Draw to current player only %>
+                <%= "player_battlefield[0][element.row][element.column] = element.type_of_move;" %>
+            <% else %>
+                <%# Game war: Draw to target player %>
+                <%= "player_battlefield[element.to_game_player_number][element.row][element.column] = element.type_of_move;" %>
+            <% end %>
         }
-        drawBattlefield();
+        redrawBattlefield();
     }
 
     // Draw (update cell color) battlefield to be corresponded with value in player_battlefield
-    function drawBattlefield() {
+    function redrawBattlefield() {
         for (var p = 0; p < player_battlefield.length; p++) {
             for (var row = 0; row < 10; row++) {
                 for (var column = 0; column < 10; column++) {
@@ -379,25 +133,68 @@
         }
     }
 
-    // Activate player tab (bootstrap)
-    // Initiate sendGameMovesAJAXRequest() on tab change
-    $('#playerTab a').click(function (e) {
-        // Make tab works
-        e.preventDefault();
-        $(this).tab('show');
-        // TODO: make it bold
+    // Call when page has been loaded
+    $(document).ready(function() {
+        // Request game moves for selected player
+        requestGameMovesFromServer(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
+    });
 
-        // Extract target_player_number from <a href>
-        var linkHref = $(this).attr("href");
-        var splitted = linkHref.split("-");
-        var target_player_number = parseInt(splitted[1]);
 
-        requestGameMovesFromServer(<%= @current_player_number %>,target_player_number,<%=@game.id%>);
-    })
-    /*$(function () {
-     //e.preventDefault();
-     $('#playerTab a').tab('show');
-     //$('#playerTab a').onclick = alert('lll');
-     })  */
+
+    // Send request for game players
+    function requestGamePlayersFromServer(game_id) {
+        $.ajax({
+            url: "/game_players.json",
+            data: {
+                game_id: game_id
+            },
+            cache: false
+        }).done(function( response ) {
+                    // Send JSON response to this function to update battlefield, which will call drawBattlefield
+                    updateGamePlayersTable(response);
+                });
+    }
+
+    // Check if everyone is ready -> refresh
+    // Otherwise (someone still not ready) just update "Game Players Table"
+    function updateGamePlayersTable(json_response) {
+        var isEveryoneReady = true;
+        for (var i=0; i<json_response.length; i++) {
+            var game_player = json_response[i];
+            if (game_player.status == 0) {
+                isEveryoneReady = false;
+                break;
+            }
+        }
+        if (isEveryoneReady) {
+            <%= "var isInPreparation = true;" if @game.status == 0 %>
+            <%= "var isInPreparation = false;" if @game.status != 0 %>
+            if (isInPreparation) {
+                // Everyone is ready, refresh! (the refreshed page will have game.status == 1)
+                window.location.reload();
+            }
+        } else {
+            for (var i=0; i<json_response.length; i++) {
+                var game_player = json_response[i];
+                switch (game_player.status) {
+                    case 0: status_to_print = "Waiting"; break;
+                    case 1: status_to_print = "<b>Ready</b>"; break;
+                    case 2: status_to_print = "Playing"; break;
+                    case 3: status_to_print = "Left"; break;
+                    case 4: status_to_print = "Lost"; break;
+                    case 5: status_to_print = "Won"; break;
+                }
+                $("#player-table-game-player-number-"+game_player.player_number+" td:nth-child(2)").html(status_to_print);
+            }
+        }
+    }
+
+    // set interval of game players
+    var gamePlayerListRefreshTimer = setInterval(refreshGamePlayerList, 5000);
+    function refreshGamePlayerList() {
+        // do some stuff...
+        // no need to recall the function (it's an interval, it'll loop forever)
+        requestGamePlayersFromServer(<%=params[:id]%>);
+    }
 
 </script>

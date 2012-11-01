@@ -1,9 +1,15 @@
-  <tr id="player-table-game-player-id-<%=game_player.id%>">
-    <td><%=game_player.user.name%></td>
+  <tr id="player-table-game-player-number-<%=game_player.player_number%>">
+    <td>
+      <% if game_player.user.name.eql?(current_user.name) %>
+        <%=content_tag(:strong,game_player.user.name)  %>
+      <% else %>
+        <%=game_player.user.name%>
+      <% end %>
+    </td>
     <td>
       <% # Before game start (game.status == 0) %>
         <%= "Waiting" if game_player.status == 0%>
-        <%= "Ready" if game_player.status == 1%>
+        <%= content_tag(:strong,"Ready") if game_player.status == 1%>
       <% # After game start (game.status == 1) %>
         <%= "Playing" if game_player.status == 2%>
         <%= "Left" if game_player.status == 3 %>
@@ -11,3 +17,5 @@
         <%= "Won" if game_player.status == 5 %>
     </td>
   </tr>
+
+

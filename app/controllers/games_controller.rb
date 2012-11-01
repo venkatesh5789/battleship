@@ -18,7 +18,8 @@ class GamesController < ApplicationController
 
     @game_players = GamePlayer.find_all_by_game_id(params[:id])
     @current_game_player = GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).first
-    @current_player_number = @current_game_player.player_number
+    @current_game_player_number = @current_game_player.player_number
+    @current_game_player_status = @current_game_player.status
 
     respond_to do |format|
       format.html # show.html.erb
