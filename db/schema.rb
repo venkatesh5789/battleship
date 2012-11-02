@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(:version => 20121102163351) do
     t.integer  "column"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
+    t.integer  "type_of_move"
     t.integer  "ship_alignment"
   end
 
