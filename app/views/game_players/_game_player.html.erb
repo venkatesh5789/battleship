@@ -1,9 +1,9 @@
   <tr id="player-table-game-player-number-<%=game_player.player_number%>">
     <td>
-      <% if game_player.user.name.eql?(current_user.name) %>
-        <%=content_tag(:strong,game_player.user.name)  %>
+      <% if game_player.user.username.eql?(current_user.username) %>
+        <%=content_tag(:strong,game_player.user.username)  %>
       <% else %>
-        <%=game_player.user.name%>
+        <%=game_player.user.username%>
       <% end %>
     </td>
     <td>

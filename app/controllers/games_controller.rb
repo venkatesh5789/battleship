@@ -18,8 +18,10 @@ class GamesController < ApplicationController
 
     @game_players = GamePlayer.find_all_by_game_id(params[:id])
     @current_game_player = GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).first
-    @current_game_player_number = @current_game_player.player_number
-    @current_game_player_status = @current_game_player.status
+    if @current_game_player
+      @current_game_player_number = @current_game_player.player_number
+      @current_game_player_status = @current_game_player.status
+    end
 
     respond_to do |format|
       format.html # show.html.erb
@@ -48,8 +50,11 @@ class GamesController < ApplicationController
   def create
     @game = Game.new(params[:game])
 
+
     respond_to do |format|
       if @game.save
+        new_player = GamePlayer.new(:user_id => current_user.id, :game_id => @game.id, :player_number=> 1, :status => 0 )
+        new_player.save
         format.html { redirect_to @game, notice: 'Game was successfully created.' }
         format.json { render json: @game, status: :created, location: @game }
       else

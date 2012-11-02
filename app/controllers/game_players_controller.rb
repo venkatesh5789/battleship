@@ -55,4 +55,26 @@ class GamePlayersController < ApplicationController
     end
   end
 
+  def create
+    @game = Game.find(params[:game_id])
+    @game.player_number < 2
+    @player = GamePlayer.new
+    @player.user_id = current_user.id
+    @player.game_id = params[:game_id]
+    @player.status = 0
+    @player.player_number = GamePlayer.where(:game_id => params[:game_id]).count + 1
+    @player.save
+
+    redirect_to @game
+
+
+
+
+    #@new_game_player   = GamePlayer.new(params[:user_id])
+    #@new_game_player.save
+
+
+  end
+
+
 end

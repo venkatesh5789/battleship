@@ -53,7 +53,7 @@ gem 'jquery-rails'
 
 #suggested gems by Todd'
 gem 'devise' 
-gem 'ruby-debug19'
+#gem 'ruby-debug19'
 #gem 'ruby-debug-base19x'
 #gem 'ruby-debug-ide' #'0.4.6'
 

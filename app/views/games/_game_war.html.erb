@@ -5,9 +5,9 @@ game_war
 <!-- This code creates "player tabs" -->
 <ul class="nav nav-tabs" id="playerTab">
   <% @game_players.each do |each_game_player| %>
-      <li class="<%= "active" if each_game_player.user.name.eql?(current_user.name)%>">
+      <li class="<%= "active" if each_game_player.user.username.eql?(current_user.username)%>">
         <a href="#player-<%= each_game_player.player_number %>" data-toggle="tab">
-          <%= each_game_player.user.name %><%= " (me)" if each_game_player.user.name.eql?(current_user.name) %>
+          <%= each_game_player.user.username %><%= " (me)" if each_game_player.user.username.eql?(current_user.username) %>
         </a>
       </li>
   <% end %>
@@ -19,7 +19,7 @@ game_war
   <!-- Div for each tab content -->
   <% @game_players.each do |each_game_player| %>
 
-      <div class="tab-pane<%= " active" if each_game_player.user.name.eql?(current_user.name) %>"
+      <div class="tab-pane<%= " active" if each_game_player.user.username.eql?(current_user.username) %>"
            id="player-<%= each_game_player.player_number %>">
 
         <!-- Draw player's grid -->
@@ -48,7 +48,7 @@ game_war
         </table>
 
         <!-- Place ships form -- only show if it's current player -->
-        <% if each_game_player.user.name.eql?(current_user.name) %>
+        <% if each_game_player.user.username.eql?(current_user.username) %>
 
             <!-- Form to place ships -->
             <div id="placeShipForm">

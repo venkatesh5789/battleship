@@ -10,10 +10,10 @@
     <% @game_players.each do |each_game_player| %>
       <tr id="player-table-game-player-number-<%=each_game_player.player_number%>">
         <td>
-          <% if each_game_player.user.name.eql?(current_user.name) %>
-              <%=content_tag(:strong,each_game_player.user.name)  %>
+          <% if each_game_player.user.username.eql?(current_user.username) %>
+              <%=content_tag(:strong,each_game_player.user.username)  %>
           <% else %>
-              <%=each_game_player.user.name%>
+              <%=each_game_player.user.username%>
           <% end %>
         </td>
         <td>
