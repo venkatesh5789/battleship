@@ -264,7 +264,7 @@ game_war
         $(this).tab('show');
         // TODO: make it bold
 
-        // Extract target_player_number from <a href>
+        // Extract target_player_number from <a href=player-number>
         var linkHref = $(this).attr("href");
         var splitted = linkHref.split("-");
         var target_player_number = parseInt(splitted[1]);
@@ -276,5 +276,14 @@ game_war
      $('#playerTab a').tab('show');
      //$('#playerTab a').onclick = alert('lll');
      })  */
+
+
+
+    // set interval of game moves
+    var battlefieldRefreshTimer = setInterval(refreshBattlefield, 5000);
+    function refreshBattlefield() {
+        // no need to recall the function (it's an interval, it'll loop forever)
+        requestGameMovesFromServer(<%= @current_game_player_number %>,target_player_number,<%=@game.id%>);
+    }
 
 </script>

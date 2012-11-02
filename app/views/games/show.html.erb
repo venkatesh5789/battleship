@@ -166,6 +166,22 @@
                 break;
             }
         }
+
+        // Update "game players" table
+        for (var i=0; i<json_response.length; i++) {
+            var game_player = json_response[i];
+            switch (game_player.status) {
+                case 0: status_to_print = "Waiting"; break;
+                case 1: status_to_print = "<b>Ready</b>"; break;
+                case 2: status_to_print = "Playing"; break;
+                case 3: status_to_print = "Left"; break;
+                case 4: status_to_print = "Lost"; break;
+                case 5: status_to_print = "Won"; break;
+            }
+            $("#player-table-game-player-number-"+game_player.player_number+" td:nth-child(2)").html(status_to_print);
+        }
+
+        // If everyone is ready and game is in game_prep --> refresh the page
         if (isEveryoneReady) {
             <%= "var isInPreparation = true;" if @game.status == 0 %>
             <%= "var isInPreparation = false;" if @game.status != 0 %>
@@ -173,26 +189,12 @@
                 // Everyone is ready, refresh! (the refreshed page will have game.status == 1)
                 window.location.reload();
             }
-        } else {
-            for (var i=0; i<json_response.length; i++) {
-                var game_player = json_response[i];
-                switch (game_player.status) {
-                    case 0: status_to_print = "Waiting"; break;
-                    case 1: status_to_print = "<b>Ready</b>"; break;
-                    case 2: status_to_print = "Playing"; break;
-                    case 3: status_to_print = "Left"; break;
-                    case 4: status_to_print = "Lost"; break;
-                    case 5: status_to_print = "Won"; break;
-                }
-                $("#player-table-game-player-number-"+game_player.player_number+" td:nth-child(2)").html(status_to_print);
-            }
         }
     }
 
     // set interval of game players
     var gamePlayerListRefreshTimer = setInterval(refreshGamePlayerList, 5000);
     function refreshGamePlayerList() {
-        // do some stuff...
         // no need to recall the function (it's an interval, it'll loop forever)
         requestGamePlayersFromServer(<%=params[:id]%>);
     }
