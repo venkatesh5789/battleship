@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+=begin
 describe UsersController do
 
   it ' should be able to create a game' do
@@ -12,3 +13,4 @@ describe UsersController do
   end
 
 end
+=end

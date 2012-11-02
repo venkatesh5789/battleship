@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+=begin
 describe "AuthenticationPages" do
   describe "GET /authentication_pages" do
     it "works! (now write some real specs)" do
@@ -9,3 +10,4 @@ describe "AuthenticationPages" do
     end
   end
 end
+=end

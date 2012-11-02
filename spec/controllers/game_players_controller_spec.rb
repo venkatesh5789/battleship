@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+=begin
 describe GamePlayersController do
 
   describe "when user joins a game, user in game is created " do
@@ -12,3 +13,4 @@ describe GamePlayersController do
   end
 
 end
+=end

@@ -141,14 +141,14 @@
         $("#instruction").html("<h2>Now wait for the game to start</h2>");
     });
 
-    /* TODO: click to shoot */
+    /* TODO: click to place ship */
     $('#myGrid td').click(function (e) {
         /* TODO: Check if it's current user's turn
          * If it's user's turn: Check whether it's a valid move (not yourself, not been shot before)
          *                      Check whether it's a hit or a miss
          *                      Then drawBattlefield()
          */
-        $(this).toggleClass("missed");
+        //$(this).toggleClass("missed");
     });
 
     /* After the player selected ship alignment, type, row, col and click on "Place".

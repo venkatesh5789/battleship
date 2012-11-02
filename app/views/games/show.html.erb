@@ -118,8 +118,10 @@
                         case 3:
                         case 4:
                         case 5:
-                            //alert("player = "+p+" position = "+row+","+column);
-                            targetCell.addClass("ship"+player_battlefield[p][row][column]+"Placed");
+                            // Show ship position only if drawing current player's table
+                            if (<%= @current_game_player_number %> == p) {
+                                targetCell.addClass("ship"+player_battlefield[p][row][column]+"Placed");
+                            }
                             break;
                         case 6: // hit
                             targetCell.addClass("hit");
