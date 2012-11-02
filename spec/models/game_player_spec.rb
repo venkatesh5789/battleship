@@ -3,7 +3,7 @@ require 'spec_helper'
 describe GamePlayer do
 
   before do
-    @game_player = GamePlayer.new(user_id:1, game_id:2, status:0)
+    @game_player = GamePlayer.new(user_id:1, game_id:2, status:0, player_number:0)
   end
 
   subject { @game_player }

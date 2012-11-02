@@ -5,7 +5,10 @@ class GameMovesController < ApplicationController
   def create
     #@input_game_move = GameMove.new(params[:carrier])
 
+
+
     #parsed_json = JSON.parse(params[:data])
+
     #params[:data][1.to_s]["row"]
     @ship_placement_notifications = []
 
@@ -16,8 +19,10 @@ class GameMovesController < ApplicationController
     # 3: Destroyer
     # 4: Battleship
     # 5: Carrier
+    # 6: Hit
+    # 7: Missed
 
-    5.times do |i|
+    params[:data].count.times do |i|
       game_id = params[:data][i.to_s]["game_id"].to_i
       from_user_id = params[:data][i.to_s]["from_user_id"].to_i
       to_user_id = params[:data][i.to_s]["to_user_id"].to_i
@@ -26,7 +31,7 @@ class GameMovesController < ApplicationController
       type_of_move =  params[:data][i.to_s]["type_of_move"].to_i
       ship_alignment = params[:data][i.to_s]["ship_alignment"].to_i
 
-      size_of_ship = 0
+      size_of_ship = 1
       size_of_ship = 5 if type_of_move == 5
       size_of_ship = 4 if type_of_move == 4
       size_of_ship = 3 if type_of_move == 3 || type_of_move == 2
