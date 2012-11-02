@@ -10,7 +10,7 @@ class GameMovesController < ApplicationController
     #parsed_json = JSON.parse(params[:data])
 
     #params[:data][1.to_s]["row"]
-    @ship_placement_notifications = []
+    @game_move_notifications = []
 
     # type_of_move
     # 0: Nothing
@@ -25,24 +25,34 @@ class GameMovesController < ApplicationController
     params[:data].count.times do |i|
       game_id = params[:data][i.to_s]["game_id"].to_i
       from_user_id = params[:data][i.to_s]["from_user_id"].to_i
-      to_user_id = params[:data][i.to_s]["to_user_id"].to_i
+
+      if params[:data][i.to_s]["to_user_id"].blank?
+        # If the client send "target_player_number", the server has to convert it to "to_user_id"
+        target_player_number = params[:data][i.to_s]["target_player_number"]
+
+        to_user_id = GamePlayer.where(:player_number=>target_player_number,:game_id => game_id).first.user_id
+      else
+        # Otherwise, use "to_user_id"
+        to_user_id = params[:data][i.to_s]["to_user_id"].to_i
+      end
+
       start_row = params[:data][i.to_s]["row"].to_i
       start_column = params[:data][i.to_s]["column"].to_i
       type_of_move =  params[:data][i.to_s]["type_of_move"].to_i
       ship_alignment = params[:data][i.to_s]["ship_alignment"].to_i
 
-      size_of_ship = 1
+      size_of_ship = 1  # Create game_move record for 1 time, if it's a hit or miss
+      # Otherwise, create n time depends on ship size
       size_of_ship = 5 if type_of_move == 5
       size_of_ship = 4 if type_of_move == 4
       size_of_ship = 3 if type_of_move == 3 || type_of_move == 2
       size_of_ship = 2 if type_of_move == 1
 
-      @ship_placement_notifications.push(GameMove.new(game_id:game_id,from_user_id:from_user_id,to_user_id:to_user_id,
+      @game_move_notifications.push(GameMove.new(game_id:game_id,from_user_id:from_user_id,to_user_id:to_user_id,
                                                       column:start_column,row:start_row,
                                                       type_of_move:type_of_move,ship_alignment:ship_alignment))
 
-      # Add records for every ship cell position
-      # 5 + 4 + 3 + 3 + 2 = 17 total records
+      # If it's a ship position, add records for every ship cell position --> 5 + 4 + 3 + 3 + 2 = 17 total records
       size_of_ship.times do |delta|
         #puts delta
         g = GameMove.new(game_id:game_id,from_user_id:from_user_id,to_user_id:to_user_id,
@@ -56,16 +66,15 @@ class GameMovesController < ApplicationController
         end
 
         if g.save
-          puts "ok"
+          puts "ok to create game_moves record"
           else
-          puts "failed"
+          puts "failed to create game_moves record"
         end
       end
-      puts "---"
     end
 
     respond_to do |format|
-      format.js { @ship_placement_notifications }
+      format.js { @game_move_notifications }
     end
 
   end

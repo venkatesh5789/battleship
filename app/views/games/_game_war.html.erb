@@ -1,51 +1,53 @@
 <div class="span6">
 
-<!-- This code creates "player tabs" -->
-<ul class="nav nav-tabs" id="playerTab">
-  <% @game_players.each do |each_game_player| %>
-      <li class="<%= "active" if each_game_player.user.username.eql?(current_user.username)%>">
-        <a href="#player-<%= each_game_player.player_number %>" data-toggle="tab">
-          <%= each_game_player.user.username %><%= " (me)" if each_game_player.user.username.eql?(current_user.username) %>
-        </a>
-      </li>
-  <% end %>
-</ul>
+  <!-- This code creates "player tabs" -->
+  <ul class="nav nav-tabs" id="playerTab">
+    <% @game_players.each do |each_game_player| %>
+        <li class="<%= "active" if each_game_player.user.username.eql?(current_user.username)%>">
+          <a href="#player-<%= each_game_player.player_number %>" data-toggle="tab">
+            <%= each_game_player.user.username %><%= " (me)" if each_game_player.user.username.eql?(current_user.username) %>
+          </a>
+        </li>
+    <% end %>
+  </ul>
 
-<!-- Draw all tabs -->
-<div class="tab-content">
+  <!-- Draw all tabs -->
+  <div class="tab-content">
 
-  <!-- Div for each tab content -->
-  <% @game_players.each do |each_game_player| %>
+    <!-- Div for each tab content -->
+    <% @game_players.each do |each_game_player| %>
 
-      <div class="tab-pane<%= " active" if each_game_player.user.username.eql?(current_user.username) %>"
-           id="player-<%= each_game_player.player_number %>">
+        <div class="tab-pane<%= " active" if each_game_player.user.username.eql?(current_user.username) %>"
+             id="player-<%= each_game_player.player_number %>">
 
-        <!-- Draw player's grid -->
-        <table id="myGrid" class="table table-bordered battlefield">
-          <tr>
-            <th>&nbsp;</th>
-            <% 10.times do |col_head| %>
-                <th><%= col_head+1 %></th>
-            <% end %>
-          </tr>
-          <% 10.times do |row| %>
-              <tr>
-                <th><%= (row+65).chr %></th>
-                <% 10.times do |column| %>
-                    <!-- Refer to each cell by using ID: battlefield-[player_number]-[row]-[column]
-                      player_number: 0..n-1    ; n = number of players
-                      row:    0..9
-                      column: 0..9
-                    -->
-                    <td id="<%="battlefield-"+each_game_player.player_number+"-"+(row.to_s+"-"+column.to_s)%>">
-                      &nbsp;&nbsp;&nbsp;
-                    </td>
-                <%end%>
-              </tr>
-          <%end%>
-        </table>
-      </div>
-  <% end %>
+          <!-- Draw player's grid -->
+          <table id="myGrid" class="table table-bordered battlefield">
+            <tr>
+              <th>&nbsp;</th>
+              <% 10.times do |col_head| %>
+                  <th><%= col_head+1 %></th>
+              <% end %>
+            </tr>
+            <% 10.times do |row| %>
+                <tr>
+                  <th><%= (row+65).chr %></th>
+                  <% 10.times do |column| %>
+                      <!-- Refer to each cell by using ID: battlefield-[player_number]-[row]-[column]
+                        player_number: 0..n-1    ; n = number of players
+                        row:    0..9
+                        column: 0..9
+                      -->
+                      <td id="<%="battlefield-"+each_game_player.player_number+"-"+(row.to_s+"-"+column.to_s)%>">
+                        &nbsp;&nbsp;&nbsp;
+                      </td>
+                  <%end%>
+                </tr>
+            <%end%>
+          </table>
+        </div>
+    <% end %>
+  </div>
+
 </div>
 
 <script>
@@ -165,11 +167,11 @@
     /* Shoot */
     function sendShootResultToServer(target_player_number,target_row,target_column,value) {
         var dataToSend = {
-                data:[
-            {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:2,row:target_row,column:target_column,ship_alignment:0, type_of_move:value}
-                ]};
+            data:[
+                {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,target_player_number:target_player_number,row:target_row,column:target_column,ship_alignment:0, type_of_move:value}
+            ]};
 
-            // Send new cell value to server via AJAX call
+        // Send new cell value to server via AJAX call
         $.ajax({
             url:"/game_moves", // call "game_moves" controller
             type:"POST", // method "create"
@@ -281,10 +283,17 @@
         requestGameMovesFromServer(<%= @current_game_player_number %>,target_player_number,<%=@game.id%>);
     })
 
-    // set interval of game moves
-    var battlefieldRefreshTimer = setInterval(refreshBattlefield, 5000);
+    /* ********** Timer **************
+        Set interval to refresh battlefield
+     */
+    var battlefieldRefreshTimer = setInterval(refreshBattlefield, 2000);
     function refreshBattlefield() {
         // no need to recall the function (it's an interval, it'll loop forever)
+        // First, get active tab
+        var linkHref = $("#playerTab li.active a").attr("href");
+        var splitted = linkHref.split("-");
+        var target_player_number = parseInt(splitted[1]);
+
         requestGameMovesFromServer(<%= @current_game_player_number %>,target_player_number,<%=@game.id%>);
     }
 

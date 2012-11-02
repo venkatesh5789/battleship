@@ -1,13 +1,20 @@
 <li xmlns="http://www.w3.org/1999/html">
-  You place <b>
-  <%="Aircraft Carrier" if game_move.type_of_move == 5%>
-  <%="Battleship" if game_move.type_of_move ==4%>
-  <%="Destroyer" if game_move.type_of_move ==3%>
-  <%="Submarine" if game_move.type_of_move ==2%>
-  <%="Patrol Boat" if game_move.type_of_move ==1%>
-  </b> with <b>
-  <%= "horizontal" if game_move.ship_alignment == 0%>
-  <%= "vertical" if game_move.ship_alignment == 1%></b>
-  alignment at
-  <b><%= (game_move.row+65).chr %><%= (game_move.column)+1 %></b>
+  <% if game_move.type_of_move >= 1 && game_move.type_of_move <= 5 %>
+      You place <b>
+      <%="Aircraft Carrier" if game_move.type_of_move == 5%>
+      <%="Battleship" if game_move.type_of_move ==4%>
+      <%="Destroyer" if game_move.type_of_move ==3%>
+      <%="Submarine" if game_move.type_of_move ==2%>
+      <%="Patrol Boat" if game_move.type_of_move ==1%>
+      </b> with <b>
+      <%= "horizontal" if game_move.ship_alignment == 0%>
+      <%= "vertical" if game_move.ship_alignment == 1%></b>
+      alignment at
+      <b><%= (game_move.row+65).chr %><%= (game_move.column)+1 %></b>
+  <% else %>
+      Someone shoot to someone.<b>
+      <%= "Hit" if game_move.type_of_move == 6 %>
+      <%= "Missed" if game_move.type_of_move == 7 %>
+      </b>
+  <% end %>
 </li>
