@@ -8,7 +8,7 @@ Battleship::Application.routes.draw do
 
   resources :game_moves
 
-  resources :game_players
+  #resources :game_players
 
   get "/static_pages/show_game" => "static_pages#show_game"
   get "/game_players/create_player" =>   "game_players#create"

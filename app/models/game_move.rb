@@ -1,3 +1,20 @@
+# Meaning of type_of_move
+#   0: Nothing
+#   1: Ship 1 - Patrol boat (size = 2)
+#   2: Ship 2 - Submarine (size = 3)
+#   3: Ship 3 - Destroyer (size = 3)
+#   4: Ship 4 - Battleship (size = 4)
+#   5: Ship 5 - Carrier (size = 5)
+#   6: Hit
+#   7: Missed
+
+# Meaning of ship_alignment
+#   0: Horizontal (increasing column)
+#   1: Vertical (increasing row)
+
+# Meaning of from_user_id & to_user_id
+#   These field store user's ID -- related to Users table
+
 class GameMove < ActiveRecord::Base
   attr_accessible :column, :from_user_id, :game_id, :row, :to_user_id,
                   :type_of_move, :ship_alignment

@@ -57,7 +57,7 @@ class GamePlayersController < ApplicationController
 
   def create
     @game = Game.find(params[:game_id])
-    @game.player_number < 2
+    #@game.player_number < 2
     @player = GamePlayer.new
     @player.user_id = current_user.id
     @player.game_id = params[:game_id]
