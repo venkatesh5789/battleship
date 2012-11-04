@@ -37,7 +37,7 @@
                         row:    0..9
                         column: 0..9
                       -->
-                      <td id="<%="battlefield-"+each_game_player.player_number+"-"+(row.to_s+"-"+column.to_s)%>">
+                      <td id="<%="battlefield-"+each_game_player.player_number.to_s+"-"+(row.to_s+"-"+column.to_s)%>">
                         &nbsp;&nbsp;&nbsp;
                       </td>
                   <%end%>
@@ -68,59 +68,15 @@
         }
     }
 
-    /* Prepare an object to be sent via AJAX request to update game_moves */
-    var allShips = {data:[
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:0,ship_alignment:0, type_of_move:1},
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:1,ship_alignment:0, type_of_move:2},
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:2,ship_alignment:0, type_of_move:3},
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:3,ship_alignment:0, type_of_move:4},
-        {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:4,ship_alignment:0, type_of_move:5}]
-    };
-
-    /* Event for "Place" button */
-    $("#placeButton").click(function() {
-        placeShip(this.form);
-    })
-
-    /* When the player click on "Ready to play" button, it first checks that all 5 ships are placed.
-     Then it sends AJAX requests of
-     - ship positions (game_moves)
-     - new player status (user_in_games)
-     */
-    $("#readyButton").click(function () {
-
-        for (i=0; i<5; i++) {
-            if (allShips.data[i].row == -1) {
-                alert("Please place all ships first!!!");
-                return;
-            }
-        }
-        // Send ship positions AJAX call
-        $.ajax({
-            url:"/game_moves", // call "game_moves" controller
-            type:"POST", // method "create"
-            data: allShips
-        });
-        // Send ready notification AJAX call
-        $.ajax({
-            url:"/game_players/<%= @current_game_player_number %>",
-            type:"PUT", // method "update"
-            data: {status: 1} // Status: 1 = Ready
-        });
-
-        $("#placeShipForm").hide("slow");
-    });
-
     /* Click to shoot */
     /* TODO: Now the player can shoot anytime, need to implement "Turn" */
     $('#myGrid td').click(function (e) {
-        /* TODO: Check if it's current user's turn
-         * If it's user's turn: Check whether it's a valid move (not yourself, not been shot before)
-         *                      Check whether it's a hit or a miss
-         *                      Then drawBattlefield()
-         */
-        //$(this).toggleClass("missed");
-        //alert(this.id);
+        // Check if he can play (Status: 1 = Ready)
+        switch (current_game_player_status) {
+            case <%=$GAME_PLAYER_STATUS_LEFT%>: alert("You cannot place any move.\n\nYou have left this game."); return;
+            case <%=$GAME_PLAYER_STATUS_LOST%>: alert("You cannot place any move.\n\nYou are lost."); return;
+            case <%=$GAME_PLAYER_STATUS_WON%>: alert("You cannot place any move.\n\nYou are won."); return;
+        }
 
         // Extract cell's target_player_number from <td id=battlefield-number-row-cell>
         var splitted = this.id.split("-");
@@ -136,9 +92,10 @@
                 case 0: // No ship here, this will be a miss
                     alert("Missed shot!");
                     $(this).addClass("missed");
-                    player_battlefield[target_player_number][target_row][target_column] = 7;
-                    // send to server
-                    sendShootResultToServer(target_player_number,target_row,target_column,7); // Missed shot
+                    // Paint that cell
+                    player_battlefield[target_player_number][target_row][target_column] = <%=$GAME_MOVE_TYPE_MISSED%>;
+                    // Send missed to server
+                    sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_MISSED%>); // Missed shot
                     break;
                 case 1: // 1 to 5 are ship
                 case 2:
@@ -146,14 +103,22 @@
                 case 4:
                 case 5:
                     alert("This is a hit!!!");
+                    // Paint that cell
                     $(this).addClass("hit");
-                    player_battlefield[target_player_number][target_row][target_column] = 6;
-                    // send to server
+                    // Send hit to server
+                    player_battlefield[target_player_number][target_row][target_column] = <%=$GAME_MOVE_TYPE_HIT%>;
+                    sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_HIT%>); // Hit shot
 
                     //check whether the ship has sunk
-                    //isShipSunk(target_value, target_player_number);
+                    if(isShipSunk(target_value, target_player_number)) {
 
-                    sendShootResultToServer(target_player_number,target_row,target_column,6); // Hit shot
+                        // Send ship is sunk notification AJAX call
+                        $.ajax({
+                            url:"/game_players/0",
+                            type:"PUT", // method "update"
+                            data: {game_id: <%=params[:id]%>, player_number: target_player_number, ship_sunk_number: target_value}
+                        });
+                    }
 
                     break;
                 case 6: // Hit already
@@ -163,6 +128,19 @@
             }
         }
     });
+
+    function isShipSunk(target_value, target_player_number) {
+        var battle = player_battlefield[target_player_number];
+
+        for(var i= 0; i<10; i++) {
+            for (var j = 0; j<10; j++) {
+                if (battle[i][j] == target_value) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     /* Shoot */
     function sendShootResultToServer(target_player_number,target_row,target_column,value) {
@@ -178,63 +156,6 @@
             // TODO: have to change "fixed to_user_id"
             data: dataToSend
         });
-    }
-
-    /* After the player selected ship alignment, type, row, col and click on "Place".
-     It check whether the ship is not off screen and collide with other ships.
-     Then it paints the grid with a new ship position.
-     */
-    function placeShip(form) {
-        var alignment = form.ship_alignment.value;
-        var type = form.type_of_move.value;
-        var row = form.ship_row.value;
-        var col = form.ship_column.value;
-
-        var sizeOfShip = 0;
-
-        if (type == 5) {
-            sizeOfShip = 5;
-        } else if (type == 4) {
-            sizeOfShip = 4;
-        } else if (type == 3 || type == 2) {
-            sizeOfShip = 3;
-        } else if (type == 1) {
-            sizeOfShip = 2;
-        }
-
-        var start_row = parseInt(row);
-        var start_col = parseInt(col);
-        var is_increase_row = (alignment == 1)?1:0;
-        var is_increase_col = (alignment == 0)?1:0;
-
-        if (isValidNewShipPosition(alignment, start_row,start_col,sizeOfShip,type))  {
-            // Delete ship from old position (if exists)
-            if (allShips.data[type-1].row > -1) {
-                for (var c=0; c<10; c++)
-                    for(var d = 0; d<10; d++)
-                    {
-                        // Clear from player_battlefield variable
-                        player_battlefield[<%= @current_game_player_number %>][start_row+i*is_increase_row][start_col+i*is_increase_col] = 0;
-                        // Clear from displaying grid
-                        $("#battlefield-"+<%= @current_game_player_number %>+"-"+c+"-"+d).removeClass("ship"+type+"Placed");
-                    }
-            }
-
-            // Replace data of ship in "allShips" object, which will be sent to server
-            allShips.data[type-1].row = start_row;
-            allShips.data[type-1].column = start_col;
-            allShips.data[type-1].ship_alignment = alignment;
-            allShips.data[type-1].type_of_move = type;
-            //allShips.data[type-1] = {row:start_row,column:start_col,ship_alignment:alignment,type_of_move:type};
-            //alert(allShips.data[type-1].ship_type+" row "+allShips.data[type-1].row+" column "+allShips.data[type-1].column);
-
-            for (var i=0; i<sizeOfShip; i++) {
-                // Update player_battlefield variable
-                player_battlefield[<%= @current_game_player_number %>][start_row+i*is_increase_row][start_col+i*is_increase_col] = type;
-                // Draw ship on battlefield
-                $("#battlefield-"+<%= @current_game_player_number %>+"-"+(start_row+i*is_increase_row)+"-"+(start_col+i*is_increase_col)).addClass("ship"+type+"Placed");
-            }
-        } // end if isValidNewShipPosition()
     }
 
     /* Helper function for placeShip(), to check validity of ship position */
@@ -284,7 +205,7 @@
     })
 
     /* ********** Timer **************
-        Set interval to refresh battlefield
+     Set interval to refresh battlefield
      */
     var battlefieldRefreshTimer = setInterval(refreshBattlefield, 2000);
     function refreshBattlefield() {

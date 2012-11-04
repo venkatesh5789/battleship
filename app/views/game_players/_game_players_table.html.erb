@@ -17,14 +17,11 @@
           <% end %>
         </td>
         <td>
-          <% # Before game start (game.status == 0) %>
-          <%= "Waiting" if each_game_player.status == 0%>
-          <%= content_tag(:strong,"Ready") if each_game_player.status == 1%>
-          <% # After game start (game.status == 1) %>
-          <%= "Playing" if each_game_player.status == 2%>
-          <%= "Left" if each_game_player.status == 3 %>
-          <%= "Lost" if each_game_player.status == 4%>
-          <%= "Won" if each_game_player.status == 5 %>
+          <%= $GAME_PLAYER_STATUS_WAITING_TEXT if each_game_player.status == $GAME_PLAYER_STATUS_WAITING %>
+          <%= content_tag(:strong,$GAME_PLAYER_STATUS_READY_TEXT) if each_game_player.status == $GAME_PLAYER_STATUS_READY %>
+          <%= $GAME_PLAYER_STATUS_LEFT_TEXT if each_game_player.status == $GAME_PLAYER_STATUS_LEFT %>
+          <%= $GAME_PLAYER_STATUS_LOST_TEXT if each_game_player.status == $GAME_PLAYER_STATUS_LOST %>
+          <%= $GAME_PLAYER_STATUS_WON_TEXT if each_game_player.status == $GAME_PLAYER_STATUS_WON %>
         </td>
       </tr>
 

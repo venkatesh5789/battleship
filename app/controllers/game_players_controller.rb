@@ -3,42 +3,72 @@ class GamePlayersController < ApplicationController
   # PUT /game_players/1
   # PUT /game_players/1.json
   def update
-    # Update player's status
-    @game_player = GamePlayer.find(params[:id])
-    @game_player.status = params[:status]
-    @game_player.save
 
-    # Server then check if everyone is ready or not
-    is_everyone_ready = true
-    @all_game_players_in_same_game = GamePlayer.where(:game_id => @game_player.game_id)
-    @all_game_players_in_same_game.each do |each_game_player|
-      puts "====="
-      puts each_game_player.player_number
-      puts "-----"
-      puts each_game_player.status
-      if each_game_player.status != 1
-        is_everyone_ready = false
-        #break
-      end
-    end
+    if params[:id].eql?("0")
+      # Update ship sunk
+      @game_player = GamePlayer.where(:game_id => params[:game_id], :player_number => params[:player_number]).first;
 
-    # if everyone is ready then update game.status = 1
-    if is_everyone_ready
-      puts "EVERYONE IS READY"
-      game = Game.find(@game_player.game_id)
-      game.status = 1
-      if game.save
-        puts "game status set"
-      else
-        puts "fuck"
+      case params[:ship_sunk_number].to_i
+        when 1
+          @game_player.is_ship1_sunk = true
+        when 2
+          @game_player.is_ship2_sunk = true
+        when 3
+          @game_player.is_ship3_sunk = true
+        when 4
+          @game_player.is_ship4_sunk = true
+        when 5
+          @game_player.is_ship5_sunk = true
       end
+
+      @game_player.save
+
+      respond_to do |format|
+        format.json { render json: @game_player }
+      end
+
     else
-      puts "not ready"
+
+      # Update player's status
+      @game_player = GamePlayer.find(params[:id])
+      @game_player.status = params[:status]
+      @game_player.save
+
+      # Server then check if everyone is ready or not
+      is_everyone_ready = true
+      @all_game_players_in_same_game = GamePlayer.where(:game_id => @game_player.game_id)
+      @all_game_players_in_same_game.each do |each_game_player|
+        puts "====="
+        puts each_game_player.player_number
+        puts "-----"
+        puts each_game_player.status
+        if each_game_player.status != 1
+          is_everyone_ready = false
+          #break
+        end
+      end
+
+      # if everyone is ready then update game.status = 1
+      if is_everyone_ready
+        puts "EVERYONE IS READY"
+        game = Game.find(@game_player.game_id)
+        game.status = 1
+        if game.save
+          puts "game status set"
+        else
+          puts "can't set game status"
+        end
+      else
+        puts "not ready"
+      end
+
+      respond_to do |format|
+        format.js { @game_player }
+      end
+
     end
 
-    respond_to do |format|
-      format.js { @game_player }
-    end
+
   end
 
   # GET /game_players

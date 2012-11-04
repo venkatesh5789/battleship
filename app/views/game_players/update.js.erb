@@ -1,1 +1,10 @@
-$("#player-table-game-player-number-<%=@game_player.player_number%> td:nth-child(2)").html("<b>Ready</b>");
+<%
+    case @game_player.status
+    when $GAME_PLAYER_STATUS_WAITING: display = "Waiting"
+    when 1: display = @game.status == 0 ? "Ready" : "Waiting"
+    when 2: display = "Left game"
+    when 3: display = "Lost"
+    when 4: display = "Won"
+    end
+%>
+$("#player-table-game-player-number-<%=@game_player.player_number%> td:nth-child(2)").html(<%=display%>);

@@ -2,8 +2,8 @@
 
   <div id="instruction">
     <h2>
-      <%= "Place your ships!" if @current_game_player_status == 0 %>
-      <%= "Now wait for the game to start" if @current_game_player_status == 1 %>
+      <%= "Place your ships!" if @current_game_player_status == $GAME_PLAYER_STATUS_WAITING %>
+      <%= "Now wait for the game to start" if @current_game_player_status == $GAME_PLAYER_STATUS_READY %>
     </h2>
   </div>
 
@@ -33,7 +33,7 @@
   </table>
 
   <!-- Place ships form: Draw only if the player is "Waiting" -->
-  <% if @current_game_player_status == 0 %>
+  <% if @current_game_player_status == $GAME_PLAYER_STATUS_WAITING %>
       <div id="placeShipForm">
         <%= form_tag("#", :class=>"form-inline") do %>
 
@@ -134,8 +134,9 @@
         $.ajax({
             url:"/game_players/<%= @current_game_player.id %>",
             type:"PUT", // method "update"
-            data: {status: 1} // Status: 1 = Ready
+            data: {status: <%=$GAME_PLAYER_STATUS_WAITING%>}
         });
+        current_game_player_status = <%=$GAME_PLAYER_STATUS_WAITING%>;
 
         $("#placeShipForm").hide("slow");
         $("#instruction").html("<h2>Now wait for the game to start</h2>");

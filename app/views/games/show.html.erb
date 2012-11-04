@@ -32,10 +32,10 @@
       </ul>
     </div>
 
-    <% if @game.status == 0 %>
+    <% if @game.status == $GAME_STATUS_WAITING %>
         <%# Render game_prep if the game is preparing %>
         <%= render 'games/game_prep' %>
-    <% elsif @game.status == 1 %>
+    <% elsif @game.status == $GAME_STATUS_STARTED %>
         <%# Render game_war if the game has started  %>
         <%= render 'games/game_war' %>
     <% else %>
@@ -80,7 +80,7 @@
         for (var i = 0; i < length; i++) {
             element = json_response[i];
 
-            <% if @game.status == 0 %>
+            <% if @game.status == $GAME_STATUS_WAITING %>
                 <%# Game preparation: Draw to current player only %>
                 <%= "player_battlefield[0][element.row][element.column] = element.type_of_move;" %>
             <% else %>
@@ -141,10 +141,19 @@
         requestGameMovesFromServer(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
     });
 
+    // Initialize current player's ship sunk status
+    var isShip1Sunk = <%=@current_game_player.is_ship1_sunk?%>;
+    var isShip2Sunk = <%=@current_game_player.is_ship2_sunk?%>;
+    var isShip3Sunk = <%=@current_game_player.is_ship3_sunk?%>;
+    var isShip4Sunk = <%=@current_game_player.is_ship4_sunk?%>;
+    var isShip5Sunk = <%=@current_game_player.is_ship5_sunk?%>;
 
+    // Initialize game player status for client use (javascript variable)
+    var current_game_player_status = <%=@current_game_player_status%>;
 
     // Send request for game players
     function requestGamePlayersFromServer(game_id) {
+        // GamePlayer - index
         $.ajax({
             url: "/game_players.json",
             data: {
@@ -153,8 +162,54 @@
             cache: false
         }).done(function( response ) {
                     // Send JSON response to this function to update battlefield, which will call drawBattlefield
+                    if (current_game_player_status != 3) {
+                        checkForShipSunk(response);
+                    }
                     updateGamePlayersTable(response);
                 });
+    }
+
+    // Check and alert for new ship sunk, for current player only
+    function checkForShipSunk(json_response) {
+        for (var i=0; i<json_response.length; i++) {
+            // Look for data of current player only
+            var game_player = json_response[i];
+            if (game_player.player_number != <%=@current_game_player_number%>) {
+                continue;
+            } else {
+                if (!isShip1Sunk && game_player.is_ship1_sunk) {
+                    alert("Your Patrol Boat has just been sunk!!!");
+                    isShip1Sunk = true;
+                }
+                if (!isShip2Sunk && game_player.is_ship2_sunk) {
+                    alert("Your Submarine has just been sunk!!!");
+                    isShip2Sunk = true;
+                }
+                if (!isShip3Sunk && game_player.is_ship3_sunk) {
+                    alert("Your Destroyer has just been sunk!!!");
+                    isShip3Sunk = true;
+                }
+                if (!isShip4Sunk && game_player.is_ship4_sunk) {
+                    alert("Your Battleship has just been sunk!!!");
+                    isShip4Sunk = true;
+                }
+                if (!isShip5Sunk && game_player.is_ship5_sunk) {
+                    alert("Your Carrier has just been sunk!!!");
+                    isShip5Sunk = true;
+                }
+                if (isShip1Sunk && isShip2Sunk && isShip3Sunk && isShip4Sunk && isShip5Sunk &&
+                        current_game_player_status != <%=$GAME_PLAYER_STATUS_LOST%>) {
+                    alert("YOU ARE LOST!");
+                    // Send lost notification AJAX call
+                    $.ajax({
+                        url:"/game_players/<%= @current_game_player.id %>",
+                        type:"PUT", // method "update"
+                        data: {status: <%=$GAME_PLAYER_STATUS_LOST%>}
+                    });
+                    current_game_player_status = <%=$GAME_PLAYER_STATUS_LOST%>;
+                }
+            }
+        }
     }
 
     // Check if everyone is ready -> refresh
@@ -163,7 +218,7 @@
         var isEveryoneReady = true;
         for (var i=0; i<json_response.length; i++) {
             var game_player = json_response[i];
-            if (game_player.status == 0) {
+            if (game_player.status == <%=$GAME_PLAYER_STATUS_WAITING%>) {
                 isEveryoneReady = false;
                 break;
             }
@@ -173,20 +228,18 @@
         for (var i=0; i<json_response.length; i++) {
             var game_player = json_response[i];
             switch (game_player.status) {
-                case 0: status_to_print = "Waiting"; break;
-                case 1: status_to_print = "<b>Ready</b>"; break;
-                case 2: status_to_print = "Playing"; break;
-                case 3: status_to_print = "Left"; break;
-                case 4: status_to_print = "Lost"; break;
-                case 5: status_to_print = "Won"; break;
+                case <%=$GAME_PLAYER_STATUS_WAITING%>: status_to_print = "<%=$GAME_PLAYER_STATUS_WAITING_TEXT%>"; break;
+                case <%=$GAME_PLAYER_STATUS_READY%>: status_to_print = "<b><%=$GAME_PLAYER_STATUS_READY_TEXT%></b>"; break;
+                case <%=$GAME_PLAYER_STATUS_LEFT%>: status_to_print = "<%=$GAME_PLAYER_STATUS_LEFT_TEXT%>"; break;
+                case <%=$GAME_PLAYER_STATUS_LOST%>: status_to_print = "<%=$GAME_PLAYER_STATUS_LOST_TEXT%>"; break;
+                case <%=$GAME_PLAYER_STATUS_WON%>: status_to_print = "<%=$GAME_PLAYER_STATUS_WON_TEXT%>"; break;
             }
             $("#player-table-game-player-number-"+game_player.player_number+" td:nth-child(2)").html(status_to_print);
         }
 
         // If everyone is ready and game is in game_prep --> refresh the page
         if (isEveryoneReady) {
-            <%= "var isInPreparation = true;" if @game.status == 0 %>
-            <%= "var isInPreparation = false;" if @game.status != 0 %>
+            var isInPreparation = <%= @game.status == $GAME_STATUS_WAITING ? "true" : "false" %>;
             if (isInPreparation) {
                 // Everyone is ready, refresh! (the refreshed page will have game.status == 1)
                 window.location.reload();
@@ -195,7 +248,7 @@
     }
 
     // set interval of game players
-    var gamePlayerListRefreshTimer = setInterval(refreshGamePlayerList, 5000);
+    var gamePlayerListRefreshTimer = setInterval(refreshGamePlayerList, 2000);
     function refreshGamePlayerList() {
         // no need to recall the function (it's an interval, it'll loop forever)
         requestGamePlayersFromServer(<%=params[:id]%>);

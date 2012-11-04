@@ -8,9 +8,20 @@
 #   6: Hit
 #   7: Missed
 
+$GAME_MOVE_TYPE_NOTHING = 0
+$GAME_MOVE_TYPE_SHIP1 = 1
+$GAME_MOVE_TYPE_SHIP2 = 2
+$GAME_MOVE_TYPE_SHIP3 = 3
+$GAME_MOVE_TYPE_SHIP4 = 4
+$GAME_MOVE_TYPE_SHIP5 = 5
+$GAME_MOVE_TYPE_HIT = 6
+$GAME_MOVE_TYPE_MISSED = 7
+
 # Meaning of ship_alignment
 #   0: Horizontal (increasing column)
 #   1: Vertical (increasing row)
+$GAME_MOVE_ALIGNMENT_HORIZONTAL = 0
+$GAME_MOVE_ALIGNMENT_VERTICAL = 0
 
 # Meaning of from_user_id & to_user_id
 #   These field store user's ID -- related to Users table

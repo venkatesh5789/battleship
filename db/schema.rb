@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121102163351) do
+ActiveRecord::Schema.define(:version => 20121103023224) do
 
   create_table "game_moves", :force => true do |t|
     t.integer  "game_id"
@@ -29,9 +29,15 @@ ActiveRecord::Schema.define(:version => 20121102163351) do
     t.integer  "user_id"
     t.integer  "game_id"
     t.integer  "status"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
-    t.string   "player_number"
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+    t.integer  "player_number", :limit => 255
+    t.boolean  "is_in_turn"
+    t.boolean  "is_ship1_sunk"
+    t.boolean  "is_ship2_sunk"
+    t.boolean  "is_ship3_sunk"
+    t.boolean  "is_ship4_sunk"
+    t.boolean  "is_ship5_sunk"
   end
 
   create_table "games", :force => true do |t|
