@@ -1,87 +1,78 @@
-<div class="span6">
+<!-- Draw player's grid -->
+<table id="myGrid" class="table table-bordered battlefield">
+  <tr>
+    <th>&nbsp;</th>
+    <% 10.times do |col_head| %>
+        <th><%= col_head+1 %></th>
+    <% end %>
+  </tr>
+  <% 10.times do |row| %>
+      <tr>
+        <th><%= (row+65).chr %></th>
+        <% 10.times do |column| %>
+            <!-- Refer to each cell by using ID: battlefield-[player_number]-[row]-[column]
+              player_number: 0..n-1    ; n = number of players
+              row:    0..9
+              column: 0..9
+            -->
+            <td id="<%="battlefield-0-"+(row.to_s+"-"+column.to_s)%>">
+              &nbsp;&nbsp;&nbsp;
+            </td>
+        <%end%>
+      </tr>
+  <%end%>
+</table>
 
-  <div id="instruction">
-    <h2>
-      <%= "Place your ships!" if @current_game_player_status == $GAME_PLAYER_STATUS_WAITING %>
-      <%= "Now wait for the game to start" if @current_game_player_status == $GAME_PLAYER_STATUS_READY %>
-    </h2>
-  </div>
+<!-- Place ships form: Draw only if the player is "Waiting" -->
+<% if @current_game_player_status == $GAME_PLAYER_STATUS_WAITING %>
+    <div id="placeShipForm">
+      <%= form_tag("#", :class=>"form-inline") do %>
 
-  <!-- Draw player's grid -->
-  <table id="myGrid" class="table table-bordered battlefield">
-    <tr>
-      <th>&nbsp;</th>
-      <% 10.times do |col_head| %>
-          <th><%= col_head+1 %></th>
+          <%= select_tag(:ship_alignment,options_for_select([['Hor',0],['Ver',1]]), :class=>"input-mini") %>
+
+          <%= select_tag(:type_of_move,options_for_select([
+                                                                  ['Carrier', 5],
+                                                                  ['Battleship', 4],
+                                                                  ['Destroyer', 3],
+                                                                  ['Submarine', 2],
+                                                                  ['Patrol Boat', 1]
+                                                          ]), :class=>"input-small") %>
+
+          <%= select_tag(:ship_row,options_for_select([
+                                                              ['A',0],
+                                                              ['B',1],
+                                                              ['C',2],
+                                                              ['D',3],
+                                                              ['E',4],
+                                                              ['F',5],
+                                                              ['G',6],
+                                                              ['H',7],
+                                                              ['I',8],
+                                                              ['J',9]
+                                                      ]), :class=>"input-mini") %>
+
+          <%= select_tag(:ship_column,options_for_select([
+                                                                 ['1',0],
+                                                                 ['2',1],
+                                                                 ['3',2],
+                                                                 ['4',3],
+                                                                 ['5',4],
+                                                                 ['6',5],
+                                                                 ['7',6],
+                                                                 ['8',7],
+                                                                 ['9',8],
+                                                                 ['10',9],
+                                                         ]), :class=>"input-mini") %>
+          <%= button_tag('Place', :id => 'placeButton', :type => 'button') %>
+          <%= button_tag(:id => 'readyButton', :type => 'button') { content_tag :strong, 'Ready to play' } %>
       <% end %>
-    </tr>
-    <% 10.times do |row| %>
-        <tr>
-          <th><%= (row+65).chr %></th>
-          <% 10.times do |column| %>
-              <!-- Refer to each cell by using ID: battlefield-[player_number]-[row]-[column]
-                player_number: 0..n-1    ; n = number of players
-                row:    0..9
-                column: 0..9
-              -->
-              <td id="<%="battlefield-0-"+(row.to_s+"-"+column.to_s)%>">
-                &nbsp;&nbsp;&nbsp;
-              </td>
-          <%end%>
-        </tr>
-    <%end%>
-  </table>
 
-  <!-- Place ships form: Draw only if the player is "Waiting" -->
-  <% if @current_game_player_status == $GAME_PLAYER_STATUS_WAITING %>
-      <div id="placeShipForm">
-        <%= form_tag("#", :class=>"form-inline") do %>
+    </div>
+<% end %>
 
-            <%= select_tag(:ship_alignment,options_for_select([['Hor',0],['Ver',1]]), :class=>"input-mini") %>
-
-            <%= select_tag(:type_of_move,options_for_select([
-                                                                    ['Carrier', 5],
-                                                                    ['Battleship', 4],
-                                                                    ['Destroyer', 3],
-                                                                    ['Submarine', 2],
-                                                                    ['Patrol Boat', 1]
-                                                            ]), :class=>"input-small") %>
-
-            <%= select_tag(:ship_row,options_for_select([
-                                                                ['A',0],
-                                                                ['B',1],
-                                                                ['C',2],
-                                                                ['D',3],
-                                                                ['E',4],
-                                                                ['F',5],
-                                                                ['G',6],
-                                                                ['H',7],
-                                                                ['I',8],
-                                                                ['J',9]
-                                                        ]), :class=>"input-mini") %>
-
-            <%= select_tag(:ship_column,options_for_select([
-                                                                   ['1',0],
-                                                                   ['2',1],
-                                                                   ['3',2],
-                                                                   ['4',3],
-                                                                   ['5',4],
-                                                                   ['6',5],
-                                                                   ['7',6],
-                                                                   ['8',7],
-                                                                   ['9',8],
-                                                                   ['10',9],
-                                                           ]), :class=>"input-mini") %>
-            <%= button_tag('Place', :id => 'placeButton', :type => 'button') %>
-            <%= button_tag(:id => 'readyButton', :type => 'button') { content_tag :strong, 'Ready to play' } %>
-        <% end %>
-
-      </div>
-  <% end %>
-
-</div>
 
 <script>
+    // *** Important variables to be used in client will be initialized here ***
 
     // Variable to store initial ship placements (length = 1 so that it compatibles to game_war)
     var player_battlefield = new Array(1); // Initialize a 3D array [number of players] = 0..n-1
@@ -134,21 +125,16 @@
         $.ajax({
             url:"/game_players/<%= @current_game_player.id %>",
             type:"PUT", // method "update"
-            data: {status: <%=$GAME_PLAYER_STATUS_WAITING%>}
+            data: {status: <%=$GAME_PLAYER_STATUS_READY%>}
         });
-        current_game_player_status = <%=$GAME_PLAYER_STATUS_WAITING%>;
+        current_game_player_status = <%=$GAME_PLAYER_STATUS_READY%>;
 
         $("#placeShipForm").hide("slow");
-        $("#instruction").html("<h2>Now wait for the game to start</h2>");
+        //$("#instruction").html("<h2>Now wait for the game to start</h2>");
     });
 
     /* TODO: click to place ship */
     $('#myGrid td').click(function (e) {
-        /* TODO: Check if it's current user's turn
-         * If it's user's turn: Check whether it's a valid move (not yourself, not been shot before)
-         *                      Check whether it's a hit or a miss
-         *                      Then drawBattlefield()
-         */
         //$(this).toggleClass("missed");
     });
 
@@ -244,6 +230,27 @@
         }
 
         return true;
+    }
+
+    // Update game notification status (game_prep)
+    function updateGameNotification(json_response) {
+        for (var i=0; i<json_response.length; i++) {
+            // Look for data of current player only
+            var game_player = json_response[i];
+            if (game_player.player_number != <%=@current_game_player_number%>) {
+                continue;
+            } else {
+                // For blink effect
+                var oldNotification = $("#notification").html();
+                switch (game_player.status) {
+                    case (<%=$GAME_PLAYER_STATUS_WAITING%>): $("#notification").html("<h2>Place your ships!</h2>"); break;
+                    case (<%=$GAME_PLAYER_STATUS_READY%>): $("#notification").html("<h2>Waiting for other player to be ready.</h2>"); break;
+                }
+                if (oldNotification != $("#notification").html) {
+                    //$("#notification").backgroundColor("red");// effect("highlight", {}, 2000);
+                }
+            }
+        }
     }
 
 

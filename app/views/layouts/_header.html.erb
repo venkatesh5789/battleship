@@ -4,8 +4,8 @@
       <%= link_to "Battleship", root_path, id: "logo" %>
       <nav>
         <ul class="nav pull-right">
-         <li><%= link_to "Battles",    games_path %></li>
-          <%if user_signed_in?%>
+         <li><%= link_to "List Battles", "/static_pages/show_game" %></li>
+          <%if user_signed_in? %>
               Signed in as <b><%= current_user.username %></b>
               <%= link_to "Sign Out", destroy_user_session_path, :type=>"button", :class=>"btn"%>
           <%else%>

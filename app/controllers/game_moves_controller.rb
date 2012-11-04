@@ -3,25 +3,10 @@ class GameMovesController < ApplicationController
   respond_to :xml, :html, :json
 
   def create
-    #@input_game_move = GameMove.new(params[:carrier])
 
-
-
-    #parsed_json = JSON.parse(params[:data])
-
-    #params[:data][1.to_s]["row"]
     @game_move_notifications = []
 
-    # type_of_move
-    # 0: Nothing
-    # 1: Patrol boat
-    # 2: Submarine
-    # 3: Destroyer
-    # 4: Battleship
-    # 5: Carrier
-    # 6: Hit
-    # 7: Missed
-
+    # Loop through each game_move (there are more than 1 game_move if they're ship placements)
     params[:data].count.times do |i|
       game_id = params[:data][i.to_s]["game_id"].to_i
       from_user_id = params[:data][i.to_s]["from_user_id"].to_i
@@ -71,7 +56,49 @@ class GameMovesController < ApplicationController
           puts "failed to create game_moves record"
         end
       end
+
+      # -------- If this is shoot move, server do a turn management -------
+      @game = Game.find(game_id)
+      if @game.status == $GAME_STATUS_STARTED
+        @all_game_players_in_same_game = GamePlayer.where(:game_id=>game_id)
+
+        # Find who has a current turn
+        turn_owner_index = 0
+        @all_game_players_in_same_game.each do |each_game_player|
+          if (each_game_player.is_in_turn?)
+            each_game_player.is_in_turn = 0
+            puts "***"
+            if each_game_player.save
+              puts "ok"
+            else
+              puts "failed"
+            end
+            break
+          end
+          turn_owner_index = turn_owner_index+1
+        end
+        # Find next player_number
+        next_turn_owner_index = turn_owner_index
+        @all_game_players_in_same_game.length.times do |i|
+          next_turn_owner_index = (next_turn_owner_index+1) % @all_game_players_in_same_game.length
+          # Check if he deserves turn
+          if @all_game_players_in_same_game[next_turn_owner_index].status == $GAME_PLAYER_STATUS_READY
+            #next_turn_player_number = @all_game_players_in_same_game[next_turn_owner_index].player_number
+            #next_turn_game_player = GamePlayer.where(:game_id=>game_id,:player_number=>next_turn_player_number).first
+            next_turn_game_player = @all_game_players_in_same_game[next_turn_owner_index]
+            puts "---"
+            next_turn_game_player.is_in_turn = true
+            if next_turn_game_player.save
+              puts "okkkk"
+            else
+              puts "failleedd"
+            end
+            break
+          end
+        end
+      end
     end
+
 
     respond_to do |format|
       format.js { @game_move_notifications }

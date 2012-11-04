@@ -16,6 +16,8 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     @game_move = GameMove.new
 
+    @user_joined_games = GamePlayer.where(:user_id=>current_user.id)
+
     @game_players = GamePlayer.find_all_by_game_id(params[:id])
     @current_game_player = GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).first
     if @current_game_player

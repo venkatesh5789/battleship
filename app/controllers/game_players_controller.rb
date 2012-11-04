@@ -5,7 +5,7 @@ class GamePlayersController < ApplicationController
   def update
 
     if params[:id].eql?("0")
-      # Update ship sunk
+      # ------------- Update ship sunk -------------
       @game_player = GamePlayer.where(:game_id => params[:game_id], :player_number => params[:player_number]).first;
 
       case params[:ship_sunk_number].to_i
@@ -28,38 +28,48 @@ class GamePlayersController < ApplicationController
       end
 
     else
-
-      # Update player's status
+      # -------------- Update player's status ---------------
       @game_player = GamePlayer.find(params[:id])
       @game_player.status = params[:status]
       @game_player.save
 
-      # Server then check if everyone is ready or not
+      # *************** Check whether everyone is ready *************
       is_everyone_ready = true
       @all_game_players_in_same_game = GamePlayer.where(:game_id => @game_player.game_id)
       @all_game_players_in_same_game.each do |each_game_player|
-        puts "====="
-        puts each_game_player.player_number
-        puts "-----"
-        puts each_game_player.status
-        if each_game_player.status != 1
+        #puts "====="
+        #puts each_game_player.player_number
+        #puts "-----"
+        #puts each_game_player.status
+        if each_game_player.status != $GAME_PLAYER_STATUS_READY
           is_everyone_ready = false
-          #break
         end
       end
 
-      # if everyone is ready then update game.status = 1
+      # ************* Change game status to START when everyone is ready *************
       if is_everyone_ready
         puts "EVERYONE IS READY"
+
+        # *** Change game status ***
         game = Game.find(@game_player.game_id)
         game.status = 1
-        if game.save
-          puts "game status set"
-        else
-          puts "can't set game status"
+        game.save
+
+        # **** And give first player a turn ****
+        giveATurn = true
+        @all_game_players_in_same_game.each do |each_game_player|
+          # Give a turn only to first player
+          if giveATurn
+            each_game_player.is_in_turn = true
+            giveATurn = false
+          else
+            each_game_player.is_in_turn = false
+          end
+          each_game_player.save
         end
+
       else
-        puts "not ready"
+        puts "Not everyone is ready"
       end
 
       respond_to do |format|
@@ -87,22 +97,21 @@ class GamePlayersController < ApplicationController
 
   def create
     @game = Game.find(params[:game_id])
-    #@game.player_number < 2
+
     @player = GamePlayer.new
     @player.user_id = current_user.id
     @player.game_id = params[:game_id]
-    @player.status = 0
+    @player.status = $GAME_PLAYER_STATUS_READY
     @player.player_number = GamePlayer.where(:game_id => params[:game_id]).count + 1
+    @player.is_ship1_sunk=false
+    @player.is_ship2_sunk=false
+    @player.is_ship3_sunk=false
+    @player.is_ship4_sunk=false
+    @player.is_ship5_sunk=false
+    @player.is_in_turn=false
     @player.save
 
-    redirect_to @game
-
-
-
-
-    #@new_game_player   = GamePlayer.new(params[:user_id])
-    #@new_game_player.save
-
+    redirect_to
 
   end
 

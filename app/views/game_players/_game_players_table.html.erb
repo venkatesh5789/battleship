@@ -1,11 +1,5 @@
 <h2>Players</h2>
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>Status</th>
-  </tr>
-  </thead>
+<table class="table">
   <tbody>
     <% @game_players.each do |each_game_player| %>
       <tr id="player-table-game-player-number-<%=each_game_player.player_number%>">
