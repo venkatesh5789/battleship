@@ -13,17 +13,39 @@ class GamesController < ApplicationController
   # GET /games/1
   # GET /games/1.json
   def show
-    @game = Game.find(params[:id])
-    @game_move = GameMove.new
 
-    @user_joined_games = GamePlayer.where(:user_id=>current_user.id)
+    # Check whether user has already joined this game
+    if(GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).count == 0)
+      # Not joined, create new game_player record to join the game
+      new_player = GamePlayer.new
+      new_player.user_id = current_user.id
+      new_player.game_id = params[:id]
+      new_player.status = $GAME_PLAYER_STATUS_WAITING
+      new_player.player_number = GamePlayer.where(:game_id => params[:id]).count   # get a new player number
+      new_player.is_ship1_sunk=false
+      new_player.is_ship2_sunk=false
+      new_player.is_ship3_sunk=false
+      new_player.is_ship4_sunk=false
+      new_player.is_ship5_sunk=false
+      new_player.is_in_turn=false
+      new_player.save
+    end
 
-    @game_players = GamePlayer.find_all_by_game_id(params[:id])
+    # Get game_player record for this player
     @current_game_player = GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).first
     if @current_game_player
       @current_game_player_number = @current_game_player.player_number
       @current_game_player_status = @current_game_player.status
     end
+
+    # Successfully joined or just continue the game
+    @game = Game.find(params[:id])
+    # For a new move
+    @game_move = GameMove.new
+    # List of games that this user has joined
+    @user_joined_games = GamePlayer.where(:user_id=>current_user.id)
+    # For players table
+    @game_players = GamePlayer.find_all_by_game_id(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb
@@ -50,12 +72,18 @@ class GamesController < ApplicationController
   # POST /games
   # POST /games.json
   def create
-    @game = Game.new(params[:game])
 
+    # Create a new record of "games" to create a new game
+    @game = Game.new(params[:game])
+    @game.status = $GAME_STATUS_WAITING
 
     respond_to do |format|
       if @game.save
-        new_player = GamePlayer.new(:user_id => current_user.id, :game_id => @game.id, :player_number=> 1, :status => 0 )
+        # Create a new "game_player" for this game creator to join the game
+        new_player = GamePlayer.new(:user_id => current_user.id,
+                                    :game_id => @game.id,
+                                    :player_number=> 0,  # first player number starts with zero
+                                    :status => $GAME_PLAYER_STATUS_WAITING )
         new_player.save
         format.html { redirect_to @game, notice: 'Game was successfully created.' }
         format.json { render json: @game, status: :created, location: @game }

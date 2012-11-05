@@ -95,24 +95,10 @@ class GamePlayersController < ApplicationController
     end
   end
 
-  def create
+  def show
     @game = Game.find(params[:game_id])
 
-    @player = GamePlayer.new
-    @player.user_id = current_user.id
-    @player.game_id = params[:game_id]
-    @player.status = $GAME_PLAYER_STATUS_READY
-    @player.player_number = GamePlayer.where(:game_id => params[:game_id]).count + 1
-    @player.is_ship1_sunk=false
-    @player.is_ship2_sunk=false
-    @player.is_ship3_sunk=false
-    @player.is_ship4_sunk=false
-    @player.is_ship5_sunk=false
-    @player.is_in_turn=false
-    @player.save
-
-    redirect_to
-
+    redirect_to @game
   end
 
 

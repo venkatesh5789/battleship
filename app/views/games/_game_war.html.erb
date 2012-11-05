@@ -93,7 +93,7 @@
 
             switch (target_value) {
                 case 0: // No ship here, this will be a miss
-                    alert("Missed shot!");
+                    //alert("Missed shot!");
                     $(this).addClass("missed");
                     // Paint that cell
                     player_battlefield[target_player_number][target_row][target_column] = <%=$GAME_MOVE_TYPE_MISSED%>;
@@ -105,9 +105,10 @@
                 case 3:
                 case 4:
                 case 5:
-                    alert("This is a hit!!!");
+                    //alert("This is a hit!!!");
                     // Paint that cell
                     $(this).addClass("hit");
+
                     // Send hit to server
                     player_battlefield[target_player_number][target_row][target_column] = <%=$GAME_MOVE_TYPE_HIT%>;
                     sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_HIT%>); // Hit shot

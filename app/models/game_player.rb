@@ -22,7 +22,7 @@ class GamePlayer < ActiveRecord::Base
   attr_accessible :game_id, :status, :user_id, :player_number, :is_in_turn,
       :is_ship1_sunk, :is_ship2_sunk, :is_ship3_sunk, :is_ship4_sunk, :is_ship5_sunk
 
-      belongs_to :user, class_name: "User"
+  belongs_to :user, class_name: "User"
   belongs_to :game, class_name: "Game"
 
   validates_numericality_of :status, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 4

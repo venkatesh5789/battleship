@@ -8,7 +8,7 @@ $GAME_STATUS_STARTED = 1
 $GAME_STATUS_FINISHED = 2
 
 class Game < ActiveRecord::Base
-  attr_accessible :name, :status
+  attr_accessible :name,:status
   has_many :users, through: :game_players, source: :user
 
   validates :name   ,presence:true
