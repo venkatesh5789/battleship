@@ -1,4 +1,8 @@
+<p>
 <table class="table table-striped">
+  <% @game_list = Game.all %>
+  <% if !@game_list.nil? %>
+      <% if user_signed_in? %>
   <%@game_list.each  do |game| %>
       <tr>
         <th><%=game.name  %>  </th>
@@ -7,7 +11,7 @@
             <% if GamePlayer.where(:game_id => game.id, :user_id => current_user.id).count == 1 %>
                 <th>  <%= link_to "Continue Game", game, class:"btn" %> </th>
             <% else %>
-                <th> <%= link_to "Join Game", game_players_create_player_path(:game_id => game.id), class:"btn"%>
+                <th> <%= link_to "Join Game", game, class:"btn"%>
       <% end %>
           </th>
           <%else if(game.status == 1) %>
@@ -20,5 +24,23 @@
       <% end %>
       </tr>
         <% end %>
+          <% else %>
+          <%@game_list.each  do |game| %>
+              <tr>
+                <th><%=game.name  %>  </th>
+
+                <% if(game.status == 0) %>
+
+                        <th>  Ready </th>
+
+                <%else if(game.status == 1) %>
+                        <th>  Going on </th>
+                    <% end %>
+                <% end %>
+              </tr>
+          <% end %>
+      <% end %>
+      <% end %>
 
 </table>
+</p>

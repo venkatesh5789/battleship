@@ -7,56 +7,14 @@
   <div class="row-fluid">
     <div class="span2"></div>
 
+
     <div class="span5">
      <h2>game status</h2>
       <%if user_signed_in?%>
-
-
-          <a href="#myModal" role="button" class="btn" data-toggle="modal">New Game</a>
-
-          <!-- Modal -->
-          <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              <h3 id="myModalLabel">Modal header</h3>
-            </div>
-            <div class="modal-body">
-              <p>
-                <% @game = Game.new%>
-                <%= form_for(@game) do |f| %>
-                    <% if @game.errors.any? %>
-                      <div id="error_explanation">
-                        <h2><%= pluralize(@game.errors.count, "error") %> prohibited this game from being saved:</h2>
-
-                        <ul>
-                          <% @game.errors.full_messages.each do |msg| %>
-                              <li><%= msg %></li>
-                          <% end %>
-                        </ul>
-                      </div>
-                  <% end %>
-
-                  <div class="field">
-                    <%= f.label :name %><br />
-                    <%= f.text_field :name %>
-                  </div>
-                  <div class="field">
-                    <%= f.label :status %><br />
-                    <%= f.number_field :status %>
-                  </div>
-                  <div class="actions">
-                    <%= f.submit %>
-                  </div>
-              <% end %>
-              </p>
-            </div>
-            <div class="modal-footer">
-              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-              <button class="btn btn-primary">Save changes</button>
-            </div>
-          </div>
+        <p><a href="#myModal" role="button" class="btn" data-toggle="modal">New Game</a> </p>
       <%end%>
-      <%= link_to "Show Games", '/static_pages/show_game', class: "btn"%>
+      <%= render "static_pages/games_table" %>
+      <%#= link_to "Show Games", '/static_pages/show_game', class: "btn"%>
     </div>
     <div class="span1"></div>
     <div class="span2">
@@ -77,9 +35,47 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Create Game</h3>
+  </div>
+  <div class="modal-body">
+    <p>
 
+      <% @game = Game.new%>
 
+      <%= form_for(@game) do |f| %>
+          <% if @game.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(@game.errors.count, "error") %> prohibited this game from being saved:</h2>
 
+              <ul>
+                <% @game.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+        <% end %>
 
+        <div class="field">
+          <%= f.label :name %><br />
+          <%= f.text_field :name %>
+        </div>
+        <div class="actions">
+          <%= f.submit %>
+        </div>
+    <% end %>
 
+    </p>
+  </div>
+
+  <!--
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Create Game </button>
+  </div>
+  -->
+</div>
 </html>

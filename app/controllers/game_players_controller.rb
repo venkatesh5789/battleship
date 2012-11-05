@@ -55,17 +55,30 @@ class GamePlayersController < ApplicationController
     end
   end
 
-  def create
+  def show
     @game = Game.find(params[:game_id])
-    #@game.player_number < 2
-    @player = GamePlayer.new
-    @player.user_id = current_user.id
-    @player.game_id = params[:game_id]
-    @player.status = 0
-    @player.player_number = GamePlayer.where(:game_id => params[:game_id]).count + 1
-    @player.save
+    if(GamePlayer.where(:game_id => game.id, :user_id => current_user.id).count == 0)
+      @player = GamePlayer.new
+      @player.user_id = current_user.id
+      @player.game_id = params[:game_id]
+      @player.status = 0
+      @player.player_number = GamePlayer.where(:game_id => params[:game_id]).count + 1
+      @player.save
+    end
 
     redirect_to @game
+  end
+
+  #def create
+   # @game = Game.find(params[:game_id])
+   # @player = GamePlayer.new
+   # @player.user_id = current_user.id
+   # @player.game_id = params[:game_id]
+  #  @player.status = 0
+  #  @player.player_number = GamePlayer.where(:game_id => params[:game_id]).count + 1
+  #  @player.save
+
+   # redirect_to @game
 
 
 
@@ -74,7 +87,7 @@ class GamePlayersController < ApplicationController
     #@new_game_player.save
 
 
-  end
+ # end
 
 
 end

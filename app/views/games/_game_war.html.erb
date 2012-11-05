@@ -147,12 +147,8 @@
                     $(this).addClass("hit");
                     player_battlefield[target_player_number][target_row][target_column] = 6;
                     // send to server
-
-                    //check whether the ship has sunk
-                    //isShipSunk(target_value, target_player_number);
-
                     sendShootResultToServer(target_player_number,target_row,target_column,6); // Hit shot
-
+                     //check whether the ship has sunk
                     break;
                 case 6: // Hit already
                 case 7: // Missed already
@@ -161,6 +157,7 @@
             }
         }
     });
+
 
     /* Shoot */
     function sendShootResultToServer(target_player_number,target_row,target_column,value) {

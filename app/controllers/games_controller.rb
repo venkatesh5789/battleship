@@ -49,7 +49,7 @@ class GamesController < ApplicationController
   # POST /games.json
   def create
     @game = Game.new(params[:game])
-
+    @game.status = 0;
 
     respond_to do |format|
       if @game.save
