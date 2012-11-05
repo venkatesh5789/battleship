@@ -215,7 +215,7 @@
                 }
                 if (isShip1Sunk && isShip2Sunk && isShip3Sunk && isShip4Sunk && isShip5Sunk &&
                         current_game_player_status != <%=$GAME_PLAYER_STATUS_LOST%>) {
-                    alert("YOU ARE LOST!");
+                    alert("YOU HAVE LOST!");
                     // Send lost notification AJAX call
                     $.ajax({
                         url:"/game_players/<%= @current_game_player.id %>",

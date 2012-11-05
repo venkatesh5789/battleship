@@ -77,8 +77,8 @@
                 }
                 break;
             case <%=$GAME_PLAYER_STATUS_LEFT%>: alert("You cannot place any move.\n\nYou have left this game."); return;
-            case <%=$GAME_PLAYER_STATUS_LOST%>: alert("You cannot place any move.\n\nYou are lost."); return;
-            case <%=$GAME_PLAYER_STATUS_WON%>: alert("You cannot place any move.\n\nYou are won."); return;
+            case <%=$GAME_PLAYER_STATUS_LOST%>: alert("You cannot place any move.\n\nYou have lost."); return;
+            case <%=$GAME_PLAYER_STATUS_WON%>: alert("You cannot place any move.\n\nYou have won."); return;
         }
 
         // Extract cell's target_player_number from <td id=battlefield-number-row-cell>
