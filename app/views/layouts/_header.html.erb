@@ -1,0 +1,17 @@
+<header class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <%= link_to "Battleship", root_path, id: "logo" %>
+      <nav>
+        <ul class="nav pull-right">
+          <%if user_signed_in? %>
+              Signed in as <b><%= current_user.username %></b>
+              <%= link_to "Sign Out", destroy_user_session_path, :type=>"button", :class=>"btn"%>
+          <%else%>
+              <%= link_to "Sign In", new_user_session_path, :type=>"button", :class=>"btn"%>
+           <%end%>
+              </ul>
+      </nav>
+    </div>
+  </div>
+</header>

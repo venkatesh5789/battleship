@@ -11,6 +11,59 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 0) do
+ActiveRecord::Schema.define(:version => 20121103023224) do
+
+  create_table "game_moves", :force => true do |t|
+    t.integer  "game_id"
+    t.integer  "from_user_id"
+    t.integer  "to_user_id"
+    t.integer  "row"
+    t.integer  "column"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+    t.integer  "type_of_move"
+    t.integer  "ship_alignment"
+  end
+
+  create_table "game_players", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "game_id"
+    t.integer  "status"
+    t.datetime "created_at",                   :null => false
+    t.datetime "updated_at",                   :null => false
+    t.integer  "player_number", :limit => 255
+    t.boolean  "is_in_turn"
+    t.boolean  "is_ship1_sunk"
+    t.boolean  "is_ship2_sunk"
+    t.boolean  "is_ship3_sunk"
+    t.boolean  "is_ship4_sunk"
+    t.boolean  "is_ship5_sunk"
+  end
+
+  create_table "games", :force => true do |t|
+    t.string   "name"
+    t.integer  "status"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "users", :force => true do |t|
+    t.string   "email",                  :default => "", :null => false
+    t.string   "encrypted_password",     :default => "", :null => false
+    t.string   "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.integer  "sign_in_count",          :default => 0
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string   "current_sign_in_ip"
+    t.string   "last_sign_in_ip"
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+    t.string   "username"
+  end
+
+  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
+  add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
 end

@@ -1,0 +1,15 @@
+<%
+    case @game_player.status
+    when $GAME_PLAYER_STATUS_WAITING
+        display = $GAME_PLAYER_STATUS_WAITING_TEXT
+    when $GAME_PLAYER_STATUS_READY
+        display = $GAME_PLAYER_STATUS_READY_TEXT
+    when $GAME_PLAYER_STATUS_LEFT
+        display = $GAME_PLAYER_STATUS_LEFT_TEXT
+    when $GAME_PLAYER_STATUS_LOST
+        display = $GAME_PLAYER_STATUS_LOST_TEXT
+    when $GAME_PLAYER_STATUS_WON
+        display = $GAME_PLAYER_STATUS_WON_TEXT
+    end
+%>
+$("#player-table-game-player-number-<%=@game_player.player_number%> td:nth-child(2)").html("<%=display%>");

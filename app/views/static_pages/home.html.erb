@@ -1,0 +1,63 @@
+<% provide(:title,'home') %>
+
+<html xmlns="http://www.w3.org/1999/html">
+<h1>Welcome to Battleship</h1>
+
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span2"></div>
+    <div class="span8">
+     <h2>Please select a game to play or create game.</h2>
+      <%if user_signed_in?%>
+        <p><a href="#myModal" role="button" class="btn" data-toggle="modal">Create Game</a> </p>
+      <%end%>
+      <%= render "static_pages/games_table" %>
+    </div>
+    <div class="span2"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Create Game</h3>
+  </div>
+  <div class="modal-body">
+    <p>
+
+      <% @game = Game.new%>
+
+      <%= form_for(@game) do |f| %>
+          <% if @game.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(@game.errors.count, "error") %> prohibited this game from being saved:</h2>
+
+              <ul>
+                <% @game.errors.full_messages.each do |msg| %>
+                    <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+        <% end %>
+
+        <div class="field">
+          <%= f.label :name %><br />
+          <%= f.text_field :name %>
+        </div>
+        <div class="actions">
+          <%= f.submit %>
+        </div>
+    <% end %>
+
+    </p>
+  </div>
+
+  <!--
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Create Game </button>
+  </div>
+  -->
+</div>
+</html>

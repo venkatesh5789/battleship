@@ -1,19 +1,27 @@
+
 source 'https://rubygems.org'
 
 gem 'rails', '3.2.7'
+gem 'bootstrap-sass', '2.0.4' # for Bootstrap and Sass CSS support
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 group :development, :test do
    gem 'sqlite3'
+   gem 'rspec-rails','2.11.0'
 end
 
+group :test do
+  gem 'capybara','1.1.2'
+  gem 'factory_girl_rails','4.1.0'
+end
 group :production do
-  gem 'pg'
+  gem 'pg','0.12.2'     # --without production ??
 end
 
-
+# OH!!! add this!!
+gem 'activesupport'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -44,10 +52,11 @@ gem 'jquery-rails'
 # To use debugger
 # gem 'debugger'
 
-#suggested gems by Todd
-gem 'factory_girl_rails' 
-gem 'rspec-rails' 
+#suggested gems by Todd'
 gem 'devise' 
-gem 'ruby-debug19' 
-gem 'ruby-debug-base19x' 
-gem 'ruby-debug-ide' #'0.4.6' 
+#gem 'ruby-debug19'
+#gem 'ruby-debug-base19x'
+#gem 'ruby-debug-ide' #'0.4.6'
+
+#encrypt the password
+gem 'bcrypt-ruby', '3.0.1'

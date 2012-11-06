@@ -1,0 +1,24 @@
+<h2>Players</h2>
+<table class="table">
+  <tbody>
+    <% @game_players.each do |each_game_player| %>
+      <tr id="player-table-game-player-number-<%=each_game_player.player_number%>">
+        <td>
+          <% if each_game_player.user.username.eql?(current_user.username) %>
+              <%=content_tag(:strong,each_game_player.user.username)  %>
+          <% else %>
+              <%=each_game_player.user.username%>
+          <% end %>
+        </td>
+        <td>
+          <%= $GAME_PLAYER_STATUS_WAITING_TEXT if each_game_player.status == $GAME_PLAYER_STATUS_WAITING %>
+          <%= content_tag(:strong,$GAME_PLAYER_STATUS_READY_TEXT) if each_game_player.status == $GAME_PLAYER_STATUS_READY %>
+          <%= $GAME_PLAYER_STATUS_LEFT_TEXT if each_game_player.status == $GAME_PLAYER_STATUS_LEFT %>
+          <%= $GAME_PLAYER_STATUS_LOST_TEXT if each_game_player.status == $GAME_PLAYER_STATUS_LOST %>
+          <%= $GAME_PLAYER_STATUS_WON_TEXT if each_game_player.status == $GAME_PLAYER_STATUS_WON %>
+        </td>
+      </tr>
+
+  <% end %>
+  </tbody>
+</table>

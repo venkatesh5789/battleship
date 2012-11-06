@@ -1,4 +1,20 @@
 Battleship::Application.routes.draw do
+
+  root to: 'static_pages#home'
+
+  devise_for :users, :path => "users", :path_names => { :sign_in => 'login', :sign_out => 'logout', :password => 'secret', :confirmation => 'verification', :unlock => 'unblock', :registration => 'register', :sign_up => 'cmon_let_me_in' }
+
+  resources :games
+
+  resources :game_moves
+
+  resources :game_players
+
+  #get "/static_pages/show_game" => "static_pages#show_game"
+
+
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

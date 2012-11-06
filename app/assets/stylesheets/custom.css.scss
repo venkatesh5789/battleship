@@ -1,0 +1,149 @@
+@import "bootstrap";
+
+/* universal */
+
+.center {
+  text-align: center;
+  h1 {
+    margin-bottom: 10px;
+  }
+}
+
+html {
+  overflow-y: scroll;
+}
+
+body {
+  padding-top: 60px;
+}
+
+section {
+  overflow: auto;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* typography */
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1;
+}
+
+h1 {
+  font-size: 3em;
+  letter-spacing: -2px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.7em;
+  letter-spacing: -1px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: normal;
+  color: #999;
+}
+
+p {
+  font-size: 1.1em;
+  line-height: 1.7em;
+}
+
+#logo {
+  float: left;
+  margin-right: 10px;
+  font-size: 1.7em;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  padding-top: 9px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+#logo:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+footer {
+  margin-top: 45px;
+  padding-top: 5px;
+  border-top: 1px solid #eaeaea;
+  color: #999;
+}
+
+footer a {
+  color: #555;
+}
+
+footer a:hover {
+  color: #222;
+}
+
+footer small {
+  float: left;
+}
+
+footer ul {
+  float: right;
+  list-style: none;
+}
+
+footer ul li {
+  float: left;
+  margin-left: 10px;
+}
+
+input, textarea, select, .uneditable-input {
+  border: 1px solid #bbb;
+  width: 100%;
+  padding: 10px;
+  height: auto !important;
+  margin-bottom: 15px;
+}
+
+/* battlefield grid */
+
+.battlefield tr:hover,
+.battlefield tr {
+  background-color: #cffefe;
+}
+
+.battlefield tr:hover .hit,
+.battlefield tr .hit {
+  background-color: red;
+}
+
+.battlefield tr:hover .missed,
+.battlefield tr .missed {
+  background-color: white;
+}
+
+.battlefield tr:hover .ship5Placed,
+.battlefield tr .ship5Placed {
+  background-color: #7cfc00;
+}
+.battlefield tr:hover .ship4Placed,
+.battlefield tr .ship4Placed {
+  background-color: #f0e68c;
+}
+.battlefield tr:hover .ship3Placed,
+.battlefield tr .ship3Placed {
+  background-color: #bc8f8f;
+}
+.battlefield tr:hover .ship2Placed,
+.battlefield tr .ship2Placed {
+  background-color: #8a2be2;
+}
+.battlefield tr:hover .ship1Placed,
+.battlefield tr .ship1Placed {
+  background-color: #00bfff;
+}
+
+/* player tab */
+
+//.active
