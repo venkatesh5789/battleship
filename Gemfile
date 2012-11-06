@@ -48,6 +48,9 @@ gem 'jquery-rails'
 gem 'factory_girl_rails' 
 gem 'rspec-rails' 
 gem 'devise' 
-gem 'ruby-debug19' 
-gem 'ruby-debug-base19x' 
-gem 'ruby-debug-ide' #'0.4.6' 
+
+group :development do
+  gem 'ruby-debug19' 
+  gem 'ruby-debug-base19x' 
+  gem 'ruby-debug-ide' #'0.4.6' 
+end
