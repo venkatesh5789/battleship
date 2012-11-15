@@ -1,32 +1,31 @@
 
 <li xmlns="http://www.w3.org/1999/html">
-  <%= game_move.id %>
   <% if game_move.type_of_move >= 1 && game_move.type_of_move <= 5 %>
-      You place <b>
-      <%=content_tag(:strong,"Aircraft Carrier") if game_move.type_of_move == 5%>
-      <%=content_tag(:strong,"Battleship") if game_move.type_of_move ==4%>
-      <%=content_tag(:strong,"Destroyer") if game_move.type_of_move ==3%>
-      <%=content_tag(:strong,"Submarine") if game_move.type_of_move ==2%>
-      <%=content_tag(:strong,"Patrol Boat") if game_move.type_of_move ==1%>
-      </b> with <b>
-      <%=content_tag(:strong,"horizontal") if game_move.ship_alignment == 0%>
-      <%=content_tag(:strong,"vertical") if game_move.ship_alignment == 1%></b>
-      alignment at
+      Placed <b>
+      <%="Aircraft Carrier" if game_move.type_of_move == 5%>
+      <%="Battleship" if game_move.type_of_move ==4%>
+      <%="Destroyer" if game_move.type_of_move ==3%>
+      <%="Submarine" if game_move.type_of_move ==2%>
+      <%="Patrol Boat" if game_move.type_of_move ==1%>
+
+      <%="horizontal" if game_move.ship_alignment == 0%>
+      <%="vertical" if game_move.ship_alignment == 1%></b>
+      at
       <b><%= (game_move.row+65).chr %><%= (game_move.column)+1 %></b>
   <% else %>
       <%= User.find(game_move.from_user_id).username+" shot at "+ User.find(game_move.to_user_id).username+" and"%><b>
-      <%=content_tag(:strong,"Hit") if game_move.type_of_move == 6 %>
-      <%=content_tag(:strong,"Missed") if game_move.type_of_move == 7 %>
+      <%="Hit" if game_move.type_of_move == 6 %>
+      <%="Missed" if game_move.type_of_move == 7 %>
       </b>
 
       <%
          if game_move.ship_sunk_number.to_i > 0 %>
           *
-          <%=content_tag(:strong,"Aircraft Carrier") if game_move.ship_sunk_number.to_i == 5%>
-          <%=content_tag(:strong,"Battleship") if game_move.ship_sunk_number.to_i ==4%>
-          <%=content_tag(:strong,"Destroyer") if game_move.ship_sunk_number.to_i ==3%>
-          <%=content_tag(:strong,"Submarine") if game_move.ship_sunk_number.to_i ==2%>
-          <%=content_tag(:strong,"Patrol Boat") if game_move.ship_sunk_number.to_i ==1%>
+          <%="Aircraft Carrier" if game_move.ship_sunk_number.to_i == 5%>
+          <%="Battleship" if game_move.ship_sunk_number.to_i ==4%>
+          <%="Destroyer" if game_move.ship_sunk_number.to_i ==3%>
+          <%="Submarine" if game_move.ship_sunk_number.to_i ==2%>
+          <%="Patrol Boat" if game_move.ship_sunk_number.to_i ==1%>
           has been sunk!*
       <% end %>
   <% end %>

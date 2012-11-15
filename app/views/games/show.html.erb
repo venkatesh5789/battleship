@@ -107,6 +107,8 @@
         }).done(function( response ) {
                     // Send JSON response to this function to update battlefield, which will call drawBattlefield
                     updateAndRedrawBattlefield(response);
+                    // TODO: Refresh game moves notification
+                    updateGameMovesNotification(response);
                 });
     }
 
@@ -171,6 +173,47 @@
                     }
                 }
             }
+        }
+    }
+
+    // Update game moves notification from JSON response
+    function updateGameMovesNotification(json_response) {
+        $("#game-moves-feed").empty()
+
+        var length = json_response.length;
+        var game_move = null;
+        for (var i = 0; i < length; i++) {
+            game_move = json_response[i];
+
+            var result = "<li>";
+            if (game_move.type_of_move >= 1 && game_move.type_of_move <= 5) {
+                // it is ship placement
+                result += "Placed <b>";
+                switch (game_move.type_of_move) {
+                    case 5: result += "Aircraft Carrier"; break;
+                    case 4: result += "Battleship"; break;
+                    case 3: result += "Destroyer"; break;
+                    case 2: result += "Submarine"; break;
+                    case 1: result += "Patrol Boat"; break;
+                }
+                switch (game_move.ship_alignment) {
+                    case 0: result += "horizontal"; break;
+                    case 1: result += "vertical"; break;
+                }
+                result += "</b> at <b>"+String.fromCharCode(game_move.row+65)+(game_move.column+1)+"</b>";
+            } else {
+                // it is hit or missed
+                result += "<b>";
+                switch (game_move.type_of_move) {
+                    case 6: result += "Hit"; break;
+                    case 7: result += "Missed"; break;
+                }
+                result += "</b> at <b>"+String.fromCharCode(game_move.row+65)+(game_move.column+1)+"</b>";
+            }
+            result += "</li>";
+
+
+            $("#game-moves-feed").prepend(result);
         }
     }
 
