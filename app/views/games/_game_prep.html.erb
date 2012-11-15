@@ -65,6 +65,7 @@
                                                          ]), :class=>"input-mini") %>
           <%= button_tag('Place', :id => 'placeButton', :type => 'button') %>
           <%= button_tag(:id => 'readyButton', :type => 'button') { content_tag :strong, 'Ready to play' } %>
+          <%= button_tag(:id => 'randomButton', :type => 'button') { content_tag :strong, 'Random Placement of ships' } %>
       <% end %>
 
     </div>
@@ -97,10 +98,17 @@
         {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,to_user_id:<%= current_user.id %>,row:-1,column:4,ship_alignment:0, type_of_move:5}]
     };
 
+    randomPlacementOfShips();
     /* Event for "Place" button */
     $("#placeButton").click(function() {
         placeShip(this.form);
     })
+
+    /*Button for the user to place ships randomly    */
+    $("#randomButton").click(function() {
+        randomPlacementOfShips();
+    })
+
 
     /* When the player click on "Ready to play" button, it first checks that all 5 ships are placed.
      Then it sends AJAX requests of
@@ -203,7 +211,8 @@
     }
 
     /* Helper function for placeShip(), to check validity of ship position */
-    function isValidNewShipPosition(alignment, start_row,start_column,sizeOfShip,type) {
+    function isValidNewShipPosition(alignment, start_row,start_column,sizeOfShip,type, showAlert ) {
+        if(typeof(showAlert)==='undefined') showAlert = true;
         var is_increase_row = (alignment == 1)?1:0;
         var is_increase_column = (alignment == 0)?1:0;
 
@@ -220,11 +229,15 @@
                     continue;
                 } else {
                     // there's something, alert and return false
-                    alert("Collide with another ship");
+                    if (showAlert) {
+                        alert("Collide with another ship");
+                    }
                     return false;
                 }
             } else {
-                alert("Position out of screen");
+                if(showAlert) {
+                    alert("Position out of screen");
+                }
                 return false;
             }
         }
@@ -252,6 +265,77 @@
             }
         }
     }
+
+    //When the user opens the game for the first time, or refreshes the game page without having placed the ships, this
+    //gives the user a random placement of ships which the user can then change
+    function randomPlacementOfShips()   {
+
+        var sizeOfShip = 0;
+
+        for( var type = 1; type <=5; type++)  {
+            if (type == 5) {
+                sizeOfShip = 5;
+            } else if (type == 4) {
+                sizeOfShip = 4;
+            } else if (type == 3 || type == 2) {
+                sizeOfShip = 3;
+            } else if (type == 1) {
+                sizeOfShip = 2;
+            }
+
+            var alignment = (Math.random() > 0.5)?1:0;
+            var is_increase_row = (alignment == 1)?1:0;
+            var is_increase_column = (alignment == 0)?1:0;
+            var start_row = Math.floor((Math.random()*10)+1);
+            var start_column = Math.floor((Math.random()*10)+ 1);
+
+            while(isValidNewShipPosition(alignment, start_row,start_column,sizeOfShip,type, false) == false ) {
+                start_row = Math.floor((Math.random()*10));
+                start_column = Math.floor((Math.random()*10));
+                alignment = (Math.random() > 0.5)?1:0;
+                is_increase_row = (alignment == 1)?1:0;
+                is_increase_column = (alignment == 0)?1:0;
+            }
+
+            if (isValidNewShipPosition(alignment, start_row,start_column,sizeOfShip,type) ) {
+                // Delete ship from old position (if exists)
+                if (allShips.data[type-1].row > -1) {
+                    var old_start_row = allShips.data[type-1].row;
+                    var old_start_column = allShips.data[type-1].column;
+                    var old_alignment = allShips.data[type-1].ship_alignment;
+                    var old_increase_row = (old_alignment == 1)?1:0;
+                    var old_increase_column = (old_alignment == 0)?1:0;
+
+                    for (var i=0; i<sizeOfShip; i++) {
+                        var final_row = old_start_row+(i*old_increase_row);
+                        var final_column = old_start_column+(i*old_increase_column);
+                        // Clear from player_battlefield[0] variable
+                        player_battlefield[0][final_row][final_column] = 0;
+                        // Clear from displaying grid
+                        $("#battlefield-0-"+final_row+"-"+final_column).removeClass("ship"+type+"Placed");
+                    }
+                }
+                allShips.data[type-1].row = start_row;
+                allShips.data[type-1].column = start_column;
+                allShips.data[type-1].ship_alignment = alignment;
+                allShips.data[type-1].type_of_move = type;
+
+                for (var i=0; i<sizeOfShip; i++) {
+                    var final_row = start_row+(i*is_increase_row);
+                    var final_column = start_column+(i*is_increase_column);
+                    // Update player_battlefield variable
+                    player_battlefield[0][final_row][final_column] = type;
+                    // Draw ship on battlefield
+                    $("#battlefield-0-"+final_row+"-"+final_column).addClass("ship"+type+"Placed");
+                }
+            }
+                // Replace data of ship in "allShips" object, which will be sent to server
+
+        }
+
+    }
+
+
 
 
 </script>
