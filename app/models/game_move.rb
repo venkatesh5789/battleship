@@ -28,7 +28,7 @@ $GAME_MOVE_ALIGNMENT_VERTICAL = 0
 
 class GameMove < ActiveRecord::Base
   attr_accessible :column, :from_user_id, :game_id, :row, :to_user_id,
-                  :type_of_move, :ship_alignment
+                  :type_of_move, :ship_alignment, :ship_sunk_number
 
   belongs_to :game
 
@@ -42,4 +42,6 @@ class GameMove < ActiveRecord::Base
 
   validates_numericality_of :type_of_move, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 7
   validates_numericality_of :ship_alignment, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 1
+
+  validates_numericality_of :ship_sunk_number, :greater_than_or_equal_to => 0, :less_than_or_equal_to => 5
 end

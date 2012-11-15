@@ -26,27 +26,45 @@ class GameMovesController < ApplicationController
       start_column = params[:data][i.to_s]["column"].to_i
       type_of_move =  params[:data][i.to_s]["type_of_move"].to_i
       ship_alignment = params[:data][i.to_s]["ship_alignment"].to_i
+      ship_sunk_number = params[:data][i.to_s]["ship_sunk_number"].to_i
 
-      size_of_ship = 1  # Create game_move record for 1 time, if it's a hit or miss
+      number_of_new_records = 1  # Create game_move record for 1 time, if it's a hit or miss
       # Otherwise, create n time depends on ship size
-      size_of_ship = 5 if type_of_move == 5
-      size_of_ship = 4 if type_of_move == 4
-      size_of_ship = 3 if type_of_move == 3 || type_of_move == 2
-      size_of_ship = 2 if type_of_move == 1
+      number_of_new_records = 5 if type_of_move == $GAME_MOVE_TYPE_SHIP5
+      number_of_new_records = 4 if type_of_move == $GAME_MOVE_TYPE_SHIP4
+      number_of_new_records = 3 if type_of_move == $GAME_MOVE_TYPE_SHIP3 || type_of_move == $GAME_MOVE_TYPE_SHIP2
+      number_of_new_records = 2 if type_of_move == $GAME_MOVE_TYPE_SHIP1
 
-      if ((type_of_move == 6) || (type_of_move == 7 ))
-      @game_move_notifications = GameMove.where(:game_id => params[:data][i.to_s]["game_id"].to_i, :type_of_move => [6,7] )
+      # Get recent game moves row, if this is HIT or MISSED
+      if ((type_of_move == $GAME_MOVE_TYPE_HIT) || (type_of_move == $GAME_MOVE_TYPE_MISSED ))
+        @game_move_notifications = GameMove.where(:game_id => params[:data][i.to_s]["game_id"].to_i,
+                                                  :type_of_move => [$GAME_MOVE_TYPE_HIT,$GAME_MOVE_TYPE_MISSED] )
       end
 
-      @game_move_notifications.push(GameMove.new(game_id:game_id,from_user_id:from_user_id,to_user_id:to_user_id,
-                                                      column:start_column,row:start_row,
-                                                      type_of_move:type_of_move,ship_alignment:ship_alignment))
-      @game_move_notifications.reverse!
-      # If it's a ship position, add records for every ship cell position --> 5 + 4 + 3 + 3 + 2 = 17 total records
-      size_of_ship.times do |delta|
-        #puts delta
-        g = GameMove.new(game_id:game_id,from_user_id:from_user_id,to_user_id:to_user_id,
-                                  type_of_move:type_of_move,ship_alignment:ship_alignment);
+      # If HIT or MISSED, append new notification
+      # If ship positions, just show these new ship positions
+      @game_move_notifications.push(GameMove.new(game_id:game_id,
+                                                 from_user_id:from_user_id,
+                                                 to_user_id:to_user_id,
+                                                 row:start_row,
+                                                 column:start_column,
+                                                  type_of_move:type_of_move,
+                                                  ship_alignment:ship_alignment,
+                                                  ship_sunk_number:ship_sunk_number
+                                    ))
+      #@game_move_notifications.reverse!
+
+      # if it's a ship position, add records for every ship cell position --> 5 + 4 + 3 + 3 + 2 = 17 total records
+      # if it's a shot, add only 1 record
+      number_of_new_records.times do |delta|
+
+        g = GameMove.new(game_id:game_id,
+                         from_user_id:from_user_id,
+                         to_user_id:to_user_id,
+                          type_of_move:type_of_move,
+                          ship_alignment:ship_alignment,
+                          ship_sunk_number:ship_sunk_number
+        )
         if ship_alignment == 0
           g.column = (start_column+delta).to_i
           g.row = start_row.to_i
@@ -62,7 +80,7 @@ class GameMovesController < ApplicationController
         end
       end
 
-      # -------- If this is shoot move, server do a turn management -------
+      # -------- If this is a shot, server do a turn management -------
       @game = Game.find(game_id)
       if @game.status == $GAME_STATUS_STARTED
         @all_game_players_in_same_game = GamePlayer.where(:game_id=>game_id)
@@ -147,6 +165,8 @@ class GameMovesController < ApplicationController
       each_game_move[:from_game_player_number] = params[:from_game_player_number].to_i
       each_game_move[:to_game_player_number] = params[:to_game_player_number].to_i
     end
+
+    #@game_moves = @game_moves.reverse
 
     respond_to do |format|
       format.html # index.html.erb

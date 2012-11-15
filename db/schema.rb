@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121103023224) do
+ActiveRecord::Schema.define(:version => 20121115211646) do
 
   create_table "game_moves", :force => true do |t|
     t.integer  "game_id"
@@ -19,10 +19,11 @@ ActiveRecord::Schema.define(:version => 20121103023224) do
     t.integer  "to_user_id"
     t.integer  "row"
     t.integer  "column"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
     t.integer  "type_of_move"
     t.integer  "ship_alignment"
+    t.integer  "ship_sunk_number"
   end
 
   create_table "game_players", :force => true do |t|

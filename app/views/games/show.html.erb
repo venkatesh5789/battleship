@@ -118,13 +118,13 @@
         for (var i = 0; i < length; i++) {
             element = json_response[i];
 
-        <% if @game.status == $GAME_STATUS_WAITING %>
-        <%# Game preparation: Draw to current player only %>
-        <%= "player_battlefield[0][element.row][element.column] = element.type_of_move;" %>
-        <% else %>
-        <%# Game war: Draw to target player %>
-        <%= "player_battlefield[element.to_game_player_number][element.row][element.column] = element.type_of_move;" %>
-        <% end %>
+            <% if @game.status == $GAME_STATUS_WAITING %>
+                <%# Game preparation: Draw to current player only %>
+                <%= "player_battlefield[0][element.row][element.column] = element.type_of_move;" %>
+            <% else %>
+                <%# Game war: Draw to target player %>
+                <%= "player_battlefield[element.to_game_player_number][element.row][element.column] = element.type_of_move;" %>
+            <% end %>
         }
         redrawBattlefield();
     }
@@ -157,9 +157,10 @@
                         case 4:
                         case 5:
                             // Show ship position only if drawing current player's table
-                            if (<%= @current_game_player_number %> == p) {
-                            targetCell.addClass("ship"+player_battlefield[p][row][column]+"Placed");
-                        }
+                            <% if @game.status == $GAME_STATUS_STARTED %>
+                                <%= "if (" + @current_game_player_number.to_s + " == p)" %>
+                            <% end %>
+                                    targetCell.addClass("ship"+player_battlefield[p][row][column]+"Placed");
                             break;
                         case 6: // hit
                             targetCell.addClass("hit");

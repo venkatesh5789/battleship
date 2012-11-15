@@ -4,7 +4,7 @@ describe GameMove do
 
   before do
     @game_move = GameMove.new(game_id:1, row:2, column:3, from_user_id:1, to_user_id:1,
-                              type_of_move:5, ship_alignment:1)
+                              type_of_move:5, ship_alignment:1, ship_sunk_number:4)
   end
 
   subject { @game_move }
@@ -16,6 +16,7 @@ describe GameMove do
   it { should respond_to(:to_user_id) }
   it { should respond_to(:type_of_move) }
   it { should respond_to(:ship_alignment) }
+  it { should respond_to(:ship_sunk_number) }
 
   describe "when game_id is below zero" do
     before { @game_move.game_id = -1 }
@@ -80,5 +81,15 @@ describe GameMove do
       @game_move.game_id = nil
       expect{ @game_move.save }.to change{GameMove.count}.by(0)
     end
+  end
+
+  describe "when ship_sunk_number is not in range 0..5 (below zero)" do
+    before { @game_move.ship_sunk_number = -1 }
+    it { should_not be_valid }
+  end
+
+  describe "when ship_sunk_number is not in range 0..5 (above five)" do
+    before { @game_move.ship_sunk_number = 6 }
+    it { should_not be_valid }
   end
 end

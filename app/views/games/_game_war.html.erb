@@ -109,20 +109,32 @@
                     // Paint that cell
                     $(this).addClass("hit");
 
-                    // Send hit to server
-                    player_battlefield[target_player_number][target_row][target_column] = <%=$GAME_MOVE_TYPE_HIT%>;
-                    sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_HIT%>); // Hit shot
-
                     //check whether the ship has sunk
+                    // target_value: type of ship
+                    var ship_sunk_number = 0;
+
+                    // Change the value in battlefield from "ship number" to "hit" first
+                    player_battlefield[target_player_number][target_row][target_column] = <%=$GAME_MOVE_TYPE_HIT%>;
+
+                    // Check for ship sunk after changed value to "hit"
                     if(isShipSunk(target_value, target_player_number)) {
+                        ship_sunk_number = target_value;
 
                         // Send ship is sunk notification AJAX call
                         $.ajax({
                             url:"/game_players/0",
                             type:"PUT", // method "update"
-                            data: {game_id: <%=params[:id]%>, player_number: target_player_number, ship_sunk_number: target_value}
+                            data: {game_id: <%=params[:id]%>, player_number: target_player_number, ship_sunk_number: ship_sunk_number}
                         });
                     }
+
+                    // Send hit to server: sendShootResultToServer
+                    //  target_player_number: player number that got a shot
+                    //  target_row: shot row position
+                    //  target_column: shot column position
+                    //  $GAME_MOVE_TYPE_HIT: a constant for "hit" value
+                    //  ship_sunk_number:   0 if this shot doesn't sink the ship. 1-5 if sink
+                    sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_HIT%>,ship_sunk_number); // Hit shot
 
                     break;
                 case 6: // Hit already
@@ -146,18 +158,39 @@
         return true;
     }
 
-    /* Shoot */
-    function sendShootResultToServer(target_player_number,target_row,target_column,value) {
+    /* Shoot
+    * Send [data] to server, to update "GameMove"
+    * */
+    function sendShootResultToServer(target_player_number,target_row,target_column,value,ship_sunk_number) {
         var dataToSend = {
+            // Must send data in an array for compatibility issue with multiple ship placement
+            // So, this will be sent in array length of 1
             data:[
-                {game_id:<%=@game.id%>,from_user_id:<%= current_user.id %>,target_player_number:target_player_number,row:target_row,column:target_column,ship_alignment:0, type_of_move:value}
+                {
+                    // Game ID
+                    game_id:<%=@game.id%>,
+                    // Shoot from who? (User ID)
+                    from_user_id:<%= current_user.id %>,
+                    // Shoot to whom? (Player number, this will be converted to user ID
+                    // because game_moves table needs to_user_id
+                    target_player_number:target_player_number,
+                    // Target row
+                    row:target_row,
+                    // Target column
+                    column:target_column,
+                    // This must be 0, because it's not ship placement
+                    ship_alignment:0,
+                    // Value will be HIT or MISSED (6 or 7)
+                    type_of_move:value,
+                    // If ship is not sunk: 0, Otherwise: ship number (1,2,3,4,5)
+                    ship_sunk_number:ship_sunk_number
+                }
             ]};
 
         // Send new cell value to server via AJAX call
         $.ajax({
             url:"/game_moves", // call "game_moves" controller
             type:"POST", // method "create"
-            // TODO: have to change "fixed to_user_id"
             data: dataToSend
         });
     }
@@ -211,7 +244,7 @@
     /* ********** Timer **************
      Set interval to refresh battlefield
      */
-    var battlefieldRefreshTimer = setInterval(refreshBattlefield, 1000);
+    var battlefieldRefreshTimer = setInterval(refreshBattlefield, 1500);
     function refreshBattlefield() {
         // no need to recall the function (it's an interval, it'll loop forever)
         // First, get active tab
