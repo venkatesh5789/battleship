@@ -1,3 +1,4 @@
+
 <li xmlns="http://www.w3.org/1999/html">
   <% if game_move.type_of_move >= 1 && game_move.type_of_move <= 5 %>
       You place <b>
@@ -12,9 +13,10 @@
       alignment at
       <b><%= (game_move.row+65).chr %><%= (game_move.column)+1 %></b>
   <% else %>
-      Someone shoot to someone.<b>
+      <%= User.find(game_move.from_user_id).username+" shot at "+ User.find(game_move.to_user_id).username+" and"%><b>
       <%= "Hit" if game_move.type_of_move == 6 %>
       <%= "Missed" if game_move.type_of_move == 7 %>
       </b>
   <% end %>
+
 </li>

@@ -38,7 +38,11 @@
           <ul class="dropdown-menu">
             <!-- dropdown menu links -->
             <% @user_joined_games.each do |each_joined_game| %>
-                <a href="#"><%= each_joined_game.game_id %></a>
+                 <% if @game.id != each_joined_game.game_id %>
+                <% game = Game.find(each_joined_game.game_id) %>
+                 <%= link_to game.name, game %>
+                    <% end%>
+
             <% end %>
           </ul>
         </div>
@@ -58,10 +62,11 @@
         <% end %>
       </div>
 
-      <div class="span4">
+      <div class="span4" style="border-width: 2px;border-color: #a52a2a;">
         <h3>Game moves</h3>
-        <ol id="game-moves-feed">
+        <ol reversed="reversed" id="game-moves-feed"  >
         </ol>
+
       </div>
 
     </div>
@@ -80,6 +85,14 @@
     var isShip4Sunk = <%=@current_game_player.is_ship4_sunk?%>;
     var isShip5Sunk = <%=@current_game_player.is_ship5_sunk?%>;
     var current_game_player_status = <%=@current_game_player_status%>;
+
+    // Ugly code for rendering the game moves partial everytime the player refreshes the page
+    //Basically a copy-paste of create.js.erb with game_move_notifications instantiated here
+    function renderGameMovesPartial() {
+        $("#game-moves-feed").empty()
+        <% game_move_notifications = GameMove.where(:game_id => @game.id , :type_of_move => [6,7] ) %>
+                $("#game-moves-feed").prepend("<%=escape_javascript(render(game_move_notifications))%>");
+    }
 
     // Send request for game moves
     function requestGameMovesFromServer(from_game_player_number,to_game_player_number,game_id) {
@@ -164,6 +177,7 @@
     $(document).ready(function() {
         // Request game moves for selected player
         requestGameMovesFromServer(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
+        renderGameMovesPartial();
     });
 
     // Send request for game players

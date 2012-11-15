@@ -12,6 +12,7 @@ class Game < ActiveRecord::Base
   has_many :users, through: :game_players, source: :user
 
   validates :name   ,presence:true
+  validates_length_of :name, :minimum => 1, :maximum => 25
   validates :status ,numericality:true
 
 end

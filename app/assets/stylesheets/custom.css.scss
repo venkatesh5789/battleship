@@ -98,6 +98,21 @@ footer ul li {
   margin-left: 10px;
 }
 
+ol{
+  height: 350px;
+  width: 250px;
+   overflow: auto;
+  border-style: groove;
+  border-width: 2px;
+  border-color: #ff4500;
+  background-color: black;
+  color: #ffffff;
+}
+
+ol li {
+  list-style-type: decimal;
+}
+
 input, textarea, select, .uneditable-input {
   border: 1px solid #bbb;
   width: 100%;

@@ -1,3 +1,5 @@
 
-$("#game-moves-feed").append("<%=escape_javascript(render(@game_move_notifications))%>");
+$("#game-moves-feed").empty()
+
+$("#game-moves-feed").prepend("<%=escape_javascript(render(@game_move_notifications))%>");
 //@game_move

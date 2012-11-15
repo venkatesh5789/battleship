@@ -11,6 +11,7 @@ class GameMovesController < ApplicationController
       game_id = params[:data][i.to_s]["game_id"].to_i
       from_user_id = params[:data][i.to_s]["from_user_id"].to_i
 
+
       if params[:data][i.to_s]["to_user_id"].blank?
         # If the client send "target_player_number", the server has to convert it to "to_user_id"
         target_player_number = params[:data][i.to_s]["target_player_number"]
@@ -33,10 +34,14 @@ class GameMovesController < ApplicationController
       size_of_ship = 3 if type_of_move == 3 || type_of_move == 2
       size_of_ship = 2 if type_of_move == 1
 
+      if ((type_of_move == 6) || (type_of_move == 7 ))
+      @game_move_notifications = GameMove.where(:game_id => params[:data][i.to_s]["game_id"].to_i, :type_of_move => [6,7] )
+      end
+
       @game_move_notifications.push(GameMove.new(game_id:game_id,from_user_id:from_user_id,to_user_id:to_user_id,
                                                       column:start_column,row:start_row,
                                                       type_of_move:type_of_move,ship_alignment:ship_alignment))
-
+      @game_move_notifications.reverse!
       # If it's a ship position, add records for every ship cell position --> 5 + 4 + 3 + 3 + 2 = 17 total records
       size_of_ship.times do |delta|
         #puts delta
