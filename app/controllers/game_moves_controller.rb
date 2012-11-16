@@ -4,7 +4,7 @@ class GameMovesController < ApplicationController
 
   def create
 
-    @game_move_notifications = []
+    @game_moves_notifications = []
 
     # Loop through each game_move (there are more than 1 game_move if they're ship placements)
     params[:data].count.times do |i|
@@ -37,13 +37,13 @@ class GameMovesController < ApplicationController
 
       # Get recent game moves row, if this is HIT or MISSED
       if ((type_of_move == $GAME_MOVE_TYPE_HIT) || (type_of_move == $GAME_MOVE_TYPE_MISSED ))
-        @game_move_notifications = GameMove.where(:game_id => params[:data][i.to_s]["game_id"].to_i,
+        @game_moves_notifications = GameMove.where(:game_id => params[:data][i.to_s]["game_id"].to_i,
                                                   :type_of_move => [$GAME_MOVE_TYPE_HIT,$GAME_MOVE_TYPE_MISSED] )
       end
 
       # If HIT or MISSED, append new notification
       # If ship positions, just show these new ship positions
-      @game_move_notifications.push(GameMove.new(game_id:game_id,
+      @game_moves_notifications.push(GameMove.new(game_id:game_id,
                                                  from_user_id:from_user_id,
                                                  to_user_id:to_user_id,
                                                  row:start_row,
@@ -124,7 +124,7 @@ class GameMovesController < ApplicationController
 
 
     respond_to do |format|
-      format.js { @game_move_notifications }
+      format.js { @game_moves_notifications }
     end
 
   end
@@ -144,33 +144,40 @@ class GameMovesController < ApplicationController
   #             game_id
   def index
 
-    # Convert player_number to user_id to append in @game_moves search result
-    from_user_id = GamePlayer.where(:player_number=>params[:from_game_player_number],
-                                    :game_id => params[:game_id]).first.user_id
-    # Convert to_player_number to to_user_id to query in GameMove & append in @game_moves search result
-    to_user_id = GamePlayer.where(:player_number=>params[:to_game_player_number],
-                                      :game_id => params[:game_id]).first.user_id
-    puts "----"
-    puts params[:from_game_player_number]
-    puts from_user_id
-    puts params[:to_game_player_number]
-    puts to_user_id
-    puts "===="
-    # Query for every row with game_id and to_user_id
-    @game_moves = GameMove.where(:game_id => params[:game_id],
-                                 :to_user_id => to_user_id)
-
-    # Append from_game_player_number & to_game_player_number to @game_moves query result
-    @game_moves.each do |each_game_move|
-      each_game_move[:from_game_player_number] = params[:from_game_player_number].to_i
-      each_game_move[:to_game_player_number] = params[:to_game_player_number].to_i
-    end
-
-    #@game_moves = @game_moves.reverse
-
     respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @game_moves }
+      format.js {
+        # JS ==> To show notifications. Returns every game move (only HIT or MISSED) in that game
+        # Query for every row with game_id and to_user_id
+        @game_moves_notifications = GameMove.where(:game_id => params[:game_id],
+                                                  :type_of_move => [$GAME_MOVE_TYPE_HIT,$GAME_MOVE_TYPE_MISSED])
+
+        @game_moves_notifications
+      }
+      format.json {
+        # JSON ==> To draw battlefield grid. Returns only game move in that game for that target player number
+
+        # Convert player_number to user_id to append in @game_moves search result
+        from_user_id = GamePlayer.where(:player_number=>params[:from_game_player_number],
+                                        :game_id => params[:game_id]).first.user_id
+        # Convert to_player_number to to_user_id to query in GameMove & append in @game_moves search result
+        to_user_id = GamePlayer.where(:player_number=>params[:to_game_player_number],
+                                      :game_id => params[:game_id]).first.user_id
+        puts params[:from_game_player_number]
+        puts from_user_id
+        puts params[:to_game_player_number]
+        puts to_user_id
+
+        # Query for every row with game_id and to_user_id
+        @game_moves_notifications = GameMove.where(:game_id => params[:game_id],
+                                                   :to_user_id => to_user_id)
+
+        # Append from_game_player_number & to_game_player_number to @game_moves query result
+        @game_moves_notifications.each do |each_game_move|
+          each_game_move[:from_game_player_number] = params[:from_game_player_number].to_i
+          each_game_move[:to_game_player_number] = params[:to_game_player_number].to_i
+        end
+        render json: @game_moves_notifications
+      }
     end
   end
 end

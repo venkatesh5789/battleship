@@ -25,7 +25,7 @@
 
     <div class="row">
       <div class="span6">
-        <div id="notification">
+        <div id="statusbar">
           <h2>&nbsp;</h2>
         </div>
       </div>
@@ -86,17 +86,10 @@
     var isShip5Sunk = <%=@current_game_player.is_ship5_sunk?%>;
     var current_game_player_status = <%=@current_game_player_status%>;
 
-    // Ugly code for rendering the game moves partial everytime the player refreshes the page
-    //Basically a copy-paste of create.js.erb with game_move_notifications instantiated here
-    function renderGameMovesPartial() {
-        $("#game-moves-feed").empty()
-        <% game_move_notifications = GameMove.where(:game_id => @game.id , :type_of_move => [6,7] ) %>
-                $("#game-moves-feed").prepend("<%=escape_javascript(render(game_move_notifications))%>");
-    }
-
-    // Send request for game moves
-    function requestGameMovesFromServer(from_game_player_number,to_game_player_number,game_id) {
+    // Send request for game moves to draw battlefield grid
+    function requestGameMovesToDrawGrid(from_game_player_number,to_game_player_number,game_id) {
         $.ajax({
+            // For drawing grid: format = JSON
             url: "/game_moves.json",
             data: {
                 from_game_player_number: from_game_player_number,
@@ -107,8 +100,6 @@
         }).done(function( response ) {
                     // Send JSON response to this function to update battlefield, which will call drawBattlefield
                     updateAndRedrawBattlefield(response);
-                    // TODO: Refresh game moves notification
-                    updateGameMovesNotification(response);
                 });
     }
 
@@ -159,6 +150,7 @@
                         case 4:
                         case 5:
                             // Show ship position only if drawing current player's table
+                            // This condition applies to only game when the STARTED
                             <% if @game.status == $GAME_STATUS_STARTED %>
                                 <%= "if (" + @current_game_player_number.to_s + " == p)" %>
                             <% end %>
@@ -174,6 +166,23 @@
                 }
             }
         }
+    }
+
+    // Send request for game moves notifications update
+    // This will call JavaScript code in "index.js.erb" that will refresh the Game Moves Notifications window
+    // that "index.js.erb" code is exactly the same as in "create.js.erb"
+    function requestGameMovesNotifications(from_game_player_number,to_game_player_number,game_id) {
+        $.ajax({
+            // For Notification: format = JS
+            url: "/game_moves.js",
+            data: {
+                game_id: game_id
+            },
+            cache: false
+        }).done(function( response ) {
+                    // Update
+                    //alert(response);
+                });
     }
 
     // Update game moves notification from JSON response
@@ -219,9 +228,14 @@
 
     // Call when page has been loaded
     $(document).ready(function() {
-        // Request game moves for selected player
-        requestGameMovesFromServer(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
-        renderGameMovesPartial();
+        // Request game moves for selected player to draw his battlefield
+        requestGameMovesToDrawGrid(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
+
+        // Get game player list
+        refreshGamePlayerList(<%=params[:id]%>);
+
+        // Get game moves notification
+        refreshGameMovesNotifications();
     });
 
     // Send request for game players
@@ -239,7 +253,7 @@
                         checkForShipSunk(response);
                     }
                     updateGamePlayersTable(response);
-                    updateGameNotification(response);
+                    updateGameStatusBar(response);
                 });
     }
 
@@ -286,9 +300,10 @@
         }
     }
 
-    // Check if everyone is ready -> refresh
-    // Otherwise (someone still not ready) just update "Game Players Table"
     function updateGamePlayersTable(json_response) {
+
+        // Check if everyone is ready -> refresh
+        // Otherwise (someone still not ready) just update "Game Players Table"
         var isEveryoneReady = true;
         for (var i=0; i<json_response.length; i++) {
             var game_player = json_response[i];
@@ -298,24 +313,52 @@
             }
         }
 
+        $("#player-window table").empty();
+
+        var result = "";
+
         // Update "game players" table
         for (var i=0; i<json_response.length; i++) {
             var game_player = json_response[i];
-            switch (game_player.status) {
-                case <%=$GAME_PLAYER_STATUS_WAITING%>: status_to_print = "<%=$GAME_PLAYER_STATUS_WAITING_TEXT%>"; break;
-                case <%=$GAME_PLAYER_STATUS_READY%>: status_to_print = "<b><%=$GAME_PLAYER_STATUS_READY_TEXT%></b>"; break;
-                case <%=$GAME_PLAYER_STATUS_LEFT%>: status_to_print = "<%=$GAME_PLAYER_STATUS_LEFT_TEXT%>"; break;
-                case <%=$GAME_PLAYER_STATUS_LOST%>: status_to_print = "<%=$GAME_PLAYER_STATUS_LOST_TEXT%>"; break;
-                case <%=$GAME_PLAYER_STATUS_WON%>: status_to_print = "<%=$GAME_PLAYER_STATUS_WON_TEXT%>"; break;
+
+            // Open the row
+            result += "<tr class='";
+            if (game_player.is_in_turn) {
+                // if that player is in turn, class = "player_in_turn" (green background)
+                result += "player_in_turn";
             }
-            $("#player-table-game-player-number-"+game_player.player_number+" td:nth-child(2)").html(status_to_print);
+            result += "'>";
+            // Player name
+            result += "<td>";
+            if (game_player.player_number == <%=@current_game_player_number%>) {
+                // BOLD if it's himself
+                result += "<b>"+game_player.username+"</b>"
+            } else {
+                result += game_player.username;
+            }
+            result += "</td>";
+            // Status
+            result += "<td>";
+            switch (game_player.status) {
+                case <%=$GAME_PLAYER_STATUS_WAITING%>: result += "<%=$GAME_PLAYER_STATUS_WAITING_TEXT%>"; break;
+                case <%=$GAME_PLAYER_STATUS_READY%>: result += "<b><%=$GAME_PLAYER_STATUS_READY_TEXT%></b>"; break;
+                case <%=$GAME_PLAYER_STATUS_LEFT%>: result += "<%=$GAME_PLAYER_STATUS_LEFT_TEXT%>"; break;
+                case <%=$GAME_PLAYER_STATUS_LOST%>: result += "<%=$GAME_PLAYER_STATUS_LOST_TEXT%>"; break;
+                case <%=$GAME_PLAYER_STATUS_WON%>: result += "<%=$GAME_PLAYER_STATUS_WON_TEXT%>"; break;
+            }
+            result += "</td>";
+            // Close the row
+            result += "</tr>";
         }
+
+        $("#player-window table").append(result);
 
         // If everyone is ready and game is in game_prep --> refresh the page
         if (isEveryoneReady) {
             var isInPreparation = <%= @game.status == $GAME_STATUS_WAITING ? "true" : "false" %>;
             if (isInPreparation) {
                 // Everyone is ready, refresh! (the refreshed page will have game.status == 1)
+                // TODO: add countdown timer here!!!
                 window.location.reload();
             }
         }
@@ -327,7 +370,11 @@
         // no need to recall the function (it's an interval, it'll loop forever)
         requestGamePlayersFromServer(<%=params[:id]%>);
     }
-    // Call this immediately at the first time
-    refreshGamePlayerList(<%=params[:id]%>);
+
+    // set interval for Game Moves Notification
+    var gameMovesNotificationsRefreshTimer = setInterval(refreshGameMovesNotifications,1000);
+    function refreshGameMovesNotifications() {
+        requestGameMovesNotifications(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
+    }
 
 </script>

@@ -1,6 +1,6 @@
 class CreateGameMoves < ActiveRecord::Migration
   def change
-    create_table :game_moves do |t|
+    create_table :game_move_notifications do |t|
       t.integer :game_id
       t.integer :from_user_id
       t.integer :to_user_id

@@ -238,7 +238,7 @@
         var splitted = linkHref.split("-");
         var target_player_number = parseInt(splitted[1]);
 
-        requestGameMovesFromServer(<%= @current_game_player_number %>,target_player_number,<%=@game.id%>);
+        requestGameMovesToDrawGrid(<%= @current_game_player_number %>,target_player_number,<%=@game.id%>);
     })
 
     /* ********** Timer **************
@@ -252,37 +252,41 @@
         var splitted = linkHref.split("-");
         var target_player_number = parseInt(splitted[1]);
 
-        requestGameMovesFromServer(<%= @current_game_player_number %>,target_player_number,<%=@game.id%>);
+        requestGameMovesToDrawGrid(<%= @current_game_player_number %>,target_player_number,<%=@game.id%>);
     }
 
     // Update game notification status (game_war)
-    function updateGameNotification(json_response) {
+    function updateGameStatusBar(json_response) {
+        var my_game_player,game_player_in_turn;
+
+        // Get my game_player & game_player who's in turn
         for (var i=0; i<json_response.length; i++) {
-            // Look for data of current player only
             var game_player = json_response[i];
-            if (game_player.player_number != <%=@current_game_player_number%>) {
-                continue;
-            } else {
-                current_game_player_is_in_turn = game_player.is_in_turn;
-                // For blink effect
-                var oldNotification = $("#notification").html;
-                switch (game_player.status) {
-                    case (<%=$GAME_PLAYER_STATUS_READY%>):
-                        if (current_game_player_is_in_turn) {
-                            $("#notification").html("<h2>Your turn!</h2>");
-                        } else {
-                            $("#notification").html("<h2>Please wait for your turn.</h2>");
-                        }
-                        break;
-                    case (<%=$GAME_PLAYER_STATUS_LEFT%>): $("#notification").html("<h2>You have quitted this game. You cannot make any moves.</h2>"); break;
-                    case (<%=$GAME_PLAYER_STATUS_LOST%>): $("#notification").html("<h2>You are lost! You cannot make any moves.</h2>"); break;
-                    case (<%=$GAME_PLAYER_STATUS_WON%>): $("#notification").html("<h2>Congratulations! You are a winner!</h2>"); break;
-                }
-                if (oldNotification != $("#notification").html) {
-                    //$("#notification").backgroundColor("red");// effect("highlight", {}, 2000);
-                }
+            if (game_player.player_number == <%=@current_game_player_number%>) {
+                my_game_player = game_player;
+            }
+            if (game_player.is_in_turn) {
+                game_player_in_turn = game_player;
             }
         }
+
+        // Show status bar
+        switch (my_game_player.status) {
+            case (<%=$GAME_PLAYER_STATUS_READY%>):
+                // If I'm still in the game (ready)
+                if (my_game_player == game_player_in_turn) {
+                    // If I've got the turn: Status bar shows "Your turn!"
+                    $("#statusbar").html("<h2>*** Your turn. Fire in the hole! ***</h2>");
+                } else {
+                    // If it's other's turn: Status bar shows "Please wait for
+                    $("#statusbar").html("<h2>Please wait for "+game_player_in_turn.username+" to make a move.</h2>");
+                }
+                break;
+            case (<%=$GAME_PLAYER_STATUS_LEFT%>): $("#statusbar").html("<h2>You have left this game. You cannot make any moves.</h2>"); break;
+            case (<%=$GAME_PLAYER_STATUS_LOST%>): $("#statusbar").html("<h2>You have lost! That's all.</h2>"); break;
+            case (<%=$GAME_PLAYER_STATUS_WON%>): $("#statusbar").html("<h2>Hooray! You have won!</h2>"); break;
+        }
+
     }
 
 </script>

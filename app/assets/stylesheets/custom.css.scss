@@ -100,7 +100,7 @@ footer ul li {
 
 ol{
   height: 350px;
-  width: 250px;
+  width: 270px;
    overflow: auto;
   border-style: groove;
   border-width: 2px;
@@ -161,4 +161,6 @@ input, textarea, select, .uneditable-input {
 
 /* player tab */
 
-//.active
+.player_in_turn {
+  background-color: #ffffcc;
+}

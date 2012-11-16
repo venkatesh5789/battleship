@@ -89,8 +89,15 @@ class GamePlayersController < ApplicationController
 
     @game_players = GamePlayer.where(:game_id => params[:game_id])
 
+    @game_players.each do |each_game_player|
+      each_game_player[:username] = each_game_player.user.username
+    end
+
     respond_to do |format|
       format.html # index.html.erb
+      format.js {
+        @game_players
+      }
       format.json { render json: @game_players }
     end
   end

@@ -2,7 +2,7 @@
 <li xmlns="http://www.w3.org/1999/html">
   <% if game_move.type_of_move >= 1 && game_move.type_of_move <= 5 %>
       Placed <b>
-      <%="Aircraft Carrier" if game_move.type_of_move == 5%>
+      <%="Carrier" if game_move.type_of_move == 5%>
       <%="Battleship" if game_move.type_of_move ==4%>
       <%="Destroyer" if game_move.type_of_move ==3%>
       <%="Submarine" if game_move.type_of_move ==2%>
@@ -20,13 +20,13 @@
 
       <%
          if game_move.ship_sunk_number.to_i > 0 %>
-          *
-          <%="Aircraft Carrier" if game_move.ship_sunk_number.to_i == 5%>
+          <br><i>* <b>
+          <%="Carrier" if game_move.ship_sunk_number.to_i == 5%>
           <%="Battleship" if game_move.ship_sunk_number.to_i ==4%>
           <%="Destroyer" if game_move.ship_sunk_number.to_i ==3%>
           <%="Submarine" if game_move.ship_sunk_number.to_i ==2%>
           <%="Patrol Boat" if game_move.ship_sunk_number.to_i ==1%>
-          has been sunk!*
+          </b> has been sunk!* </i>
       <% end %>
   <% end %>
 </li>
