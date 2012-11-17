@@ -52,7 +52,6 @@ class GameMovesController < ApplicationController
                                                   ship_alignment:ship_alignment,
                                                   ship_sunk_number:ship_sunk_number
                                     ))
-      #@game_move_notifications.reverse!
 
       # if it's a ship position, add records for every ship cell position --> 5 + 4 + 3 + 3 + 2 = 17 total records
       # if it's a shot, add only 1 record
@@ -80,9 +79,11 @@ class GameMovesController < ApplicationController
         end
       end
 
-      # -------- If this is a shot, server do a turn management -------
       @game = Game.find(game_id)
       if @game.status == $GAME_STATUS_STARTED
+
+        # -------- If this is a shot, server do a turn management -------
+
         @all_game_players_in_same_game = GamePlayer.where(:game_id=>game_id)
 
         # Find who has a current turn

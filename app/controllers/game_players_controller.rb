@@ -5,6 +5,8 @@ class GamePlayersController < ApplicationController
   def update
 
     if params[:id].eql?("0")
+      # Parameters got from client are "game_id", "player_number"
+      # So, he sent "id" as 0. We've to find that GamePlayer from game_id & player_number
       # ------------- Update ship sunk -------------
       @game_player = GamePlayer.where(:game_id => params[:game_id], :player_number => params[:player_number]).first;
 
@@ -73,7 +75,7 @@ class GamePlayersController < ApplicationController
       end
 
       respond_to do |format|
-        format.js { @game_player }
+        format.json { render json: @game_player }
       end
 
     end

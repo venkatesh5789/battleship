@@ -247,22 +247,17 @@
         return true;
     }
 
-    // Update game notification status (game_prep)
-    function updateGameNotification(json_response) {
+    // Update game status bar (game_prep)
+    function updateGameStatusBar(json_response) {
         for (var i=0; i<json_response.length; i++) {
             // Look for data of current player only
             var game_player = json_response[i];
             if (game_player.player_number != <%=@current_game_player_number%>) {
                 continue;
             } else {
-                // For blink effect
-                var oldNotification = $("#notification").html();
                 switch (game_player.status) {
-                    case (<%=$GAME_PLAYER_STATUS_WAITING%>): $("#notification").html("<h2>Place your ships!</h2>"); break;
-                    case (<%=$GAME_PLAYER_STATUS_READY%>): $("#notification").html("<h2>Waiting for other player to be ready.</h2>"); break;
-                }
-                if (oldNotification != $("#notification").html) {
-                    //$("#notification").backgroundColor("red");// effect("highlight", {}, 2000);
+                    case (<%=$GAME_PLAYER_STATUS_WAITING%>): $("#statusbar").html("<h2>Place your ships!</h2>"); break;
+                    case (<%=$GAME_PLAYER_STATUS_READY%>): $("#statusbar").html("<h2>Waiting for other player to be ready.</h2>"); break;
                 }
             }
         }

@@ -98,15 +98,11 @@ class GamesController < ApplicationController
   # PUT /games/1.json
   def update
     @game = Game.find(params[:id])
+    @game.status = params[:status];
+    @game.save
 
     respond_to do |format|
-      if @game.update_attributes(params[:game])
-        format.html { redirect_to @game, notice: 'Game was successfully updated.' }
-        format.json { head :no_content }
-      else
-        format.html { render action: "edit" }
-        format.json { render json: @game.errors, status: :unprocessable_entity }
-      end
+      format.json { render json: @game }
     end
   end
 

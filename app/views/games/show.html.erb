@@ -1,6 +1,6 @@
 
 <div class="center">
-  <h1><%= @game.name %></h1>
+  <h1><%= @game.name %> <%= @game.status %></h1>
 </div>
 
 <div class="row">
@@ -54,11 +54,9 @@
         <% if @game.status == $GAME_STATUS_WAITING %>
             <%# Render game_prep if the game is preparing %>
             <%= render 'games/game_prep' %>
-        <% elsif @game.status == $GAME_STATUS_STARTED %>
-            <%# Render game_war if the game has started  %>
+        <% elsif @game.status == $GAME_STATUS_STARTED || @game.status == $GAME_STATUS_FINISHED %>
+            <%# Render game_war if the game has started or finished %>
             <%= render 'games/game_war' %>
-        <% else %>
-            <%# Render game_result if the game has ended %>
         <% end %>
       </div>
 
@@ -226,18 +224,6 @@
         }
     }
 
-    // Call when page has been loaded
-    $(document).ready(function() {
-        // Request game moves for selected player to draw his battlefield
-        requestGameMovesToDrawGrid(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
-
-        // Get game player list
-        refreshGamePlayerList(<%=params[:id]%>);
-
-        // Get game moves notification
-        refreshGameMovesNotifications();
-    });
-
     // Send request for game players
     function requestGamePlayersFromServer(game_id) {
         // GamePlayer - index
@@ -248,54 +234,94 @@
             },
             cache: false
         }).done(function( response ) {
+                    updateGamePlayersTable(response);
+                    updateCurrentPlayerStatus(response);
+                    // This function is different in "game_prep" and "game_war"
+                    updateGameStatusBar(response);
+
                     // Send JSON response to this function to update battlefield, which will call drawBattlefield
                     if (current_game_player_status == <%=$GAME_PLAYER_STATUS_READY%>) {
-                        checkForShipSunk(response);
+                        // This will also update game player status, so it needs to be the last thing to do
+                        checkForShipSunkAndUpdateStatus(response);
                     }
-                    updateGamePlayersTable(response);
-                    updateGameStatusBar(response);
                 });
     }
 
     // Check and alert for new ship sunk, for current player only
-    function checkForShipSunk(json_response) {
+    function checkForShipSunkAndUpdateStatus(json_response) {
+        // Get current player's record
+        var my_game_player;
         for (var i=0; i<json_response.length; i++) {
             // Look for data of current player only
             var game_player = json_response[i];
-            if (game_player.player_number != <%=@current_game_player_number%>) {
-                continue;
-            } else {
-                if (!isShip1Sunk && game_player.is_ship1_sunk) {
-                    alert("Your Patrol Boat has just been sunk!!!");
-                    isShip1Sunk = true;
+            if (game_player.player_number == <%=@current_game_player_number%>) {
+                my_game_player = game_player;
+                break;
+            }
+        }
+
+        // Check for change in ship sunk status
+        if (!isShip1Sunk && game_player.is_ship1_sunk) {
+            alert("Your Patrol Boat has just been sunk!!!");
+            isShip1Sunk = true;
+        }
+        if (!isShip2Sunk && game_player.is_ship2_sunk) {
+            alert("Your Submarine has just been sunk!!!");
+            isShip2Sunk = true;
+        }
+        if (!isShip3Sunk && game_player.is_ship3_sunk) {
+            alert("Your Destroyer has just been sunk!!!");
+            isShip3Sunk = true;
+        }
+        if (!isShip4Sunk && game_player.is_ship4_sunk) {
+            alert("Your Battleship has just been sunk!!!");
+            isShip4Sunk = true;
+        }
+        if (!isShip5Sunk && game_player.is_ship5_sunk) {
+            alert("Your Carrier has just been sunk!!!");
+            isShip5Sunk = true;
+        }
+        // Check if every ship has been sunk & my status hasn't been set to LOST
+        if (isShip1Sunk && isShip2Sunk && isShip3Sunk && isShip4Sunk && isShip5Sunk &&
+                current_game_player_status != <%=$GAME_PLAYER_STATUS_LOST%>) {
+            // for debugging purpose
+            alert("YOU HAVE LOST!");
+            // Tell server that I've lost!
+            $.ajax({
+                url:"/game_players/<%= @current_game_player.id %>",
+                type:"PUT", // method "update"
+                data: {status: <%=$GAME_PLAYER_STATUS_LOST%>}
+            });
+            // Then change my status to LOST
+            current_game_player_status = <%=$GAME_PLAYER_STATUS_LOST%>;
+            // Check for winner -- there must be only 1 player with status == "$GAME_PLAYER_STATUS_READY"
+            var readyCount = 0;
+            var potentialWinner = null;
+            for (var i=0; i<json_response.length; i++) {
+                var game_player = json_response[i];
+                // Remember to skip checking myself, because I've lost!
+                if (game_player != my_game_player && game_player.status == <%=$GAME_PLAYER_STATUS_READY%>) {
+                    readyCount++;
+                    if (readyCount > 1) {
+                        break;
+                    }
+                    potentialWinner = game_player;
                 }
-                if (!isShip2Sunk && game_player.is_ship2_sunk) {
-                    alert("Your Submarine has just been sunk!!!");
-                    isShip2Sunk = true;
-                }
-                if (!isShip3Sunk && game_player.is_ship3_sunk) {
-                    alert("Your Destroyer has just been sunk!!!");
-                    isShip3Sunk = true;
-                }
-                if (!isShip4Sunk && game_player.is_ship4_sunk) {
-                    alert("Your Battleship has just been sunk!!!");
-                    isShip4Sunk = true;
-                }
-                if (!isShip5Sunk && game_player.is_ship5_sunk) {
-                    alert("Your Carrier has just been sunk!!!");
-                    isShip5Sunk = true;
-                }
-                if (isShip1Sunk && isShip2Sunk && isShip3Sunk && isShip4Sunk && isShip5Sunk &&
-                        current_game_player_status != <%=$GAME_PLAYER_STATUS_LOST%>) {
-                    alert("YOU HAVE LOST!");
-                    // Send lost notification AJAX call
-                    $.ajax({
-                        url:"/game_players/<%= @current_game_player.id %>",
-                        type:"PUT", // method "update"
-                        data: {status: <%=$GAME_PLAYER_STATUS_LOST%>}
-                    });
-                    current_game_player_status = <%=$GAME_PLAYER_STATUS_LOST%>;
-                }
+            }
+            if (readyCount == 1) {
+                alert("we found the winner! "+potentialWinner.username);
+                // Now, we've found the winner! Tell server that he has won!!
+                $.ajax({
+                    url:"/game_players/"+potentialWinner.id,
+                    type:"PUT", // method "update"
+                    data: {status: <%=$GAME_PLAYER_STATUS_WON%>}
+                });
+                // Also tell the server to change game status to "Finished"
+                $.ajax({
+                    url:"/games/<%=@game.id%>",
+                    type:"PUT", // method "update"
+                    data: {status: <%=$GAME_STATUS_FINISHED%>}
+                });
             }
         }
     }
@@ -364,6 +390,17 @@
         }
     }
 
+    function updateCurrentPlayerStatus(json_response) {
+        for (var i=0; i<json_response.length; i++) {
+            game_player = json_response[i];
+            if (game_player.player_number == <%=@current_game_player_number%>) {
+                // Got myself. Now, update my status
+                current_game_player_status = game_player.status;
+                break;
+            }
+        }
+    }
+
     // set interval of game players
     var gamePlayerListRefreshTimer = setInterval(refreshGamePlayerList, 1000);
     function refreshGamePlayerList() {
@@ -376,5 +413,20 @@
     function refreshGameMovesNotifications() {
         requestGameMovesNotifications(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
     }
+
+
+
+    // ***********************************************
+    // Call once when page has been loaded
+    $(document).ready(function() {
+        // Request game moves for selected player to draw his battlefield
+        requestGameMovesToDrawGrid(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
+
+        // Get game player list
+        refreshGamePlayerList(<%=params[:id]%>);
+
+        // Get game moves notification
+        refreshGameMovesNotifications();
+    });
 
 </script>
