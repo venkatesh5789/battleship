@@ -51,8 +51,6 @@
 <script>
 
     // *** Important variables to be used in client will be initialized here ***
-    var current_game_player_is_in_turn = <%= (@current_game_player.is_in_turn?) ? "true" : "false" %>;
-
     var player_battlefield = new Array(<%=@game_players.count%>); // Initialize a 3D array [number of players] = 0..n-1
 
     // Initialize battlefield 2d-array for each player

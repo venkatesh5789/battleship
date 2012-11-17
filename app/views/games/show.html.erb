@@ -82,7 +82,9 @@
     var isShip3Sunk = <%=@current_game_player.is_ship3_sunk?%>;
     var isShip4Sunk = <%=@current_game_player.is_ship4_sunk?%>;
     var isShip5Sunk = <%=@current_game_player.is_ship5_sunk?%>;
+
     var current_game_player_status = <%=@current_game_player_status%>;
+    var current_game_player_is_in_turn = <%= (@current_game_player.is_in_turn?) ? "true" : "false" %>;
 
     // Send request for game moves to draw battlefield grid
     function requestGameMovesToDrawGrid(from_game_player_number,to_game_player_number,game_id) {
@@ -235,7 +237,7 @@
             cache: false
         }).done(function( response ) {
                     updateGamePlayersTable(response);
-                    updateCurrentPlayerStatus(response);
+                    updateCurrentPlayerStatusAndTurn(response);
                     // This function is different in "game_prep" and "game_war"
                     updateGameStatusBar(response);
 
@@ -390,12 +392,15 @@
         }
     }
 
-    function updateCurrentPlayerStatus(json_response) {
+    function updateCurrentPlayerStatusAndTurn(json_response) {
         for (var i=0; i<json_response.length; i++) {
             game_player = json_response[i];
             if (game_player.player_number == <%=@current_game_player_number%>) {
-                // Got myself. Now, update my status
+                // Got myself
+                // Now, update my status
                 current_game_player_status = game_player.status;
+                // And update my is_in_turn
+                current_game_player_is_in_turn = game_player.is_in_turn;
                 break;
             }
         }
