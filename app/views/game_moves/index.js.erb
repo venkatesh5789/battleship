@@ -1,4 +1,29 @@
 
+// Update game moves notification window
 $("#game-moves-feed").empty()
 
 $("#game-moves-feed").append("<%=escape_javascript(render(@game_moves_notifications))%>");
+
+// Blink effect for particular player's tab
+<%
+last_game_move = @game_moves_notifications.last
+%>
+function changeTabColor() {
+    $("#playerTab li:nth-child(<%=last_game_move.to_game_player_number.to_i + 1%>)").css("background-color", "transparent");
+}
+var newGameMoveID = <%=last_game_move.id%>;
+if (recentGameMoveID != newGameMoveID) {
+    blinkCount = 0;
+    recentGameMoveID = newGameMoveID;
+}
+
+//$("#game-moves-feed").append("recent = "+recentGameMoveID+" new ="+newGameMoveID+" blinkcount="+blinkCount);
+
+if (blinkCount < 4) {
+    $("#playerTab li:nth-child(<%=last_game_move.to_game_player_number.to_i + 1%>)").css("background-color", "#FFAAAA");
+    setTimeout(changeTabColor,500);
+    blinkCount++;
+}
+
+
+//css("background-color", "#FFFF9C").animate({ backgroundColor: "#FFFFFF"}, 300);

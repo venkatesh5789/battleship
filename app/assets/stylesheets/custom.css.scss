@@ -159,8 +159,14 @@ input, textarea, select, .uneditable-input {
   background-color: #00bfff;
 }
 
-/* player tab */
+/* player table */
 
 .player_in_turn {
   background-color: #ffffcc;
+}
+
+/* player battlefield tab */
+
+.attack_signal {
+  background-color: red !important;
 }

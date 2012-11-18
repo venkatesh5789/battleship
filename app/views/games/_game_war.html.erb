@@ -222,8 +222,7 @@
         return true;
     }
 
-
-    // Activate player tab (bootstrap)
+    // ********* Activate player tab (bootstrap tab) ***********
     // Initiate sendGameMovesAJAXRequest() on tab change
     $('#playerTab a').click(function (e) {
         // Make tab works
@@ -238,6 +237,7 @@
 
         requestGameMovesToDrawGrid(<%= @current_game_player_number %>,target_player_number,<%=@game.id%>);
     })
+
 
     /* ********** Timer **************
      Set interval to refresh battlefield

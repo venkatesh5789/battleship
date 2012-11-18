@@ -152,6 +152,15 @@ class GameMovesController < ApplicationController
         @game_moves_notifications = GameMove.where(:game_id => params[:game_id],
                                                   :type_of_move => [$GAME_MOVE_TYPE_HIT,$GAME_MOVE_TYPE_MISSED])
 
+        # Append to_game_player_number to @game_moves query result
+        @game_moves_notifications.each do |each_game_move|
+          #each_game_move[:from_game_player_number] = params[:from_game_player_number].to_i
+          gp = GamePlayer.where(:game_id => params[:game_id],
+                                :user_id => each_game_move.to_user_id).first
+
+          each_game_move[:to_game_player_number] = gp.player_number
+        end
+
         @game_moves_notifications
       }
       format.json {

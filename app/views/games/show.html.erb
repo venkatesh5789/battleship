@@ -86,6 +86,10 @@
     var current_game_player_status = <%=@current_game_player_status%>;
     var current_game_player_is_in_turn = <%= (@current_game_player.is_in_turn?) ? "true" : "false" %>;
 
+    // For game move notification and tab lights up
+    var blinkCount = 0;
+    var recentGameMoveID = 0;
+
     // Send request for game moves to draw battlefield grid
     function requestGameMovesToDrawGrid(from_game_player_number,to_game_player_number,game_id) {
         $.ajax({
@@ -180,8 +184,7 @@
             },
             cache: false
         }).done(function( response ) {
-                    // Update
-                    //alert(response);
+                    // response is javascript, nothing to do with response
                 });
     }
 
@@ -238,6 +241,7 @@
         }).done(function( response ) {
                     updateGamePlayersTable(response);
                     updateCurrentPlayerStatusAndTurn(response);
+                    checkForMoreThanOnePlayer(response);
                     // This function is different in "game_prep" and "game_war"
                     updateGameStatusBar(response);
 
@@ -402,6 +406,21 @@
                 // And update my is_in_turn
                 current_game_player_is_in_turn = game_player.is_in_turn;
                 break;
+            }
+        }
+    }
+
+    // Check if the game is "waiting". There must be more than 1 player in the game to start.
+    // If there's 1 player --> disable "Ready to Player" button
+    function checkForMoreThanOnePlayer(json_response) {
+        if (<%= @game.status == $GAME_STATUS_WAITING ? "true" : "false" %>) {
+            // Game status is waiting.. check for number of players
+            if (json_response.length > 1) {
+                $("#readyButton").html('<strong>Ready to play</strong>');
+                $("#readyButton").removeAttr('disabled');
+            } else {
+                $("#readyButton").html('Minimum 2 players are needed to play.');
+                $("#readyButton").attr('disabled', 'disabled');
             }
         }
     }
