@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="span4">
-        <div class="btn-group">
+        <div id="joinedGamesDropdown" class="btn-group">
           <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
             Switch game
             <span class="caret"></span>
@@ -315,18 +315,12 @@
                 }
             }
             if (readyCount == 1) {
-                alert("we found the winner! "+potentialWinner.username);
+                //alert("we found the winner! "+potentialWinner.username);
                 // Now, we've found the winner! Tell server that he has won!!
                 $.ajax({
                     url:"/game_players/"+potentialWinner.id,
                     type:"PUT", // method "update"
                     data: {status: <%=$GAME_PLAYER_STATUS_WON%>}
-                });
-                // Also tell the server to change game status to "Finished"
-                $.ajax({
-                    url:"/games/<%=@game.id%>",
-                    type:"PUT", // method "update"
-                    data: {status: <%=$GAME_STATUS_FINISHED%>}
                 });
             }
         }
@@ -425,19 +419,35 @@
         }
     }
 
+    // =========== Check turn in other games ==========
+    function requestCheckTurn(user_id) {
+        $.ajax({
+            url:"/users/"+user_id+".js?current_game_id="+<%=@game.id%>,
+            type:"GET" // method "show"
+        });
+    }
+
+    // ****************** TIMERS ********************
+    var defaultTimerInterval = 2000;
+
     // set interval of game players
-    var gamePlayerListRefreshTimer = setInterval(refreshGamePlayerList, 1000);
+    var gamePlayerListRefreshTimer = setInterval(refreshGamePlayerList, defaultTimerInterval);
     function refreshGamePlayerList() {
         // no need to recall the function (it's an interval, it'll loop forever)
         requestGamePlayersFromServer(<%=params[:id]%>);
     }
 
     // set interval for Game Moves Notification
-    var gameMovesNotificationsRefreshTimer = setInterval(refreshGameMovesNotifications,1000);
+    var gameMovesNotificationsRefreshTimer = setInterval(refreshGameMovesNotifications,defaultTimerInterval);
     function refreshGameMovesNotifications() {
         requestGameMovesNotifications(<%=@current_game_player_number%>,<%=@current_game_player_number%>,<%=params[:id]%>);
     }
 
+    // set interval of checking your turn in other games (update switch game drop down)
+    var checkTurnTimer = setInterval(checkTurn, defaultTimerInterval);
+    function checkTurn() {
+        requestCheckTurn(<%=current_user.id%>);
+    }
 
 
     // ***********************************************

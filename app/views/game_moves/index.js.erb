@@ -6,7 +6,8 @@ $("#game-moves-feed").append("<%=escape_javascript(render(@game_moves_notificati
 
 // Blink effect for particular player's tab
 <%
-last_game_move = @game_moves_notifications.last
+if @game_moves_notifications.count > 0
+    last_game_move = @game_moves_notifications.last
 %>
 function changeTabColor() {
     $("#playerTab li:nth-child(<%=last_game_move.to_game_player_number.to_i + 1%>)").css("background-color", "transparent");
@@ -25,5 +26,4 @@ if (blinkCount < 4) {
     blinkCount++;
 }
 
-
-//css("background-color", "#FFFF9C").animate({ backgroundColor: "#FFFFFF"}, 300);
+<% end %>

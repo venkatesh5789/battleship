@@ -1,0 +1,31 @@
+// Clear drop down
+$("#joinedGamesDropdown ul").empty();
+
+//alert($("#joinedGamesDropDown").html());//.append($("#joinedGamesDropdown"));
+//alert("<%=@current_game_id%>");
+
+<% atLeastOneGameNeedYou = false %>
+<% @all_game_players.each do |each_game_player| %>
+    <% if each_game_player.game_id != @current_game_id.to_i %>
+        <% if each_game_player.is_in_turn %>
+            <% atLeastOneGameNeedYou = true %>
+            $("#joinedGamesDropdown ul").append("<a href='/games/<%= each_game_player.game_id%>'><%= each_game_player.game_name %> (your turn)</a>");
+        <% else %>
+            $("#joinedGamesDropdown ul").append("<a href='/games/<%= each_game_player.game_id%>'><%= each_game_player.game_name %></a>");
+        <% end %>
+    <% end %>
+<% end %>
+
+function resetDropdownBorderColor() {
+   $("#joinedGamesDropdown a").css("border-color", "#DDDDDD");
+}
+
+<% if atLeastOneGameNeedYou %>
+    // Blink
+    $("#joinedGamesDropdown a").css("border-color", "red");
+//alert("somegame");
+    setTimeout(resetDropdownBorderColor,800);
+<% else %>
+    // Reset to default color
+    resetDropdownBorderColor();
+<% end %>

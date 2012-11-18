@@ -35,45 +35,84 @@ class GamePlayersController < ApplicationController
       @game_player.status = params[:status]
       @game_player.save
 
-      # *************** Check whether everyone is ready *************
-      is_everyone_ready = true
-      @all_game_players_in_same_game = GamePlayer.where(:game_id => @game_player.game_id)
-      @all_game_players_in_same_game.each do |each_game_player|
-        #puts "====="
-        #puts each_game_player.player_number
-        #puts "-----"
-        #puts each_game_player.status
-        if each_game_player.status != $GAME_PLAYER_STATUS_READY
-          is_everyone_ready = false
-        end
-      end
+      # ***** Server checks the new game player status ******
+      if (params[:status].to_i.equal? $GAME_PLAYER_STATUS_WON)
+        # ======================================================================================================
+        # If it is WON, change game status to FINISHED and set everyone's is_in_turn to false
+        game_to_finish = Game.find(@game_player.game_id)
+        game_to_finish.status = $GAME_STATUS_FINISHED
+        game_to_finish.save
 
-      # ************* Change game status to START when everyone is ready *************
-      if is_everyone_ready
-        puts "EVERYONE IS READY"
-
-        # *** Change game status ***
-        game = Game.find(@game_player.game_id)
-        game.status = 1
-        game.save
-
-        # **** And give first player a turn ****
-        giveATurn = true
-        @all_game_players_in_same_game.each do |each_game_player|
-          # Give a turn only to first player
-          if giveATurn
-            each_game_player.is_in_turn = true
-            giveATurn = false
-          else
-            each_game_player.is_in_turn = false
-          end
+        # Set is_in_turn of everyone in that game to false
+        all_game_players = GamePlayer.where(:game_id => @game_player.game_id)
+        all_game_players.each do |each_game_player|
+          each_game_player.is_in_turn = false
           each_game_player.save
         end
 
-      else
-        puts "Not everyone is ready"
-      end
+      elsif (params[:status].to_i.equal? $GAME_PLAYER_STATUS_LEFT)
+        # ======================================================================================================
+        # New game player status is LEFT, check that everyone has left the game???
+        all_game_players = GamePlayer.where(:game_id => @game_player.game_id)
+        no_active_player = true
+        all_game_players.each do |each_game_player|
+          if each_game_player.status == $GAME_PLAYER_STATUS_READY
+            no_active_player = false
+            break
+          end
+        end
 
+        if no_active_player
+          # There is no player that is ready. That means everyone has left the game.
+          # Set game status to FINISHED
+          game_to_finish = Game.find(@game_player.game_id)
+          game_to_finish.status = $GAME_STATUS_FINISHED
+          game_to_finish.save
+
+          # Set is_in_turn of everyone in that game to false
+          all_game_players = GamePlayer.where(:game_id => @game_player.game_id)
+          all_game_players.each do |each_game_player|
+            each_game_player.is_in_turn = false
+            each_game_player.save
+          end
+        end
+      elsif (params[:status].to_i.equal? $GAME_PLAYER_STATUS_READY)
+        # ======================================================================================================
+        # If it is READY. This happened from game_prep mode
+
+        # *************** Check whether everyone is ready *************
+        is_everyone_ready = true
+        @all_game_players_in_same_game = GamePlayer.where(:game_id => @game_player.game_id)
+        @all_game_players_in_same_game.each do |each_game_player|
+          if each_game_player.status == $GAME_PLAYER_STATUS_WAITING
+            is_everyone_ready = false
+          end
+        end
+
+        # ************* If everyone is ready. Change game status to START *************
+        if is_everyone_ready
+
+          # *** Change game status ***
+          game = Game.find(@game_player.game_id)
+          game.status = $GAME_STATUS_STARTED
+          game.save
+
+          # **** And give first player a turn ****
+          giveATurn = true
+          @all_game_players_in_same_game.each do |each_game_player|
+            # Give a turn only to first player
+            if giveATurn
+              each_game_player.is_in_turn = true
+              giveATurn = false
+            else
+              each_game_player.is_in_turn = false
+            end
+            each_game_player.save
+          end
+        end
+      end
+      # ======================================================================================================
+      # Return that @game_player that has been updated.
       respond_to do |format|
         format.json { render json: @game_player }
       end
