@@ -97,6 +97,10 @@
                     player_battlefield[target_player_number][target_row][target_column] = <%=$GAME_MOVE_TYPE_MISSED%>;
                     // Send missed to server
                     sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_MISSED%>); // Missed shot
+
+                    // *** Prevent player from making multiple moves ***
+                    current_game_player_is_in_turn = false;
+
                     break;
                 case 1: // 1 to 5 are ship
                 case 2:
@@ -133,6 +137,9 @@
                     //  $GAME_MOVE_TYPE_HIT: a constant for "hit" value
                     //  ship_sunk_number:   0 if this shot doesn't sink the ship. 1-5 if sink
                     sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_HIT%>,ship_sunk_number); // Hit shot
+
+                    // *** Prevent player from making multiple moves ***
+                    current_game_player_is_in_turn = false;
 
                     break;
                 case 6: // Hit already
