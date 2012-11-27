@@ -43,7 +43,7 @@ class GamesController < ApplicationController
     # For a new move
     @game_move = GameMove.new
     # List of games that this user has joined
-    @user_joined_games = GamePlayer.where(:user_id=>current_user.id)
+    @user_joined_games = GamePlayer.where(:user_id=>current_user.id).order("player_number asc")
     # For players table
     @game_players = GamePlayer.find_all_by_game_id(params[:id])
 

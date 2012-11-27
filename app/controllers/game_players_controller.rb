@@ -44,7 +44,7 @@ class GamePlayersController < ApplicationController
         game_to_finish.save
 
         # Set is_in_turn of everyone in that game to false
-        all_game_players = GamePlayer.where(:game_id => @game_player.game_id)
+        all_game_players = GamePlayer.where(:game_id => @game_player.game_id).order("player_number asc")
         all_game_players.each do |each_game_player|
           each_game_player.is_in_turn = false
           each_game_player.save
@@ -53,7 +53,7 @@ class GamePlayersController < ApplicationController
       elsif (params[:status].to_i.equal? $GAME_PLAYER_STATUS_LEFT)
         # ======================================================================================================
         # New game player status is LEFT, check that everyone has left the game???
-        all_game_players = GamePlayer.where(:game_id => @game_player.game_id)
+        all_game_players = GamePlayer.where(:game_id => @game_player.game_id).order("player_number asc")
         no_active_player = true
         all_game_players.each do |each_game_player|
           if each_game_player.status == $GAME_PLAYER_STATUS_READY
@@ -70,7 +70,7 @@ class GamePlayersController < ApplicationController
           game_to_finish.save
 
           # Set is_in_turn of everyone in that game to false
-          all_game_players = GamePlayer.where(:game_id => @game_player.game_id)
+          all_game_players = GamePlayer.where(:game_id => @game_player.game_id).order("player_number asc")
           all_game_players.each do |each_game_player|
             each_game_player.is_in_turn = false
             each_game_player.save
@@ -82,7 +82,7 @@ class GamePlayersController < ApplicationController
 
         # *************** Check whether everyone is ready *************
         is_everyone_ready = true
-        @all_game_players_in_same_game = GamePlayer.where(:game_id => @game_player.game_id)
+        @all_game_players_in_same_game = GamePlayer.where(:game_id => @game_player.game_id).order("player_number asc")
         @all_game_players_in_same_game.each do |each_game_player|
           if each_game_player.status == $GAME_PLAYER_STATUS_WAITING
             is_everyone_ready = false
@@ -128,7 +128,7 @@ class GamePlayersController < ApplicationController
   # Parameter: game_id
   def index
 
-    @game_players = GamePlayer.where(:game_id => params[:game_id])
+    @game_players = GamePlayer.where(:game_id => params[:game_id]).order("player_number asc")
 
     @game_players.each do |each_game_player|
       each_game_player[:username] = each_game_player.user.username

@@ -38,7 +38,7 @@ class GameMovesController < ApplicationController
       # Get recent game moves row, if this is HIT or MISSED
       if ((type_of_move == $GAME_MOVE_TYPE_HIT) || (type_of_move == $GAME_MOVE_TYPE_MISSED ))
         @game_moves_notifications = GameMove.where(:game_id => params[:data][i.to_s]["game_id"].to_i,
-                                                  :type_of_move => [$GAME_MOVE_TYPE_HIT,$GAME_MOVE_TYPE_MISSED] )
+                                                  :type_of_move => [$GAME_MOVE_TYPE_HIT,$GAME_MOVE_TYPE_MISSED] ).order("id asc")
       end
 
       # If HIT or MISSED, append new notification
@@ -84,7 +84,7 @@ class GameMovesController < ApplicationController
 
         # -------- If this is a shot, server do a turn management -------
 
-        @all_game_players_in_same_game = GamePlayer.where(:game_id=>game_id)
+        @all_game_players_in_same_game = GamePlayer.where(:game_id=>game_id).order("player_number asc")
 
         # Find who has a current turn
         turn_owner_index = 0
@@ -150,7 +150,7 @@ class GameMovesController < ApplicationController
         # JS ==> To show notifications. Returns every game move (only HIT or MISSED) in that game
         # Query for every row with game_id and to_user_id
         @game_moves_notifications = GameMove.where(:game_id => params[:game_id],
-                                                  :type_of_move => [$GAME_MOVE_TYPE_HIT,$GAME_MOVE_TYPE_MISSED])
+                                                  :type_of_move => [$GAME_MOVE_TYPE_HIT,$GAME_MOVE_TYPE_MISSED]).order("id asc")
 
         # Append to_game_player_number to @game_moves query result
         @game_moves_notifications.each do |each_game_move|
@@ -179,7 +179,7 @@ class GameMovesController < ApplicationController
 
         # Query for every row with game_id and to_user_id
         @game_moves_notifications = GameMove.where(:game_id => params[:game_id],
-                                                   :to_user_id => to_user_id)
+                                                   :to_user_id => to_user_id).order("id asc")
 
         # Append from_game_player_number & to_game_player_number to @game_moves query result
         @game_moves_notifications.each do |each_game_move|

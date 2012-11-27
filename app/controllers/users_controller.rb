@@ -6,8 +6,8 @@ class UsersController < ApplicationController
   def show
     respond_to do |format|
       format.js {
-        @all_game_players = GamePlayer.where(:user_id => params[:id]) #,
-                                             #:game_id != params[:current_game_id])
+        @all_game_players = GamePlayer.where(:user_id => params[:id]).order("player_number asc")
+                                             #,:game_id != params[:current_game_id])
         @current_game_id = params[:current_game_id]
 
         # Append the game name to show in dropdown

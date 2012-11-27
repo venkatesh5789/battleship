@@ -242,7 +242,7 @@
     /* ********** Timers **************
      Set interval to refresh battlefield
      */
-    var battlefieldRefreshTimer = setInterval(refreshBattlefield, 1500);
+    var battlefieldRefreshTimer = setInterval(refreshBattlefield, 1000);
     function refreshBattlefield() {
         // no need to recall the function (it's an interval, it'll loop forever)
         // First, get active tab
