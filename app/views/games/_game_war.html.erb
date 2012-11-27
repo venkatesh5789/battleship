@@ -90,7 +90,12 @@
             var target_value = player_battlefield[target_player_number][target_row][target_column];
 
             switch (target_value) {
-                case 0: // No ship here, this will be a miss
+                case 0: // No ship here, this will be a missed shot
+
+                    // *** Prevent player from making multiple moves ***
+                    grid_is_locked = true;
+                    current_game_player_is_in_turn = false;
+
                     //alert("Missed shot!");
                     $(this).addClass("missed");
                     // Paint that cell
@@ -98,16 +103,17 @@
                     // Send missed to server
                     sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_MISSED%>); // Missed shot
 
-                    // *** Prevent player from making multiple moves ***
-                    current_game_player_is_in_turn = false;
-
                     break;
                 case 1: // 1 to 5 are ship
                 case 2:
                 case 3:
                 case 4:
                 case 5:
-                    //alert("This is a hit!!!");
+
+                    // *** Prevent player from making multiple moves ***
+                    grid_is_locked = true;
+                    current_game_player_is_in_turn = false;
+
                     // Paint that cell
                     $(this).addClass("hit");
 
@@ -137,9 +143,6 @@
                     //  $GAME_MOVE_TYPE_HIT: a constant for "hit" value
                     //  ship_sunk_number:   0 if this shot doesn't sink the ship. 1-5 if sink
                     sendShootResultToServer(target_player_number,target_row,target_column,<%=$GAME_MOVE_TYPE_HIT%>,ship_sunk_number); // Hit shot
-
-                    // *** Prevent player from making multiple moves ***
-                    current_game_player_is_in_turn = false;
 
                     break;
                 case 6: // Hit already

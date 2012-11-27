@@ -85,6 +85,18 @@
 
     var current_game_player_status = <%=@current_game_player_status%>;
     var current_game_player_is_in_turn = <%= (@current_game_player.is_in_turn?) ? "true" : "false" %>;
+    /* Multiple moves prevention
+        New game_player response comes
+            if (incoming is_in_turn == T && grid_is_locked == T)
+                is_in_turn => F
+            if (incoming is_in_turn == T && grid_is_locked == F)
+                is_in_turn => T
+            if (incoming is_in_turn == F && grid_is_locked == T)
+                is_in_turn => F, grid_is_locked => F
+            if (incoming is_in_turn == F && grid_is_locked == F)
+                is_in_turn => F
+     */
+    var grid_is_locked = false;
 
     // For game move notification and tab lights up
     var blinkCount = 0;
@@ -397,8 +409,21 @@
                 // Got myself
                 // Now, update my status
                 current_game_player_status = game_player.status;
-                // And update my is_in_turn
-                current_game_player_is_in_turn = game_player.is_in_turn;
+                // And update my is_in_turn.. but you need to check grid_is_locked
+                if (grid_is_locked) {
+                    if (game_player.is_in_turn) {
+                        current_game_player_is_in_turn = false;
+                    } else {
+                        current_game_player_is_in_turn = false;
+                        grid_is_locked = false;
+                    }
+                } else {
+                    if (game_player.is_in_turn) {
+                        current_game_player_is_in_turn = true;
+                    } else {
+                        current_game_player_is_in_turn = false;
+                    }
+                }
                 break;
             }
         }
