@@ -2,11 +2,13 @@
 <!-- This code creates "player tabs" -->
 <ul class="nav nav-tabs" id="playerTab">
   <% @game_players.each do |each_game_player| %>
+      <% if each_game_player.status != $GAME_PLAYER_STATUS_OBSERVE %>
       <li class="<%= "active" if each_game_player.user.username.eql?(current_user.username)%>">
         <a href="#player-<%= each_game_player.player_number %>" data-toggle="tab">
           <%= each_game_player.user.username %><%= " (me)" if each_game_player.user.username.eql?(current_user.username) %>
         </a>
       </li>
+      <% end %>
   <% end %>
 </ul>
 
@@ -15,7 +17,7 @@
 
   <!-- Div for each tab content -->
   <% @game_players.each do |each_game_player| %>
-
+      <% if each_game_player.status != $GAME_PLAYER_STATUS_OBSERVE %>
       <div class="tab-pane<%= " active" if each_game_player.user.username.eql?(current_user.username) %>"
            id="player-<%= each_game_player.player_number %>">
 
@@ -44,6 +46,7 @@
           <%end%>
         </table>
       </div>
+     <% end %>
   <% end %>
 </div>
 
