@@ -13,14 +13,22 @@ class GamesController < ApplicationController
   # GET /games/1
   # GET /games/1.json
   def show
+    player_count_in_game = GamePlayer.where(:game_id => params[:id]).count
+    current_player_has_joined = (GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).count != 0)
+    current_game_status = Game.find(params[:id]).status
 
     # Check whether user has already joined this game
-    if(GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).count == 0)
+    #if(player_count_in_game < 5 && !current_player_has_joined && current_game_status == $GAME_STATUS_WAITING )
+    if(!current_player_has_joined)
       # Not joined, create new game_player record to join the game
       new_player = GamePlayer.new
       new_player.user_id = current_user.id
       new_player.game_id = params[:id]
-      new_player.status = $GAME_PLAYER_STATUS_WAITING
+      if(player_count_in_game >= 5 || current_game_status == $GAME_STATUS_STARTED)
+        new_player.status = $GAME_PLAYER_STATUS_OBSERVE
+      else
+        new_player.status = $GAME_PLAYER_STATUS_WAITING
+      end
       new_player.player_number = GamePlayer.where(:game_id => params[:id]).count   # get a new player number
       new_player.is_ship1_sunk=false
       new_player.is_ship2_sunk=false
@@ -53,8 +61,8 @@ class GamesController < ApplicationController
     end
   end
 
-  # GET /games/new
-  # GET /games/new.json
+# GET /games/new
+# GET /games/new.json
   def new
     @game = Game.new
 
@@ -64,13 +72,13 @@ class GamesController < ApplicationController
     end
   end
 
-  # GET /games/1/edit
+# GET /games/1/edit
   def edit
     @game = Game.find(params[:id])
   end
 
-  # POST /games
-  # POST /games.json
+# POST /games
+# POST /games.json
   def create
 
     # Create a new record of "games" to create a new game
@@ -94,8 +102,8 @@ class GamesController < ApplicationController
     end
   end
 
-  # PUT /games/1
-  # PUT /games/1.json
+# PUT /games/1
+# PUT /games/1.json
   def update
     @game = Game.find(params[:id])
     @game.status = params[:status];
@@ -106,8 +114,8 @@ class GamesController < ApplicationController
     end
   end
 
-  # DELETE /games/1
-  # DELETE /games/1.json
+# DELETE /games/1
+# DELETE /games/1.json
   def destroy
     @game = Game.find(params[:id])
     @game.destroy
@@ -118,3 +126,4 @@ class GamesController < ApplicationController
     end
   end
 end
+

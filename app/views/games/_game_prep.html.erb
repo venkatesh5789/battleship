@@ -1,4 +1,7 @@
 <!-- Draw player's grid -->
+<% if @current_game_player.status == $GAME_PLAYER_STATUS_OBSERVE %>
+    <p>Game hasn't started, please wait!</p>
+<%else%>
 <table id="myGrid" class="table table-bordered battlefield">
   <tr>
     <th>&nbsp;</th>
@@ -69,6 +72,7 @@
       <% end %>
 
     </div>
+<% end %>
 <% end %>
 
 
@@ -331,8 +335,4 @@
         }
 
     }
-
-
-
-
 </script>

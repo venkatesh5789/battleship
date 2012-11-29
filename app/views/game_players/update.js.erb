@@ -10,6 +10,8 @@
         display = $GAME_PLAYER_STATUS_LOST_TEXT
     when $GAME_PLAYER_STATUS_WON
         display = $GAME_PLAYER_STATUS_WON_TEXT
+    when $GAME_PLAYER_STATUS_OBSERVE
+        display = $GAME_PLAYER_STATUS_OBSERVE_TEXT
     end
 %>
 $("#player-table-game-player-number-<%=@game_player.player_number%> td:nth-child(2)").html("<%=display%>");

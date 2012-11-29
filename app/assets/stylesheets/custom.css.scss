@@ -10,15 +10,14 @@
 }
 
 html {
-  overflow-y: scroll;
+    background-color: #555555;
 }
 
 body {
-  padding-top: 60px;
+  padding-top: 40px;
 }
 
 section {
-  overflow: auto;
 }
 
 textarea {
@@ -42,6 +41,7 @@ h1 {
   letter-spacing: -2px;
   margin-bottom: 30px;
   text-align: center;
+  color: #00bfff;
 }
 
 h2 {
@@ -50,7 +50,7 @@ h2 {
   margin-bottom: 30px;
   text-align: center;
   font-weight: normal;
-  color: #999;
+  color: #00bfff;
 }
 
 p {
@@ -75,48 +75,21 @@ p {
   text-decoration: none;
 }
 
-footer {
-  margin-top: 45px;
-  padding-top: 5px;
-  border-top: 1px solid #eaeaea;
-  color: #999;
-}
-
-footer a {
-  color: #555;
-}
-
-footer a:hover {
-  color: #222;
-}
-
-footer small {
-  float: left;
-}
-
-footer ul {
-  float: right;
-  list-style: none;
-}
-
-footer ul li {
-  float: left;
-  margin-left: 10px;
-}
-
 ol{
   height: 350px;
   width: 270px;
    overflow: auto;
   border-style: groove;
   border-width: 2px;
-  border-color: #ff4500;
-  background-color: #fffaf0;
+  border-color: #bbbbbb;
   color: #00008b;
 }
 
 ol li {
   list-style-type: decimal;
+  list-style-position: inside;
+  font-weight: bold;
+
 }
 
 input, textarea, select, .uneditable-input {
@@ -130,7 +103,7 @@ input, textarea, select, .uneditable-input {
 /* battlefield grid */
 
 .battlefield tr {
-  background-color: #cffefe;
+  background-image: inherit;
 }
 
 .battlefield tr:hover .hit,
@@ -145,29 +118,29 @@ input, textarea, select, .uneditable-input {
 
 .battlefield tr:hover .ship5Placed,
 .battlefield tr .ship5Placed {
-  background-color: #7cfc00;
+  background-color: #00008b;
 }
 .battlefield tr:hover .ship4Placed,
 .battlefield tr .ship4Placed {
-  background-color: #f0e68c;
+  background-color: #8b0000;
 }
 .battlefield tr:hover .ship3Placed,
 .battlefield tr .ship3Placed {
-  background-color: #bc8f8f;
+  background-color: teal;
 }
 .battlefield tr:hover .ship2Placed,
 .battlefield tr .ship2Placed {
-  background-color: #8a2be2;
+  background-color: #ff69b4;
 }
 .battlefield tr:hover .ship1Placed,
 .battlefield tr .ship1Placed {
-  background-color: #00bfff;
+  background-color: #7fffd4;
 }
 
 /* player table */
 
 .player_in_turn {
-  background-color: #ffffcc;
+  background-color: #000000;
 }
 
 /* player battlefield tab */
