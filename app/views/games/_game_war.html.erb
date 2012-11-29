@@ -3,7 +3,13 @@
 <ul class="nav nav-tabs" id="playerTab">
   <% @game_players.each do |each_game_player| %>
       <% if each_game_player.status != $GAME_PLAYER_STATUS_OBSERVE %>
-      <li class="<%= "active" if each_game_player.user.username.eql?(current_user.username)%>">
+   <!-- The following if-else statement is so that the first ready player is the default selected tab
+   that an observer sees. Earlier it was just the first statement in the if -->
+      <% if @game_players.where(:user_id => current_user.id ).first.status != $GAME_PLAYER_STATUS_OBSERVE %>
+            <li class="<%= "active" if each_game_player.user.username.eql?(current_user.username)%>">
+      <% else %>
+            <li class="<%= "active" if each_game_player.id == @first_ready_player_in_game.id%>">
+      <% end %>
         <a href="#player-<%= each_game_player.player_number %>" data-toggle="tab">
           <%= each_game_player.user.username %><%= " (me)" if each_game_player.user.username.eql?(current_user.username) %>
         </a>
@@ -18,8 +24,18 @@
   <!-- Div for each tab content -->
   <% @game_players.each do |each_game_player| %>
       <% if each_game_player.status != $GAME_PLAYER_STATUS_OBSERVE %>
-      <div class="tab-pane<%= " active" if each_game_player.user.username.eql?(current_user.username) %>"
-           id="player-<%= each_game_player.player_number %>">
+
+<!-- if-else condition added that chekcs if the player is an observer. This code is the same as the one
+used for the tabs -->
+          <% if @game_players.where(:user_id => current_user.id ).first.status != $GAME_PLAYER_STATUS_OBSERVE %>
+                <div class="tab-pane<%= " active" if each_game_player.user.username.eql?(current_user.username) %>"
+                 id="player-<%= each_game_player.player_number %>">
+          <% else %>
+            <div class="tab-pane<%= " active" if each_game_player.id == @first_ready_player_in_game.id %>"
+                 id="player-<%= each_game_player.player_number %>">
+           <% end %>
+
+
 
         <!-- Draw player's grid -->
         <table id="myGrid" class="table table-bordered battlefield">
@@ -77,6 +93,7 @@
                     return;
                 }
                 break;
+            case <%=$GAME_PLAYER_STATUS_OBSERVE%>: return;
             case <%=$GAME_PLAYER_STATUS_LEFT%>: alert("You cannot place any move.\n\nYou have left this game."); return;
             case <%=$GAME_PLAYER_STATUS_LOST%>: alert("You cannot place any move.\n\nYou have lost."); return;
             case <%=$GAME_PLAYER_STATUS_WON%>: alert("You cannot place any move.\n\nYou have won."); return;
@@ -295,11 +312,14 @@
                     $("#statusbar").html("<h2>Please wait for "+game_player_in_turn.username+" to make a move.</h2>");
                 }
                 break;
+            case (<%=$GAME_PLAYER_STATUS_OBSERVE%>): $("#statusbar").html("<h2>You are an observer. You cannot make any moves.</h2>"); break;
             case (<%=$GAME_PLAYER_STATUS_LEFT%>): $("#statusbar").html("<h2>You have left this game. You cannot make any moves.</h2>"); break;
             case (<%=$GAME_PLAYER_STATUS_LOST%>): $("#statusbar").html("<h2>You have lost! That's all.</h2>"); break;
             case (<%=$GAME_PLAYER_STATUS_WON%>): $("#statusbar").html("<h2>Hooray! You have won!</h2>"); break;
         }
 
     }
+
+
 
 </script>

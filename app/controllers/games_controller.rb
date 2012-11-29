@@ -55,6 +55,9 @@ class GamesController < ApplicationController
     # For players table
     @game_players = GamePlayer.where(:game_id => params[:id]).order("player_number asc")
 
+    @first_ready_player_in_game  = @game_players.where(:status => $GAME_PLAYER_STATUS_READY).first
+
+
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @game }
