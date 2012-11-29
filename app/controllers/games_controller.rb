@@ -13,9 +13,12 @@ class GamesController < ApplicationController
   # GET /games/1
   # GET /games/1.json
   def show
+    player_count_in_game = GamePlayer.where(:game_id => params[:id]).count
+    current_player_has_joined = (GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).count != 0)
+    current_game_status = Game.find(params[:id]).status
 
     # Check whether user has already joined this game
-    if(GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).count == 0)
+    if(player_count_in_game < 5 && !current_player_has_joined && current_game_status == $GAME_STATUS_WAITING )
       # Not joined, create new game_player record to join the game
       new_player = GamePlayer.new
       new_player.user_id = current_user.id

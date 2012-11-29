@@ -18,15 +18,10 @@
       <%="Missed" if game_move.type_of_move == 7 %>
       </b>
 
-      <%
-         if game_move.ship_sunk_number.to_i > 0 %>
-          <br><i>* <b>
-          <%="Carrier" if game_move.ship_sunk_number.to_i == 5%>
-          <%="Battleship" if game_move.ship_sunk_number.to_i ==4%>
-          <%="Destroyer" if game_move.ship_sunk_number.to_i ==3%>
-          <%="Submarine" if game_move.ship_sunk_number.to_i ==2%>
-          <%="Patrol Boat" if game_move.ship_sunk_number.to_i ==1%>
-          </b> has been sunk!* </i>
+      <%if game_move.ship_sunk_number.to_i > 0 %>
+          <br><i>*
+            <b> <%= User.find(game_move.from_user_id).username %> </b>
+            has sunk <b><%= User.find(game_move.to_user_id).username %></b>'s ship!* </i>
       <% end %>
   <% end %>
 </li>

@@ -61,7 +61,8 @@
       </div>
 
       <div class="span4" style="border-width: 2px;border-color: #a52a2a;">
-        <h3>Game moves</h3>
+        <h3 style="text-align: center;">Game moves</h3>
+        <br>
         <ol reversed="reversed" id="game-moves-feed"  >
         </ol>
 
@@ -74,37 +75,42 @@
 </div>
 
 <script>
-
-    // *** Important variables to be used in client will be initialized here ***
+       // *** Important variables to be used in client will be initialized here ***
     // Initialize current player's ship sunk status
-    var isShip1Sunk = <%=@current_game_player.is_ship1_sunk?%>;
-    var isShip2Sunk = <%=@current_game_player.is_ship2_sunk?%>;
-    var isShip3Sunk = <%=@current_game_player.is_ship3_sunk?%>;
-    var isShip4Sunk = <%=@current_game_player.is_ship4_sunk?%>;
-    var isShip5Sunk = <%=@current_game_player.is_ship5_sunk?%>;
+    var current_game_player = <%=@current_game_player %> ;
+    alert (current_game_player)   ;
+    if(current_game_player!=null ) {
+        var isShip1Sunk = <%=@current_game_player.is_ship1_sunk?%>;
+        var isShip2Sunk = <%=@current_game_player.is_ship2_sunk?%>;
+        var isShip3Sunk = <%=@current_game_player.is_ship3_sunk?%>;
+        var isShip4Sunk = <%=@current_game_player.is_ship4_sunk?%>;
+        var isShip5Sunk = <%=@current_game_player.is_ship5_sunk?%>;
 
-    var current_game_player_status = <%=@current_game_player_status%>;
-    var current_game_player_is_in_turn = <%= (@current_game_player.is_in_turn?) ? "true" : "false" %>;
-    /* Multiple moves prevention
-        New game_player response comes
-            if (incoming is_in_turn == T && grid_is_locked == T)
-                is_in_turn => F
-            if (incoming is_in_turn == T && grid_is_locked == F)
-                is_in_turn => T
-            if (incoming is_in_turn == F && grid_is_locked == T)
-                is_in_turn => F, grid_is_locked => F
-            if (incoming is_in_turn == F && grid_is_locked == F)
-                is_in_turn => F
-     */
-    var grid_is_locked = false;
+        var current_game_player_status = <%=@current_game_player_status%>;
+        var current_game_player_is_in_turn = <%= (@current_game_player.is_in_turn?) ? "true" : "false" %>;
+        /* Multiple moves prevention
+         New game_player response comes
+         if (incoming is_in_turn == T && grid_is_locked == T)
+         is_in_turn => F
+         if (incoming is_in_turn == T && grid_is_locked == F)
+         is_in_turn => T
+         if (incoming is_in_turn == F && grid_is_locked == T)
+         is_in_turn => F, grid_is_locked => F
+         if (incoming is_in_turn == F && grid_is_locked == F)
+         is_in_turn => F
+         */
+        var grid_is_locked = false;
 
-    // For game move notification and tab lights up
-    var blinkCount = 0;
-    var recentGameMoveID = 0;
+        // For game move notification and tab lights up
+        var blinkCount = 0;
+        var recentGameMoveID = 0;
+
+    }
 
     // Send request for game moves to draw battlefield grid
     function requestGameMovesToDrawGrid(from_game_player_number,to_game_player_number,game_id) {
-        $.ajax({
+        if(<%= @current_game_player %> ) {
+            $.ajax({
             // For drawing grid: format = JSON
             url: "/game_moves.json",
             data: {
@@ -117,6 +123,7 @@
                     // Send JSON response to this function to update battlefield, which will call drawBattlefield
                     updateAndRedrawBattlefield(response);
                 });
+        }
     }
 
     // Update player_battlefield variable (in client-side) from JSON response
@@ -188,16 +195,18 @@
     // This will call JavaScript code in "index.js.erb" that will refresh the Game Moves Notifications window
     // that "index.js.erb" code is exactly the same as in "create.js.erb"
     function requestGameMovesNotifications(from_game_player_number,to_game_player_number,game_id) {
-        $.ajax({
-            // For Notification: format = JS
-            url: "/game_moves.js",
-            data: {
-                game_id: game_id
-            },
-            cache: false
-        }).done(function( response ) {
-                    // response is javascript, nothing to do with response
-                });
+        if(<%= @current_game_player %> ) {
+            $.ajax({
+                // For Notification: format = JS
+                url: "/game_moves.js",
+                data: {
+                    game_id: game_id
+                },
+                cache: false
+            }).done(function( response ) {
+                        // response is javascript, nothing to do with response
+                    });
+        }
     }
 
     // Update game moves notification from JSON response
