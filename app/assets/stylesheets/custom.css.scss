@@ -102,8 +102,13 @@ input, textarea, select, .uneditable-input {
 
 /* battlefield grid */
 
-.battlefield tr {
-  background-image: inherit;
+.battlefield {
+  //background-image: image-url("sea.jpg");
+  background: rgba(200, 255, 255, 0.3);
+}
+.battlefield th:hover,
+.battlefield th {
+  //background-color: #a9a9a9;
 }
 
 .battlefield tr:hover .hit,
@@ -140,7 +145,7 @@ input, textarea, select, .uneditable-input {
 /* player table */
 
 .player_in_turn {
-  background-color: #000000;
+  background: rgba(150,200,255,0.6);
 }
 
 /* player battlefield tab */
