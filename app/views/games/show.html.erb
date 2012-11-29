@@ -1,4 +1,4 @@
-
+<div id="main" style="width: 70%;padding-left: 200px;">
 <div class="center">
   <h1><%= @game.name %></h1>
 </div>
@@ -50,7 +50,7 @@
     </div>
 
     <div class="row">
-      <div class="span6">
+      <div class="span6" style="background-image: url(/images/);">
         <% if @game.status == $GAME_STATUS_WAITING %>
             <%# Render game_prep if the game is preparing %>
             <%= render 'games/game_prep' %>
@@ -61,9 +61,9 @@
       </div>
 
       <div class="span4" style="border-width: 2px;border-color: #a52a2a;">
-        <h3 style="text-align: center;">Game moves</h3>
+        <h3 style="text-align: center;color: #00bfff;">Game moves</h3>
         <br>
-        <ol reversed="reversed" id="game-moves-feed"  >
+        <ol reversed="reversed" id="game-moves-feed" style="background-color:#000000 ;"  >
         </ol>
 
       </div>
@@ -73,13 +73,10 @@
   </div>
 
 </div>
-
+</div>
 <script>
        // *** Important variables to be used in client will be initialized here ***
     // Initialize current player's ship sunk status
-    var current_game_player = <%=@current_game_player %> ;
-    alert (current_game_player)   ;
-    if(current_game_player!=null ) {
         var isShip1Sunk = <%=@current_game_player.is_ship1_sunk?%>;
         var isShip2Sunk = <%=@current_game_player.is_ship2_sunk?%>;
         var isShip3Sunk = <%=@current_game_player.is_ship3_sunk?%>;
@@ -105,11 +102,9 @@
         var blinkCount = 0;
         var recentGameMoveID = 0;
 
-    }
 
     // Send request for game moves to draw battlefield grid
     function requestGameMovesToDrawGrid(from_game_player_number,to_game_player_number,game_id) {
-        if(<%= @current_game_player %> ) {
             $.ajax({
             // For drawing grid: format = JSON
             url: "/game_moves.json",
@@ -123,7 +118,6 @@
                     // Send JSON response to this function to update battlefield, which will call drawBattlefield
                     updateAndRedrawBattlefield(response);
                 });
-        }
     }
 
     // Update player_battlefield variable (in client-side) from JSON response
@@ -195,7 +189,6 @@
     // This will call JavaScript code in "index.js.erb" that will refresh the Game Moves Notifications window
     // that "index.js.erb" code is exactly the same as in "create.js.erb"
     function requestGameMovesNotifications(from_game_player_number,to_game_player_number,game_id) {
-        if(<%= @current_game_player %> ) {
             $.ajax({
                 // For Notification: format = JS
                 url: "/game_moves.js",
@@ -206,7 +199,7 @@
             }).done(function( response ) {
                         // response is javascript, nothing to do with response
                     });
-        }
+
     }
 
     // Update game moves notification from JSON response
