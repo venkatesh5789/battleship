@@ -1,7 +1,2 @@
-<% #@game_move_notifications.reverse! %>
-
-$("#game-moves-feed").empty()
-//$("#game-moves-feed").append("from create.js.erb");
-
-$("#game-moves-feed").append("<%=escape_javascript(render(@game_moves_notifications))%>");
-//@game_move
+$("#game-moves-feed").html("<%=escape_javascript(render(@game_moves_notifications))%>");
+$("#game-moves-feed").animate({ scrollTop: $("#game-moves-feed").height() }, "slow");

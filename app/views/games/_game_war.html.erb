@@ -95,6 +95,7 @@
                     // *** Prevent player from making multiple moves ***
                     grid_is_locked = true;
                     current_game_player_is_in_turn = false;
+                    $("#statusbar").html("<h2>Sending the move...</h2>");
 
                     //alert("Missed shot!");
                     $(this).addClass("missed");
@@ -113,6 +114,7 @@
                     // *** Prevent player from making multiple moves ***
                     grid_is_locked = true;
                     current_game_player_is_in_turn = false;
+                    $("#statusbar").html("<h2>Sending the move...</h2>");
 
                     // Paint that cell
                     $(this).addClass("hit");

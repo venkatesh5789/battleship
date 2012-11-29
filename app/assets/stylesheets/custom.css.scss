@@ -25,6 +25,12 @@ textarea {
   resize: vertical;
 }
 
+// No hover!
+.table tbody tr:hover td,
+.table tbody tr:hover th {
+  background-color: inherit;
+}
+
 /* typography */
 
 h1, h2, h3, h4, h5, h6 {
@@ -123,7 +129,6 @@ input, textarea, select, .uneditable-input {
 
 /* battlefield grid */
 
-.battlefield tr:hover,
 .battlefield tr {
   background-color: #cffefe;
 }

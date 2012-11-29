@@ -1,8 +1,6 @@
-
 // Update game moves notification window
-$("#game-moves-feed").empty()
-
-$("#game-moves-feed").append("<%=escape_javascript(render(@game_moves_notifications))%>");
+$("#game-moves-feed").html("<%=escape_javascript(render(@game_moves_notifications))%>");
+$("#game-moves-feed").animate({ scrollTop: $("#game-moves-feed").height() }, "slow");
 
 // Blink effect for particular player's tab
 <%
