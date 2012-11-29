@@ -45,7 +45,7 @@ class GamesController < ApplicationController
     # List of games that this user has joined
     @user_joined_games = GamePlayer.where(:user_id=>current_user.id).order("player_number asc")
     # For players table
-    @game_players = GamePlayer.find_all_by_game_id(params[:id]).order("player_number asc")
+    @game_players = GamePlayer.where(:game_id => params[:id]).order("player_number asc")
 
     respond_to do |format|
       format.html # show.html.erb
