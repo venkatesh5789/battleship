@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
   has_many :games
-  has_many :user_in_games
+  has_many :game_players
+  has_many :chats
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,

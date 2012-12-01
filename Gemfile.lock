@@ -164,14 +164,14 @@ DEPENDENCIES
   activesupport
   bcrypt-ruby (= 3.0.1)
   bootstrap-sass (= 2.0.4)
-  capybara (= 1.1.2)
+  capybara
   coffee-rails (~> 3.2.1)
   devise
-  factory_girl_rails (= 4.1.0)
+  factory_girl_rails
   jquery-rails
   pg (= 0.12.2)
   rails (= 3.2.7)
-  rspec-rails (= 2.11.0)
+  rspec-rails
   sass-rails (~> 3.2.3)
   sqlite3
   uglifier (>= 1.0.3)

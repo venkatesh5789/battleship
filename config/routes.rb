@@ -13,6 +13,8 @@ Battleship::Application.routes.draw do
 
   resources :users
 
+  resources :chats
+
 
   #get "/static_pages/show_game" => "static_pages#show_game"
 

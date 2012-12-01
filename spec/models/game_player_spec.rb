@@ -24,8 +24,8 @@ describe GamePlayer do
     before { @game_player.status = -1 }
     it { should_not be_valid }
   end
-  describe "when game player status is above four" do
-    before { @game_player.status = 5 }
+  describe "when game player status is above five" do
+    before { @game_player.status = 6 }
     it { should_not be_valid }
   end
 

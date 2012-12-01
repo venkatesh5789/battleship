@@ -8,12 +8,12 @@ gem 'bootstrap-sass', '2.0.4' # for Bootstrap and Sass CSS support
 
 group :development, :test do
    gem 'sqlite3'
-   gem 'rspec-rails','2.11.0'
+   gem 'rspec-rails'
 end
 
 group :test do
-  gem 'capybara','1.1.2'
-  gem 'factory_girl_rails','4.1.0'
+  gem 'capybara'
+  gem 'factory_girl_rails'
 end
 group :production do
   gem 'pg','0.12.2'     # --without production ??
