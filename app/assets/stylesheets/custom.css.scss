@@ -106,39 +106,36 @@ input, textarea, select, .uneditable-input {
   //background-image: image-url("sea.jpg");
   background: rgba(200, 255, 255, 0.3);
 }
-.battlefield th:hover,
-.battlefield th {
-  //background-color: #a9a9a9;
-}
 
-.battlefield tr:hover .hit,
-.battlefield tr .hit {
+tr:hover .hit,
+tr .hit {
   background-color: red;
 }
 
-.battlefield tr:hover .missed,
-.battlefield tr .missed {
+tr:hover .missed,
+tr .missed {
   background-color: white;
 }
 
-.battlefield tr:hover .ship5Placed,
-.battlefield tr .ship5Placed {
+tr:hover .ship5Placed,
+tr .ship5Placed {
+  border: 1;
   background-color: #00008b;
 }
-.battlefield tr:hover .ship4Placed,
-.battlefield tr .ship4Placed {
+tr:hover .ship4Placed,
+tr .ship4Placed {
   background-color: #8b0000;
 }
-.battlefield tr:hover .ship3Placed,
-.battlefield tr .ship3Placed {
+tr:hover .ship3Placed,
+tr .ship3Placed {
   background-color: teal;
 }
-.battlefield tr:hover .ship2Placed,
-.battlefield tr .ship2Placed {
+tr:hover .ship2Placed,
+tr .ship2Placed {
   background-color: #ff69b4;
 }
-.battlefield tr:hover .ship1Placed,
-.battlefield tr .ship1Placed {
+tr:hover .ship1Placed,
+tr .ship1Placed {
   background-color: #7fffd4;
 }
 
@@ -152,4 +149,15 @@ input, textarea, select, .uneditable-input {
 
 .attack_signal {
   background-color: red !important;
+}
+
+/* legend */
+.legend {
+  background: rgba(0,0,0,0.7);
+  font-weight: bold;
+}
+
+.table-borderless td,
+.table-borderless th{
+  border: 0 !important
 }
