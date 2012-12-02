@@ -14,7 +14,7 @@ describe "Chat model test" do
   it { should respond_to(:game_id) }
 
   describe "when chat message is blank" do
-    before { @chat.message.length == 0 }
+    before { @chat.message = "" }
     it { should_not be_valid }
   end
 
