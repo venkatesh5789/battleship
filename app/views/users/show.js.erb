@@ -18,12 +18,13 @@ $("#joinedGamesDropdown ul").empty();
 
 function resetDropdownBorderColor() {
    $("#joinedGamesDropdown a").css("border-color", "#DDDDDD");
+    $("#joinedGamesDropdown a").css("border-width", "3");
 }
 
 <% if atLeastOneGameNeedYou %>
     // Blink
     $("#joinedGamesDropdown a").css("border-color", "red");
-//alert("somegame");
+    $("#joinedGamesDropdown a").css("border-width", "3");
     setTimeout(resetDropdownBorderColor,800);
 <% else %>
     // Reset to default color

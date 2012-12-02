@@ -32,6 +32,13 @@ textarea {
   background-color: inherit;
 }
 
+.nav-tabs li a {
+  color: white;
+}
+.nav-tabs li a:hover {
+  background-color: #00008b;
+}
+
 /* typography */
 
 h1, h2, h3, h4, h5, h6 {
@@ -53,6 +60,17 @@ h2 {
   text-align: center;
   font-weight: normal;
   color: #00bfff;
+}
+
+h3 {
+  font-size: 1.7em;
+  letter-spacing: -1px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: normal;
+  color: #00bfff;
+  margin:10px 70px;
+  background-color: rgba(0,0,0,0.7);
 }
 
 p {
@@ -83,6 +101,11 @@ input, textarea, select, .uneditable-input {
   padding: 10px;
   height: auto !important;
   margin-bottom: 15px;
+}
+
+label {
+  color: #fff;
+  font-size: 12pt;
 }
 
 /* battlefield grid */

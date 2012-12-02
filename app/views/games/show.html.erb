@@ -37,7 +37,7 @@
         </tr>
         <tr>
           <td>
-            <table border="1" class="ship4Placed">
+            <table border="1" class="ship4Placed" bordercolor="gray">
               <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
             </table>
           </td>
@@ -45,7 +45,7 @@
         </tr>
         <tr>
           <td>
-            <table border="1" class="ship3Placed">
+            <table border="1" class="ship3Placed" bordercolor="gray">
               <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
             </table>
           </td>
@@ -53,7 +53,7 @@
         </tr>
         <tr>
           <td>
-            <table border="1" class="ship2Placed">
+            <table border="1" class="ship2Placed" bordercolor="gray">
               <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
             </table>
           </td>
@@ -61,7 +61,7 @@
         </tr>
         <tr>
           <td>
-            <table border="1" class="ship1Placed">
+            <table border="1" class="ship1Placed" bordercolor="gray">
               <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
             </table>
           </td>
@@ -102,12 +102,13 @@
 
     <div class="span4" style="border-width: 2px;border-color: #a52a2a;">
       <div>
-        <h2>Game moves</h2>
+        <h3>Game moves</h3>
         <!-- Game moves notification -->
         <ol id="game-moves-feed" style="background-color: black;"></ol>
       </div>
       <div>
-        <h2>Chat</h2>
+        <h3>Chat</h3>
+        <!-- Chat -->
         <ol id="chat-content" style="background-color: black;">
             <%= render(@all_chat_messages)%>
         </ol>
@@ -505,7 +506,7 @@
     }
 
     // ********* CHAT ***************
-    $("#chat-content").animate({ scrollTop: $("#chat-content").height()*2 }, "slow");
+    $("#chat-content").scrollTop($("#chat-content").height()*20);
     $("#sendButton").click(function () {
         if ($("#message").val() != "") {
             $.ajax({
