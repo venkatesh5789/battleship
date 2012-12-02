@@ -17,7 +17,6 @@
                   <% game = Game.find(each_joined_game.game_id) %>
                   <%= link_to game.name, game %>
               <% end%>
-
           <% end %>
         </ul>
       </div>
@@ -25,6 +24,67 @@
       <div id="player-window">
         <%= render 'game_players/game_players_table' %>
       </div>
+
+      <h2>Legend</h2>
+      <table class="legend battlefield">
+        <tr>
+          <td>
+            <table class="ship5Placed" border="1" bordercolor="gray">
+              <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            </table>
+          </td>
+          <td>Carrier</td>
+        </tr>
+        <tr>
+          <td>
+            <table border="1" class="ship4Placed">
+              <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            </table>
+          </td>
+          <td>Battleship</td>
+        </tr>
+        <tr>
+          <td>
+            <table border="1" class="ship3Placed">
+              <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            </table>
+          </td>
+          <td>Destroyer</td>
+        </tr>
+        <tr>
+          <td>
+            <table border="1" class="ship2Placed">
+              <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+            </table>
+          </td>
+          <td>Submarine</td>
+        </tr>
+        <tr>
+          <td>
+            <table border="1" class="ship1Placed">
+              <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+            </table>
+          </td>
+          <td>Patrol boat</td>
+        </tr>
+        <tr>
+          <td>
+            <table border="1" class="hit">
+              <tr><td>&nbsp;</td></tr>
+            </table>
+          </td>
+          <td>Hit</td>
+        </tr>
+        <tr>
+          <td>
+            <table border="1" class="missed">
+              <tr><td>&nbsp;</td></tr>
+            </table>
+          </td>
+          <td>Missed</td>
+        </tr>
+      </table>
+      <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>&nbsp;
     </div>
 
     <div class="span6">
@@ -52,71 +112,15 @@
             <%= render(@all_chat_messages)%>
         </ol>
         <%= form_tag("#", :class=>"form-inline", :remote=>"true") do %>
-            <%= text_field_tag :message,"",placeholder:"type message..",class:"input-medium" %>
-            <%= button_tag(:id => 'sendButton', :type => 'submit') { content_tag :strong, 'send' } %>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <%= text_field_tag :message,"",placeholder:"type message..",class:"input-medium",autocomplete:"off" %>
+            &nbsp;<%= button_tag(:id => 'sendButton', :type => 'submit') { content_tag :strong, 'send' } %>
         <% end %>
       </div>
     </div>
 
   </div>
 
-  <div class="row">
-    <table class="table table-borderless legend battlefield">
-      <!-- First row -->
-      <tr>
-        <td>
-          <table class="ship5Placed">
-            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-          </table>
-        </td>
-        <td>Carrier</td><td>&nbsp;</td>
-        <td>
-          <table border="1" class="ship2Placed">
-            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-          </table>
-        </td>
-        <td>Submarine</td><td>&nbsp;</td>
-        <td>
-          <table border="1" class="hit">
-            <tr><td>&nbsp;</td></tr>
-          </table>
-        </td>
-        <td>Hit</td>
-      </tr>
-      <!-- Second row -->
-      <tr>
-        <td>
-          <table border="1" class="ship4Placed">
-            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-          </table>
-        </td>
-        <td>Battleship</td><td>&nbsp;</td>
-        <td>
-          <table border="1" class="ship1Placed">
-            <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-          </table>
-        </td>
-        <td>Patrol boat</td><td>&nbsp;</td>
-        <td>
-          <table border="1" class="missed">
-            <tr><td>&nbsp;</td></tr>
-          </table>
-        </td>
-        <td>Missed</td>
-      </tr>
-      <!-- Third row -->
-      <tr>
-        <td>
-          <table border="1" class="ship3Placed">
-            <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-          </table>
-        </td>
-        <td>Destroyer</td><td>&nbsp;</td>
-        <td>&nbsp;</td><td>&nbsp;</td>
-        <td>&nbsp;</td><td>&nbsp;</td>
-      </tr>
-    </table>
-  </div>
 
 </div>
 <script>
@@ -500,6 +504,26 @@
         });
     }
 
+    // ********* CHAT ***************
+    $("#chat-content").animate({ scrollTop: $("#chat-content").height()*2 }, "slow");
+    $("#sendButton").click(function () {
+        if ($("#message").val() != "") {
+            $.ajax({
+                url:"/chats", // call "chats" controller
+                type:"POST", // method "create"
+                data: { message: $("#message").val(), game_id: <%=params[:id]%> }
+            });
+        }
+        $("#message").val("");
+    });
+    function updateChatWindow(game_id) {
+        $.ajax({
+            url:"/chats",
+            type:"GET",
+            data: { game_id: game_id }
+        });
+    }
+
     // ****************** TIMERS ********************
     var defaultTimerInterval = 1000;
 
@@ -522,14 +546,11 @@
         requestCheckTurn(<%=current_user.id%>);
     }
 
-    // *************************************
-    $("#sendButton").click(function () {
-        $.ajax({
-            url:"/chats", // call "chats" controller
-            type:"POST", // method "create"
-            data: { message: $("#message").val(), game_id: <%=params[:id]%> }
-        });
-    });
+    // set interval of chat refresh
+    var chatRefreshTimer = setInterval(refreshChat, 1000);
+    function refreshChat() {
+        updateChatWindow(<%=params[:id]%>);
+    }
 
     // ***********************************************
     // Call once when page has been loaded

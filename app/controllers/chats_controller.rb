@@ -1,16 +1,5 @@
 class ChatsController < ApplicationController
 
-  # GET /reviews/new
-  # GET /reviews/new.json
-  def new
-    @chat = Chat.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.json { render json: @chat }
-    end
-  end
-
 # POST /chats
   def create
     @chat = Chat.new
@@ -26,6 +15,15 @@ class ChatsController < ApplicationController
       else
         format.json { render json }
       end
+    end
+  end
+
+# GET /chats
+  def index
+    respond_to do |format|
+      @all_chat_messages = Chat.where(:game_id => params[:game_id]).order("id asc")
+      # for AJAX request
+      format.js { @all_chat_messages }
     end
   end
 
