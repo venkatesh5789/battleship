@@ -4,46 +4,52 @@
       <% if user_signed_in? %>
           <%@game_list.each  do |game| %>
               <% gamePlayer = GamePlayer.where(:game_id => game.id, :user_id => current_user.id)%>
-              <tr>
-                <td><%=game.name  %>  </td>
 
-                <% if(game.status == $GAME_STATUS_WAITING) %>
-
-                    <% if (gamePlayer.count == 1 && gamePlayer.first.status != $GAME_PLAYER_STATUS_OBSERVE)%>
-                        <td>  <%= link_to "Continue Game", game, class:"btn" %> </td>
-                    <% else if GamePlayer.where(:game_id => game.id).count < 5 %>
-                        <td> <%= link_to "Join Game", game, class:"btn"%>
-                    <% else %>
-                            <td> <%= link_to "Observe Game", game, class:"btn"%>
-                    <% end %>
-                <%end%>
-                    </td>
-                <%else if(game.status == $GAME_STATUS_STARTED) %>
+              <% if(game.status == $GAME_STATUS_WAITING) %>
+                  <tr>
+                      <td><%=game.name  %></td>
+                      <td>
+                      <% if (gamePlayer.count == 1 && gamePlayer.first.status != $GAME_PLAYER_STATUS_OBSERVE) %>
+                          <%= link_to "Continue Game", game, class:"btn" %>
+                      <% elsif GamePlayer.where(:game_id => game.id).count < 5 %>
+                          <%= link_to "Join Game", game, class:"btn"%>
+                      <% else %>
+                          <%= link_to "Observe Game", game, class:"btn"%>
+                      <% end %>
+                      </td>
+                  </tr>
+              <% elsif(game.status == $GAME_STATUS_STARTED) %>
+                   <tr>
+                        <td><%=game.name  %>  </td>
+                        <td>
                         <% if (gamePlayer.count == 1 && gamePlayer.first.status != $GAME_PLAYER_STATUS_OBSERVE) %>
-                            <td>  <%= link_to "Continue Game", game, class:"btn" %> </td>
+                            <%= link_to "Continue Game", game, class:"btn" %>
                         <% else %>
-                            <td>  <%= link_to "Observe Game", game, class:"btn" %> </td>
+                            <%= link_to "Observe Game", game, class:"btn" %>
                         <% end %>
-                    <% end %>
-                <% end %>
-              </tr>
+                        </td>
+                   </tr>
+              <% end %>
           <% end %>
       <% else %>
           <%@game_list.each  do |game| %>
-              <tr>
-                <td><%=game.name  %>  </td>
 
-                <% if(game.status == $GAME_STATUS_WAITING) %>
-
+              <% if(game.status == $GAME_STATUS_WAITING) %>
+                  <tr>
+                    <td><%= game.name %></td>
                     <td>  Ready </td>
-
-                <%else if(game.status == $GAME_STATUS_STARTED) %>
-                        <td>  Going on </td>
-                    <% end %>
-                <% end %>
-              </tr>
+                  </tr>
+              <%else if(game.status == $GAME_STATUS_STARTED) %>
+                      <tr>
+                        <td><%= game.name %></td>
+                        <td>  Going on  </td>
+                      </tr>
+                  <% end %>
+              <% end %>
           <% end %>
       <% end %>
-  <% end %>
+
+
+  <% end  %>
 
 </table>

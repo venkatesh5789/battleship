@@ -10,10 +10,12 @@
       <br><br><br><br><br><br><br><br><br><br>
     </div>
     <div class="span6">
-     <h2>Please select or create a game to play.</h2>
       <%if user_signed_in?%>
+        <h2>Please select or create a game to play.</h2>
         <p><a href="#myModal" role="button" class="btn" data-toggle="modal">Create Game</a> </p>
-      <%end%>
+      <% else %>
+          <h2>Games in progress</h2>
+      <% end %>
       <%= render "static_pages/games_table" %>
     </div>
     <div class="span3"></div>
