@@ -13,6 +13,8 @@ class GamesController < ApplicationController
   # GET /games/1
   # GET /games/1.json
   def show
+    @all_chat_messages = Chat.where(:game_id => params[:id]).order("id asc");
+
     player_count_in_game = GamePlayer.where(:game_id => params[:id]).count
     current_player_has_joined = (GamePlayer.where(:game_id => params[:id], :user_id => current_user.id).count != 0)
     current_game_status = Game.find(params[:id]).status

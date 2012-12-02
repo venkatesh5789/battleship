@@ -5,17 +5,52 @@
 
   <div class="row">
     <div class="span2">
+      <div id="joinedGamesDropdown" class="btn-group">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+          Switch game
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <!-- dropdown menu links -->
+          <% @user_joined_games.each do |each_joined_game| %>
+              <% if @game.id != each_joined_game.game_id %>
+                  <% game = Game.find(each_joined_game.game_id) %>
+                  <%= link_to game.name, game %>
+              <% end%>
+
+          <% end %>
+        </ul>
+      </div>
+      <br>&nbsp;<br>
       <div id="player-window">
         <%= render 'game_players/game_players_table' %>
       </div>
-      <div id="chat-window" >
+    </div>
+
+    <div class="span6">
+      <div id="statusbar">
+        <h2>&nbsp;</h2>
+      </div>
+      <% if @game.status == $GAME_STATUS_WAITING %>
+          <%# Render game_prep if the game is preparing %>
+          <%= render 'games/game_prep' %>
+      <% elsif @game.status == $GAME_STATUS_STARTED || @game.status == $GAME_STATUS_FINISHED %>
+          <%# Render game_war if the game has started or finished %>
+          <%= render 'games/game_war' %>
+      <% end %>
+    </div>
+
+    <div class="span4" style="border-width: 2px;border-color: #a52a2a;">
+      <div>
+        <h2>Game moves</h2>
+        <!-- Game moves notification -->
+        <ol id="game-moves-feed" style="background-color: black;"></ol>
+      </div>
+      <div>
         <h2>Chat</h2>
-        <div id="chat-content">
-            <ul>
-              <li><b>Knotty: </b>Chat message 1</li>
-              <li><b>Venky: </b>Chat message 2</li>
-            </ul>
-        </div>
+        <ol id="chat-content" style="background-color: black;">
+            <%= render(@all_chat_messages)%>
+        </ol>
         <%= form_tag("#", :class=>"form-inline", :remote=>"true") do %>
             <%= text_field_tag :message,"",placeholder:"type message..",class:"input-medium" %>
             <%= button_tag(:id => 'sendButton', :type => 'submit') { content_tag :strong, 'send' } %>
@@ -23,61 +58,10 @@
       </div>
     </div>
 
-    <div class="span10">
-
-      <div class="row">
-        <div class="span6">
-          <div id="statusbar">
-            <h2>&nbsp;</h2>
-          </div>
-        </div>
-        <div class="span4">
-          <div id="joinedGamesDropdown" class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              Switch game
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <!-- dropdown menu links -->
-              <% @user_joined_games.each do |each_joined_game| %>
-                  <% if @game.id != each_joined_game.game_id %>
-                      <% game = Game.find(each_joined_game.game_id) %>
-                      <%= link_to game.name, game %>
-                  <% end%>
-
-              <% end %>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="span6" style="background-image: url(/images/);">
-          <% if @game.status == $GAME_STATUS_WAITING %>
-              <%# Render game_prep if the game is preparing %>
-              <%= render 'games/game_prep' %>
-          <% elsif @game.status == $GAME_STATUS_STARTED || @game.status == $GAME_STATUS_FINISHED %>
-              <%# Render game_war if the game has started or finished %>
-              <%= render 'games/game_war' %>
-          <% end %>
-        </div>
-
-        <div class="span4" style="border-width: 2px;border-color: #a52a2a;">
-          <h3 style="text-align: center;color: #00bfff;">Game moves</h3>
-          <br>
-          <ol reversed="reversed" id="game-moves-feed" style="background-color:#000000 ;"  >
-          </ol>
-
-        </div>
-
-      </div>
-
-    </div>
-
   </div>
 
   <div class="row">
-    <table class="table table-borderless legend">
+    <table class="table table-borderless legend battlefield">
       <!-- First row -->
       <tr>
         <td>

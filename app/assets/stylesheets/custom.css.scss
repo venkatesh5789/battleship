@@ -77,23 +77,6 @@ p {
   text-decoration: none;
 }
 
-ol{
-  height: 350px;
-  width: 270px;
-   overflow: auto;
-  border-style: groove;
-  border-width: 2px;
-  border-color: #bbbbbb;
-  color: #00008b;
-}
-
-ol li {
-  list-style-type: decimal;
-  list-style-position: inside;
-  font-weight: bold;
-
-}
-
 input, textarea, select, .uneditable-input {
   border: 1px solid #bbb;
   width: 100%;
@@ -109,35 +92,35 @@ input, textarea, select, .uneditable-input {
   background: rgba(200, 255, 255, 0.3);
 }
 
-tr:hover .hit,
-tr .hit {
+.battlefield tr:hover .hit,
+.battlefield tr .hit {
   background-color: red;
 }
 
-tr:hover .missed,
-tr .missed {
+.battlefield tr:hover .missed,
+.battlefield tr .missed {
   background-color: white;
 }
 
-tr:hover .ship5Placed,
-tr .ship5Placed {
+.battlefield tr:hover .ship5Placed,
+.battlefield tr .ship5Placed {
   border: 1;
   background-color: #00008b;
 }
-tr:hover .ship4Placed,
-tr .ship4Placed {
+.battlefield tr:hover .ship4Placed,
+.battlefield tr .ship4Placed {
   background-color: #8b0000;
 }
-tr:hover .ship3Placed,
-tr .ship3Placed {
+.battlefield tr:hover .ship3Placed,
+.battlefield tr .ship3Placed {
   background-color: teal;
 }
-tr:hover .ship2Placed,
-tr .ship2Placed {
+.battlefield tr:hover .ship2Placed,
+.battlefield tr .ship2Placed {
   background-color: #ff69b4;
 }
-tr:hover .ship1Placed,
-tr .ship1Placed {
+.battlefield tr:hover .ship1Placed,
+.battlefield tr .ship1Placed {
   background-color: #7fffd4;
 }
 
@@ -172,4 +155,21 @@ tr .ship1Placed {
 .game-list-table td {
 
   font-color: white !important;
+}
+
+/* game moves notification */
+
+ol  {
+  height: 200px;
+  width: 280px;
+   overflow: auto;
+  border-style: groove;
+  border-width: 2px;
+  border-color: #bbbbbb;
+  color: #00008b;
+}
+
+ol li {
+  list-style-type: square;
+  list-style-position: inside;
 }
